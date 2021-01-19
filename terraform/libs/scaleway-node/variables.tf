@@ -1,6 +1,4 @@
 
-variable "name" {
-}
 variable "environment" {
 }
 
