@@ -56,11 +56,13 @@ services:
     
   super-node:
     container_name: super-node
-    image: defiwallet.azurecr.io/super-node:latest
+    image: defiwallet.azurecr.io/supernode:latest
     networks:
       - default
     ports:
       - 5000:5000
+    depends_on:
+      - bitcore-node
 
 volumes:
   db_data:
