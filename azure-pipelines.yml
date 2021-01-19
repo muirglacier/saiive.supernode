@@ -13,7 +13,7 @@ variables:
   dockerRegistryServiceConnection: '09ede222-72d3-46b3-9b0a-7d1805a7b465'
   imageRepository: 'supernode'
   containerRegistry: 'defiwallet.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/src/saiive.defi.api/Dockerfile'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   
   # Agent VM image name
@@ -37,3 +37,4 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+          latest

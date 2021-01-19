@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   defichain:
-    image: defi/defichain
+    image: defiwallet.azurecr.io/defichain:latest
     networks:
       - default
     environment:
@@ -32,12 +32,12 @@ services:
 
   bitcore-node:
     container_name: bitcore-node
-    image: bitcore-node
+    image: defiwallet.azurecr.io/bitcorenode:latest
     command: "bash -c 'cd ./packages/bitcore-node/; npm run tsc; node build/src/server.js'"
     networks:
       - default
     ports:
-      - ${API_PORT}:3000
+      - 3000:3000
     environment:
       - NETWORK=${NETWORK:?NETWORK env required}
       - API_PORT=3000
@@ -53,6 +53,14 @@ services:
       - database
       - defichain
     restart: unless-stopped
+    
+  super-node:
+    container_name: super-node
+    image: defiwallet.azurecr.io/super-node:latest
+    networks:
+      - default
+    ports:
+      - 5000:5000
 
 volumes:
   db_data:

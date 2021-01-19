@@ -7,14 +7,14 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["saiive.defi.api/saiive.defi.api.csproj", "saiive.defi.api/"]
-RUN dotnet restore "saiive.defi.api/saiive.defi.api.csproj"
+COPY src .
+RUN dotnet restore
 COPY . .
 WORKDIR "/src/saiive.defi.api"
-RUN dotnet build "saiive.defi.api.csproj" -c Release -o /app/build
+RUN dotnet build -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "saiive.defi.api.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
