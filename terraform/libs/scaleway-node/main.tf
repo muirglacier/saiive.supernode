@@ -44,7 +44,7 @@ resource "scaleway_instance_server" "node" {
   connection {
     host = self.public_ip
     user = var.username
-    private_key = file(var.ssh_key_file)
+    private_key = var.ssh_key
   }
 
    provisioner "remote-exec" {

@@ -23,7 +23,7 @@ variable "server_type" {
   default = "DEV1-S"
 }
 
-variable "ssh_key_file" {
+variable "ssh_key" {
 
 }
 
