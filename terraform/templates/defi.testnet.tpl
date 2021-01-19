@@ -5,5 +5,5 @@ testnet=1
 rpcallowip=172.28.0.0/16
 rpcbind=0.0.0.0
 
-rpcuser=<random_username>
-rpcpassword=<random_password>
+rpcuser=${wallet_user}
+rpcpassword=${wallet_password}

@@ -20,8 +20,8 @@
           "rpc": {
             "host": "defichain",
             "port": 8554,
-            "username": "<random_username>",
-            "password": "<random_password>"
+            "username": "${wallet_user}"
+            "password": "${wallet_password}"
           }
         }
       }

@@ -5,39 +5,43 @@ data "scaleway_image" "image" {
 }
 
 locals {
-    environment = "${var.environment}-"
+    node_name = "${var.prefix}-${var.environment}"
 }
 
 resource "scaleway_instance_ip" "node_ip" {
   count = var.node_count
 }
 
+resource "scaleway_instance_security_group" "node" {
+  inbound_default_policy  = "drop"
+  outbound_default_policy = "accept"
 
-data "template_file" "env" {
-  template   = file("${path.root}/templates/env.tpl")
+  inbound_rule {
+    action = "accept"
+    port   = "22"
+  }
 
-  vars = {
-    network      = var.network
+  inbound_rule {
+    action = "accept"
+    port   = "80"
+  }
+
+  inbound_rule {
+    action = "accept"
+    port   = "443"
   }
 }
 
-resource "local_file" "env" {
-  depends_on = [data.template_file.env]
-
-  content  = data.template_file.env.rendered
-  filename = "${path.root}/config/.env"
-}
-
-
 resource "scaleway_instance_server" "node" {
   count = var.node_count
-  name = "${var.prefix}-${var.name}-${count.index}"
+  name = "${local.node_name}-${count.index}"
   depends_on = [scaleway_instance_ip.node_ip]
 
   image               = data.scaleway_image.image.id
   type                = var.server_type
   enable_dynamic_ip   = true
   ip_id = element(scaleway_instance_ip.node_ip.*.id, count.index)
+  security_group_id = scaleway_instance_security_group.node.id
   # initialization sequence
   cloud_init = var.cloud_init
 
@@ -52,11 +56,35 @@ resource "scaleway_instance_server" "node" {
       "mkdir /opt/node"
     ]
   }
+  
+  provisioner "file" {
+    content = element(data.template_file.env.*.rendered, count.index)
+    destination = "/opt/node/.env"
+  }
 
   provisioner "file" {
-    source      = "${path.root}/config/"
-    destination = "/opt/node"
+    content = element(data.template_file.docker_compose.*.rendered, count.index)
+    destination = "/opt/node/docker-compose.yml"
   }
+
+  provisioner "file" {
+    content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
+    destination = "/opt/node/bitcore.mainnet.config.json"
+  }
+
+  provisioner "file" {
+    content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
+    destination = "/opt/node/bitcore.testnet.config.json"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
+    destination = "/opt/node/defi.mainnet.conf"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_testnet.*.rendered, count.index)
+    destination = "/opt/node/defi.testnet.conf"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "tail -f /var/log/cloud-init-output.log &",
@@ -68,6 +96,14 @@ resource "scaleway_instance_server" "node" {
 resource "azurerm_dns_a_record" "custom_domain_cname" {
   count = var.node_count
   name                = element(scaleway_instance_server.node.*.name, count.index)
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(scaleway_instance_server.node.*.public_ip, count.index)]
+}
+resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
+  count = var.node_count
+  name                = "traefik.${element(scaleway_instance_server.node.*.name, count.index)}"
   zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
   ttl                 = 300
@@ -96,7 +132,7 @@ resource "uptimerobot_monitor" "main" {
 
 resource "azurerm_traffic_manager_endpoint" "endpoint" {
   count = var.node_count
-  name = "${var.prefix}-${var.name}-${count.index}"
+  name = "${var.prefix}-${count.index}"
   resource_group_name = var.resource_group
   profile_name        = var.traffic_manager
   target              = element(scaleway_instance_server.node.*.public_ip, count.index)
