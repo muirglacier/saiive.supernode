@@ -1,0 +1,67 @@
+version: '3.0'
+
+services:
+  database:
+    container_name: mongo_db
+    image: mongo:3.4-jessie
+    networks:
+      - default
+    expose:
+      - 27017
+    volumes:
+      - db_data:/data/db
+    restart: unless-stopped
+
+  defichain:
+    image: defi/defichain
+    networks:
+      - default
+    environment:
+      - NETWORK=${NETWORK:?NETWORK env required}
+    volumes:
+      - node_data:/data
+      - ./defi.${NETWORK}.conf:/data/defi.conf
+    restart: unless-stopped
+    ports:
+      - 8555:8555
+      - 8554:8554
+      - 18555:18555
+      - 18554:18554
+      - 19555:19555
+      - 19554:19554
+
+  bitcore-node:
+    container_name: bitcore-node
+    image: bitcore-node
+    command: "bash -c 'cd ./packages/bitcore-node/; npm run tsc; node build/src/server.js'"
+    networks:
+      - default
+    ports:
+      - ${API_PORT}:3000
+    environment:
+      - NETWORK=${NETWORK:?NETWORK env required}
+      - API_PORT=3000
+      - DB_HOST=database
+      - CHAIN=DFI
+      - BITCORE_CONFIG_PATH=bitcore.config.json
+      - BITCORE_NODE_FILE_LOG=${BITCORE_NODE_FILE_LOG:-false}
+      - BITCORE_NODE_SENTRY_DNS=${BITCORE_NODE_SENTRY_DNS:-false}
+      - DISABLE_HEALTH_CRON=${DISABLE_HEALTH_CRON:-false}
+    volumes:
+      - ./bitcore.${NETWORK}.config.json:/usr/src/app/bitcore.config.json
+    depends_on:
+      - database
+      - defichain
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  node_data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
