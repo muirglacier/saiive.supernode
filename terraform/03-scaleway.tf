@@ -14,6 +14,11 @@ data "azurerm_key_vault_secret" "docker_registry_password" {
   key_vault_id = var.key_vault_id
 }
 
+data "azurerm_key_vault_secret" "scalway_private_key" {
+  name         = "scaleway-private-key"
+  key_vault_id = var.key_vault_id
+}
+
 
 data "template_file" "cloud_init" {
   template   = file("${path.root}/cloud-init/cloud-init.yml")
@@ -34,12 +39,12 @@ module "chain_scaleway_network_nodes" {
   environment = var.environment
   cloud_init = data.template_file.cloud_init.rendered
   
-  ssh_key_file = "${path.root}/secrets/scaleway.key"
-  
   dns_zone = var.dns_zone
   dns_zone_resource_group = var.dns_zone_resource_group
   
   resource_group = azurerm_resource_group.rg.name
   traffic_manager = module.traffic_manager.name
   network="testnet"
+
+  ssh_key = data.azurerm_key_vault_secret.scalway_private_key.value
 }
