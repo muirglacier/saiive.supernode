@@ -148,7 +148,8 @@ services:
     networks:
       - default
     environment:
-      - Network=$${NETWORK:?NETWORK env required}
+      - NETWORK=$${NETWORK:?NETWORK env required}
+      - BITCORE_URL=http://bitcore_node:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.super_node.loadbalancer.server.port=5000"
