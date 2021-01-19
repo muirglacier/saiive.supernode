@@ -25,7 +25,7 @@ namespace saiive.defi.api.Controllers
             _apiUrl = config["BITCORE_URL"];
             _network = config["NETWORK"];
             
-            _logger.LogDebug($"Using bitcore {_apiUrl} on network {_network}");
+            _logger.LogInformation($"Using bitcore {_apiUrl} on network {_network}");
         }
 
         [HttpGet("{coin}/balance/{address}")]
