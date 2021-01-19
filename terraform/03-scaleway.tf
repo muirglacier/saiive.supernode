@@ -15,10 +15,9 @@ data "azurerm_key_vault_secret" "docker_registry_password" {
 }
 
 data "azurerm_key_vault_secret" "scalway_private_key" {
-  name         = "scaleway-private-key"
+  name         = "scaleway-vm-private-key"
   key_vault_id = var.key_vault_id
 }
-
 
 data "template_file" "cloud_init" {
   template   = file("${path.root}/cloud-init/cloud-init.yml")
@@ -30,11 +29,12 @@ data "template_file" "cloud_init" {
   }
 }
 
+
+
 module "chain_scaleway_network_nodes" {
   source = "./libs/scaleway-node"
 
   node_count = 1
-  name = "defichain-supernode"
   prefix = var.prefix
   environment = var.environment
   cloud_init = data.template_file.cloud_init.rendered
@@ -46,5 +46,5 @@ module "chain_scaleway_network_nodes" {
   traffic_manager = module.traffic_manager.name
   network="testnet"
 
-  ssh_key = data.azurerm_key_vault_secret.scalway_private_key.value
+  ssh_key = base64decode(data.azurerm_key_vault_secret.scalway_private_key.value)
 }
