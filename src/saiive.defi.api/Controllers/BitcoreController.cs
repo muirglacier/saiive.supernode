@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -33,12 +34,22 @@ namespace saiive.defi.api.Controllers
         {
             var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/address/{address}/balance");
 
-            var data = await response.Content.ReadAsStringAsync();
+            try
+            {
+                response.EnsureSuccessStatusCode();
 
-            var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
-            obj.Address = address;
+                var data = await response.Content.ReadAsStringAsync();
 
-            return obj;
+                var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
+                obj.Address = address;
+
+                return obj;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"{e}");
+                throw;
+            }
         }
 
         [HttpPost("{coin}/balances")]
@@ -59,12 +70,19 @@ namespace saiive.defi.api.Controllers
         public async Task<List<TransactionModel>> GetTransactions(string coin, string address)
         {
             var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/address/{address}/txs");
+            try
+            {
+                var data = await response.Content.ReadAsStringAsync();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
 
-            var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-
-            return obj;
+                return obj;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"{e}");
+                throw;
+            }
         }
 
         [HttpPost("{coin}/txs")]
@@ -84,12 +102,19 @@ namespace saiive.defi.api.Controllers
         public async Task<FeeEstimateModel> GetEstimateFee(string coin)
         {
             var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/fee/30");
+            try
+            {
+                var data = await response.Content.ReadAsStringAsync();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<FeeEstimateModel>(data);
 
-            var obj = JsonConvert.DeserializeObject<FeeEstimateModel>(data);
-
-            return obj;
+                return obj;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"{e}");
+                throw;
+            }
         }
     }
 }
