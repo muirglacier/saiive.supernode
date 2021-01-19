@@ -15,21 +15,23 @@ namespace saiive.defi.api.Controllers
     {
         private readonly ILogger<BitcoreController> _logger;
         private readonly string _apiUrl;
-        private readonly string _net;
+        private readonly string _network;
 
         private readonly HttpClient _client = new HttpClient();
 
         public BitcoreController(ILogger<BitcoreController> logger, IConfiguration config)
         {
             _logger = logger;
-            _apiUrl = config["BitcoreUrl"];
-            _net = config["Network"];
+            _apiUrl = config["BITCORE_URL"];
+            _network = config["NETWORK"];
+            
+            _logger.LogDebug($"Using bitcore {_apiUrl} on network {_network}");
         }
 
         [HttpGet("{coin}/balance/{address}")]
         public async Task<BalanceModel> GetBalance(string coin, string address)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_net}/address/{address}/balance");
+            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/address/{address}/balance");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -56,7 +58,7 @@ namespace saiive.defi.api.Controllers
         [HttpGet("{coin}/txs/{address}")]
         public async Task<List<TransactionModel>> GetTransactions(string coin, string address)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_net}/address/{address}/txs");
+            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/address/{address}/txs");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -81,7 +83,7 @@ namespace saiive.defi.api.Controllers
         [HttpGet("{coin}/fee")]
         public async Task<FeeEstimateModel> GetEstimateFee(string coin)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_net}/fee/30");
+            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/fee/30");
 
             var data = await response.Content.ReadAsStringAsync();
 
