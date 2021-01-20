@@ -13,7 +13,7 @@ namespace saiive.defi.api.Controllers
 
         protected readonly HttpClient _client = new HttpClient();
 
-        public BaseController(ILogger logger, IConfiguration config)
+        protected BaseController(ILogger logger, IConfiguration config)
         {
             Logger = logger;
             ApiUrl = config["BITCORE_URL"];
