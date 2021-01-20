@@ -129,14 +129,3 @@ resource "uptimerobot_monitor" "main" {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
   }
 }
-
-resource "azurerm_traffic_manager_endpoint" "endpoint" {
-  count = var.node_count
-  name = "${var.prefix}-${count.index}"
-  resource_group_name = var.resource_group
-  profile_name        = var.traffic_manager
-  target              = element(scaleway_instance_server.node.*.public_ip, count.index)
-  type                = "externalEndpoints"
-  weight              = 100
-}
-

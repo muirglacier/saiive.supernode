@@ -19,6 +19,8 @@ services:
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.email=office@p3-software.eu"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.storage=/letsencrypt/acme.json"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=letsEncryptHttpChallenge"
     labels:
       # use sub-domain for traefik
       - "traefik.enable=true"
@@ -32,6 +34,7 @@ services:
       - ./volumes/letsencrypt:/letsencrypt
     networks:
       - default
+      - private-docker-socks-proxy-ro
     depends_on:
       - docker-socket-proxy-ro
       - database
@@ -44,7 +47,6 @@ services:
         max-size: "10m"
         max-file: "5"
     restart: always
-    user: "1000:1000"
     sysctls:
       - net.ipv4.ip_unprivileged_port_start=80
   
@@ -66,7 +68,7 @@ services:
       - CONFIGS=0
       - DISTRIBUTION=0
       - EXEC=0
-      - IMAGES=0
+      - IMAGES=1
       - NETWORKS=0
       - NODES=0
       - PLUGINS=0
@@ -126,6 +128,11 @@ services:
       - default
     ports:
       - 3000:3000
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "curl http://bitcore_node:3000/api/status/enabled-chains"]
+      interval: 3s
+      timeout: 5s
+      retries: 3
     environment:
       - NETWORK=$${NETWORK:?NETWORK env required}
       - API_PORT=3000
@@ -162,6 +169,21 @@ services:
       - 5000:5000
     depends_on:
       - bitcore_node
+
+  ouroboros:
+    container_name: ouroboros
+    hostname: ouroboros
+    image: pyouroboros/ouroboros
+    environment:
+      - CLEANUP=true
+      - INTERVAL=300
+      - LOG_LEVEL=info
+      - SELF_UPDATE=true
+      - IGNORE=mongo defiwallet.azurecr.io/bitcorenode tecnativa/docker-socket-proxy docker-socket-proxy defiwallet.azurecr.io/defichain
+      - DOCKER_SOCKETS=tcp://docker-socket-proxy-ro:2375
+    networks:
+      - private-docker-socks-proxy-ro
+    restart: unless-stopped
 
 volumes:
   db_data:

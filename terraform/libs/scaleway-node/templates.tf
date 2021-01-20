@@ -9,7 +9,7 @@ resource "random_string" "wallet_user" {
 resource "random_password" "wallet_password" {
   count = var.node_count
   length = 16
-  special = true
+  special = false
 }
 
 data "template_file" "env" {
