@@ -37,7 +37,7 @@ namespace saiive.defi.api.Controllers
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return NotFound(txId);
+                    return NotFound($"tx {txId} could not be found");
                 }
                 Logger.LogError($"{e}");
                 return BadRequest(e);
@@ -62,7 +62,7 @@ namespace saiive.defi.api.Controllers
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return NotFound(block);
+                    return NotFound($"block with hash {block} could not be found");
                 }
                 Logger.LogError($"{e}");
                 return BadRequest(e);
@@ -87,7 +87,7 @@ namespace saiive.defi.api.Controllers
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return NotFound(height);
+                    return NotFound($"block with height {height} could not be found");
                 }
                 Logger.LogError($"{e}");
                 return BadRequest(e);
