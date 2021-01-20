@@ -19,6 +19,9 @@ namespace saiive.defi.api.Model
 
         [JsonProperty("size")]
         public int Size { get; set; }
+        
+        [JsonProperty("height")]
+        public int Height { get; set; }
 
         [JsonProperty("merkleRoot")]
         public string MerkleRoot { get; set; }
