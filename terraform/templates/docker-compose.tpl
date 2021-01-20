@@ -181,6 +181,8 @@ services:
       - SELF_UPDATE=true
       - IGNORE=mongo defiwallet.azurecr.io/bitcorenode tecnativa/docker-socket-proxy docker-socket-proxy defiwallet.azurecr.io/defichain
       - DOCKER_SOCKETS=tcp://docker-socket-proxy-ro:2375
+      - REPO_USER=${repo_user} 
+      - REPO_PASS=${repo_pass}
     networks:
       - private-docker-socks-proxy-ro
     restart: unless-stopped

@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using saiive.defi.api.Model;
@@ -19,73 +21,103 @@ namespace saiive.defi.api.Controllers
         {
         }
 
-        [HttpGet("{coin}/balance/{address}")]
-        public async Task<BalanceModel> GetBalance(string coin, string address)
+        private async Task<BalanceModel> GetBalanceInternal(string coin, string address)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/balance");
 
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
+            obj.Address = address;
+
+            return obj;
+
+        }
+
+        [HttpGet("{coin}/balance/{address}")]
+        public async Task<IActionResult> GetBalance(string coin, string address)
+        {
+            
             try
             {
-                response.EnsureSuccessStatusCode();
-
-                var data = await response.Content.ReadAsStringAsync();
-
-                var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
-                obj.Address = address;
-
-                return obj;
+                return Ok(await GetBalanceInternal(coin, address));
             }
             catch (Exception e)
             {
                 Logger.LogError($"{e}");
-                throw;
+                return BadRequest(e);
             }
         }
 
+
         [HttpPost("{coin}/balances")]
-        public async Task<List<BalanceModel>> GetBalances(string coin, List<string> addresses)
+        public async Task<IActionResult> GetBalances(string coin, List<string> addresses)
         {
-            var ret = new List<BalanceModel>();
-
-            foreach (var address in addresses)
+            try
             {
-                ret.Add(await GetBalance(coin, address));
-            }
+                var ret = new List<BalanceModel>();
 
-            return ret;
+                foreach (var address in addresses)
+                {
+                    ret.Add(await GetBalanceInternal(coin, address));
+                }
+
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(e);
+            }
+        }
+
+        public async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/txs");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+
+            return obj;
+
         }
 
 
         [HttpGet("{coin}/txs/{address}")]
-        public async Task<List<TransactionModel>> GetTransactions(string coin, string address)
+        public async Task<IActionResult> GetTransactions(string coin, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/txs");
             try
             {
-                var data = await response.Content.ReadAsStringAsync();
-
-                var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-
-                return obj;
+                return Ok(await GetTransactionsInternal(coin, address));
             }
             catch (Exception e)
             {
                 Logger.LogError($"{e}");
-                throw;
+                return BadRequest(e);
             }
         }
 
         [HttpPost("{coin}/txs")]
-        public async Task<List<TransactionModel>> GetMultiTransactions(string coin, List<string> addresses)
+        public async Task<IActionResult> GetMultiTransactions(string coin, List<string> addresses)
         {
-            var ret = new List<TransactionModel>();
-
-            foreach (var address in addresses)
+            try
             {
-                ret.AddRange(await GetTransactions(coin, address));
-            }
+                var ret = new List<TransactionModel>();
 
-            return ret;
+                foreach (var address in addresses)
+                {
+                    ret.AddRange(await GetTransactionsInternal(coin, address));
+                }
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(e);
+            }
         }
 
         [HttpGet("{coin}/fee")]
