@@ -51,4 +51,7 @@ module "chain_scaleway_network_nodes" {
   ssh_key = base64decode(data.azurerm_key_vault_secret.scalway_private_key.value)
 
   public_endpoint = "${local.cname}.${var.dns_zone}"
+
+  docker_user = data.azurerm_key_vault_secret.docker_registry_username.value
+  docker_password = data.azurerm_key_vault_secret.docker_registry_password.value
 }

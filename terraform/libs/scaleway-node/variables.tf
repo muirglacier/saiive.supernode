@@ -51,3 +51,11 @@ variable "network" {
 variable "public_endpoint" {
   
 }
+
+
+variable "docker_user" {
+  
+}
+variable "docker_password" {
+  
+}
