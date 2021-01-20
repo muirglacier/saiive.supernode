@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -12,27 +11,18 @@ namespace saiive.defi.api.Controllers
 {
     [ApiController]
     [Route("v1/api/")]
-    public class BitcoreController : ControllerBase
+    public class AddressController : BaseController
     {
-        private readonly ILogger<BitcoreController> _logger;
-        private readonly string _apiUrl;
-        private readonly string _network;
+        
 
-        private readonly HttpClient _client = new HttpClient();
-
-        public BitcoreController(ILogger<BitcoreController> logger, IConfiguration config)
+        public AddressController(ILogger<AddressController> logger, IConfiguration config) : base(logger, config)
         {
-            _logger = logger;
-            _apiUrl = config["BITCORE_URL"];
-            _network = config["NETWORK"];
-            
-            _logger.LogInformation($"Using bitcore {_apiUrl} on network {_network}");
         }
 
         [HttpGet("{coin}/balance/{address}")]
         public async Task<BalanceModel> GetBalance(string coin, string address)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/address/{address}/balance");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/balance");
 
             try
             {
@@ -47,7 +37,7 @@ namespace saiive.defi.api.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e}");
+                Logger.LogError($"{e}");
                 throw;
             }
         }
@@ -69,7 +59,7 @@ namespace saiive.defi.api.Controllers
         [HttpGet("{coin}/txs/{address}")]
         public async Task<List<TransactionModel>> GetTransactions(string coin, string address)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/address/{address}/txs");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/txs");
             try
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -80,7 +70,7 @@ namespace saiive.defi.api.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e}");
+                Logger.LogError($"{e}");
                 throw;
             }
         }
@@ -101,7 +91,7 @@ namespace saiive.defi.api.Controllers
         [HttpGet("{coin}/fee")]
         public async Task<FeeEstimateModel> GetEstimateFee(string coin)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{_network}/fee/30");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/fee/30");
             try
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -112,7 +102,7 @@ namespace saiive.defi.api.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e}");
+                Logger.LogError($"{e}");
                 throw;
             }
         }
