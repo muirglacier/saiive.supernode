@@ -36,9 +36,6 @@ variable "dns_zone_resource_group" {
 
 }
 
-variable "traffic_manager" {
-  
-}
 variable "resource_group" {
 	
 }
@@ -48,5 +45,9 @@ variable "node_count" {
 }
 
 variable "network" {
+  
+}
+
+variable "public_endpoint" {
   
 }
