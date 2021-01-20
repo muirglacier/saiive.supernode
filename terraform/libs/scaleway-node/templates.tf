@@ -27,6 +27,8 @@ data "template_file" "docker_compose" {
 
   vars = {
     public_url      = "${local.node_name}-${count.index}.${var.dns_zone}"
+    repo_user       = var.docker_user
+    repo_pass       = var.docker_password
   }
 }
 
