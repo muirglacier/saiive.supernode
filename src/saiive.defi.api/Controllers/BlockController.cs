@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,9 @@ namespace saiive.defi.api.Controllers
 
 
         [HttpGet("{coin}/block/{height}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BlockModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentBlock(string coin, int height)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/block/{height}");
@@ -37,14 +41,16 @@ namespace saiive.defi.api.Controllers
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return NotFound($"block with height {height} could not be found");
+                    return NotFound(new ErrorModel($"block with height {height} could not be found"));
                 }
                 Logger.LogError($"{e}");
-                return BadRequest(e);
+                return BadRequest(new ErrorModel(e.Message));
             }
         }
 
         [HttpGet("{coin}/block/tip")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BlockModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentHeight(string coin)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/block/tip");
@@ -61,7 +67,7 @@ namespace saiive.defi.api.Controllers
             catch (Exception e)
             {
                 Logger.LogError($"{e}");
-                return BadRequest(e);
+                return BadRequest(new ErrorModel(e.Message));
             }
         }
 
