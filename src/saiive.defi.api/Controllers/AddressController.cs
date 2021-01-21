@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -36,7 +37,7 @@ namespace saiive.defi.api.Controllers
 
         }
 
-        private async Task<BalanceModel> GetAccountInternal(string coin, string address)
+        private async Task<List<AccountModel>> GetAccountInternal(string coin, string address)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/account");
 
@@ -44,10 +45,26 @@ namespace saiive.defi.api.Controllers
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
-            obj.Address = address;
+            var ret = new  List<AccountModel>();
+            var obj = JsonConvert.DeserializeObject<List<string>>(data);
 
-            return obj;
+            
+            foreach (var acc in obj)
+            {
+                var split = acc.Split("@");
+                var account = new AccountModel
+                {
+                    Address = address,
+                    Raw = acc,
+                    Balance = Convert.ToDouble(split[0], CultureInfo.InvariantCulture),
+                    Token = split[1]
+                };
+
+                ret.Add(account);
+            }
+            
+            
+            return ret;
 
         }
 
@@ -102,16 +119,17 @@ namespace saiive.defi.api.Controllers
             }
         }
         
-        [HttpPost("{coin}/account")]
+        [HttpPost("{coin}/accounts")]
         public async Task<IActionResult> GetAccounts(string coin, List<string> addresses)
         {
             try
             {
-                var ret = new List<BalanceModel>();
+                var ret = new Dictionary<string, List<AccountModel>>();
 
                 foreach (var address in addresses)
                 {
-                    ret.Add(await GetAccountInternal(coin, address));
+                    var accountModel = await GetAccountInternal(coin, address);
+                    ret.Add(address, accountModel);
                 }
 
                 return Ok(ret);
