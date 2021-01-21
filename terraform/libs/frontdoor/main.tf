@@ -16,11 +16,25 @@ resource "azurerm_frontdoor" "frontdoor" {
   resource_group_name                          = var.resource_group
   enforce_backend_pools_certificate_name_check = true
 
+
   routing_rule {
-    name               = "${var.prefix}-${var.environment}-route"
-    accepted_protocols = ["Http", "Https"]
+    name               = "${var.prefix}-${var.environment}-http-https"
+    accepted_protocols = ["Http"]
     patterns_to_match  = ["/*"]
     frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
+    redirect_configuration {
+      redirect_protocol = "HttpsOnly"
+      redirect_type       = "Found"
+    }
+  }
+
+  routing_rule {
+    name               = "${var.prefix}-${var.environment}-be-route"
+    accepted_protocols = ["Https"]
+    patterns_to_match  = ["/*"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "${var.prefix}-${var.environment}-backend"
@@ -60,8 +74,8 @@ resource "azurerm_frontdoor" "frontdoor" {
     custom_https_configuration {
       certificate_source                         = "FrontDoor"
     }
-
   }
+
   frontend_endpoint {
     name                              = "default"
     host_name                         = "${var.prefix}-${var.environment}.azurefd.net"
