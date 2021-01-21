@@ -43,9 +43,14 @@ namespace saiive.defi.api
                 app.UseDeveloperExceptionPage();
             }
             app.UseRouting();
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
             app.UseAuthorization();
-
+      
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
