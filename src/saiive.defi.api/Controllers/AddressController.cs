@@ -36,6 +36,21 @@ namespace saiive.defi.api.Controllers
 
         }
 
+        private async Task<BalanceModel> GetAccountInternal(string coin, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/account");
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
+            obj.Address = address;
+
+            return obj;
+
+        }
+
         [HttpGet("{coin}/balance/{address}")]
         public async Task<IActionResult> GetBalance(string coin, string address)
         {
@@ -50,8 +65,6 @@ namespace saiive.defi.api.Controllers
                 return BadRequest(e);
             }
         }
-
-
         [HttpPost("{coin}/balances")]
         public async Task<IActionResult> GetBalances(string coin, List<string> addresses)
         {
@@ -72,6 +85,46 @@ namespace saiive.defi.api.Controllers
                 return BadRequest(e);
             }
         }
+
+
+        [HttpGet("{coin}/account/{address}")]
+        public async Task<IActionResult> GetAccount(string coin, string address)
+        {
+
+            try
+            {
+                return Ok(await GetAccountInternal(coin, address));
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(e);
+            }
+        }
+        
+        [HttpPost("{coin}/account")]
+        public async Task<IActionResult> GetAccounts(string coin, List<string> addresses)
+        {
+            try
+            {
+                var ret = new List<BalanceModel>();
+
+                foreach (var address in addresses)
+                {
+                    ret.Add(await GetAccountInternal(coin, address));
+                }
+
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(e);
+            }
+        }
+
+
+
 
         public async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string address)
         {
