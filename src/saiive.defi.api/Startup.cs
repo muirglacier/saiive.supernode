@@ -21,7 +21,7 @@ namespace saiive.defi.api
             services.AddControllers();
             services.AddSwaggerGen();
 
-            services.AddCors(o => o.AddDefaultPolicy( builder =>
+            services.AddCors(o => o.AddPolicy("cors", builder =>
             {
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
@@ -43,11 +43,7 @@ namespace saiive.defi.api
                 app.UseDeveloperExceptionPage();
             }
             app.UseRouting();
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+            app.UseCors("cors");
 
             app.UseAuthorization();
       
