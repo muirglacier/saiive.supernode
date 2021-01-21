@@ -21,7 +21,7 @@ namespace saiive.defi.api
             services.AddControllers();
             services.AddSwaggerGen();
 
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            services.AddCors(o => o.AddDefaultPolicy( builder =>
             {
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
