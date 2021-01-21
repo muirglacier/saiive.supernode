@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -17,22 +18,12 @@ namespace saiive.defi.api.Controllers
             _logger = logger;
         }
         [HttpGet]
-        public bool HealthCheck()
+
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult HealthCheck()
         {
-            return true;
+            return NoContent();
         }
 
-        [HttpGet("test")]
-        public bool Test()
-        {
-            var root = (IConfigurationRoot)_config;
-            var debugView = root.GetDebugView();
-
-            _logger.LogInformation(debugView);
-
-
-            return true;
-        }
-        
     }
 }
