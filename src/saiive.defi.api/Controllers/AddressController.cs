@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using saiive.defi.api.Model;
+using saiive.defi.api.Requests;
 
 namespace saiive.defi.api.Controllers
 {
@@ -106,14 +107,14 @@ namespace saiive.defi.api.Controllers
         [HttpPost("{coin}/balance-all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Dictionary<string, AccountModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTotalBalance(string coin, List<string> addresses)
+        public async Task<IActionResult> GetTotalBalance(string coin, AddressesBodyRequest addresses)
         {
             try
             {
                 var retAccountList = new Dictionary<string, AccountModel>();
                 var accounts = new Dictionary<string, List<AccountModel>>();
 
-                foreach (var address in addresses)
+                foreach (var address in addresses.Addresses)
                 {
                     var accountModel = await GetAccountInternal(coin, address);
                     accounts.Add(address, accountModel);
@@ -135,7 +136,7 @@ namespace saiive.defi.api.Controllers
                 }
                 
                 
-                foreach (var address in addresses)
+                foreach (var address in addresses.Addresses)
                 {
                     var balanceNative = await GetBalanceInternal(coin, address);
                     var account = new AccountModel
@@ -185,13 +186,13 @@ namespace saiive.defi.api.Controllers
         [HttpPost("{coin}/balances")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BalanceModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetBalances(string coin, List<string> addresses)
+        public async Task<IActionResult> GetBalances(string coin, AddressesBodyRequest addresses)
         {
             try
             {
                 var ret = new List<BalanceModel>();
 
-                foreach (var address in addresses)
+                foreach (var address in addresses.Addresses)
                 {
                     ret.Add(await GetBalanceInternal(coin, address));
                 }
