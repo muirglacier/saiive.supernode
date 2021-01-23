@@ -225,21 +225,27 @@ namespace saiive.defi.api.Controllers
         }
         
         [HttpPost("{coin}/accounts")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IDictionary<string, IList<AccountModel>>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<Account>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetAccounts(string coin, List<string> addresses)
         {
             try
             {
-                var ret = new Dictionary<string, List<AccountModel>>();
+                var retList = new List<Account>();
 
                 foreach (var address in addresses)
                 {
                     var accountModel = await GetAccountInternal(coin, address);
-                    ret.Add(address, accountModel);
+                   
+                    var account = new Account
+                    {
+                        Address = address,
+                        Accounts = accountModel
+                    };
+                    retList.Add(account);
                 }
 
-                return Ok(ret);
+                return Ok(retList);
             }
             catch (Exception e)
             {
