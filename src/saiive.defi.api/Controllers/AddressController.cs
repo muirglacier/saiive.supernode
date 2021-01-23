@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -67,6 +68,101 @@ namespace saiive.defi.api.Controllers
             
             return ret;
 
+        }
+
+
+        [HttpGet("{coin}/balance-all/{address}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BalanceModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+
+        public async Task<IActionResult> GetTotalBalance(string coin, string address)
+        {
+
+            try
+            {
+                var balanceNative = await GetBalanceInternal(coin, address);
+                var balanceTokens = await GetAccountInternal(coin, address);
+                
+                balanceTokens.Add(new AccountModel
+                {
+                    Address = address,
+                    Balance = balanceNative.Balance,
+                    Token = "$DFI"
+                });
+
+                foreach (var account in balanceTokens)
+                {
+                    account.Address = null;
+                    account.Raw = null;
+                }
+                return Ok(balanceTokens);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
+        }
+        [HttpPost("{coin}/balance-all")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Dictionary<string, AccountModel>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> GetTotalBalance(string coin, List<string> addresses)
+        {
+            try
+            {
+                var retAccountList = new Dictionary<string, AccountModel>();
+                var accounts = new Dictionary<string, List<AccountModel>>();
+
+                foreach (var address in addresses)
+                {
+                    var accountModel = await GetAccountInternal(coin, address);
+                    accounts.Add(address, accountModel);
+
+                    foreach (var account in accountModel)
+                    {
+                        account.Address = null;
+                        account.Raw = null;
+                        if (!retAccountList.ContainsKey(account.Token))
+                        {
+                            retAccountList.Add(account.Token, account);
+                        }
+                        else
+                        {
+                            retAccountList[account.Token].Balance += account.Balance;
+                        }
+                    }
+                    
+                }
+                
+                
+                foreach (var address in addresses)
+                {
+                    var balanceNative = await GetBalanceInternal(coin, address);
+                    var account = new AccountModel
+                    {
+                        Balance = balanceNative.Balance,
+                        Token = "$DFI"
+                    };
+                    accounts[address].Add(account);
+
+
+                    if (!retAccountList.ContainsKey(account.Token))
+                    {
+                        retAccountList.Add(account.Token, account);
+                    }
+                    else
+                    {
+                        retAccountList[account.Token].Balance += account.Balance;
+                    }
+                }
+
+                return Ok(retAccountList);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
         }
 
         [HttpGet("{coin}/balance/{address}")]
