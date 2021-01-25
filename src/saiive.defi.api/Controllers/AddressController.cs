@@ -288,13 +288,13 @@ namespace saiive.defi.api.Controllers
         [HttpPost("{coin}/txs")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetMultiTransactions(string coin, List<string> addresses)
+        public async Task<IActionResult> GetMultiTransactions(string coin, AddressesBodyRequest request)
         {
             try
             {
                 var ret = new List<TransactionModel>();
 
-                foreach (var address in addresses)
+                foreach (var address in request.Addresses)
                 {
                     ret.AddRange(await GetTransactionsInternal(coin, address));
                 }
