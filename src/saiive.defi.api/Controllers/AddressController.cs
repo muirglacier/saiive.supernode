@@ -227,13 +227,13 @@ namespace saiive.defi.api.Controllers
         [HttpPost("{coin}/accounts")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<Account>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetAccounts(string coin, List<string> addresses)
+        public async Task<IActionResult> GetAccounts(string coin, AddressesBodyRequest request)
         {
             try
             {
                 var retList = new List<Account>();
 
-                foreach (var address in addresses)
+                foreach (var address in request.Addresses)
                 {
                     var accountModel = await GetAccountInternal(coin, address);
                    
