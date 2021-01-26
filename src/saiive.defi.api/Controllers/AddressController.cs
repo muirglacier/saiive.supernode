@@ -195,7 +195,7 @@ namespace saiive.defi.api.Controllers
             }
         }
         [HttpPost("{coin}/balances")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BalanceModel))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetBalances(string coin, AddressesBodyRequest addresses)
         {
@@ -247,13 +247,16 @@ namespace saiive.defi.api.Controllers
                 foreach (var address in request.Addresses)
                 {
                     var accountModel = await GetAccountInternal(coin, address);
-                   
-                    var account = new Account
+
+                    if (accountModel.Count > 0)
                     {
-                        Address = address,
-                        Accounts = accountModel
-                    };
-                    retList.Add(account);
+                        var account = new Account
+                        {
+                            Address = address,
+                            Accounts = accountModel
+                        };
+                        retList.Add(account);
+                    }
                 }
 
                 return Ok(retList);
