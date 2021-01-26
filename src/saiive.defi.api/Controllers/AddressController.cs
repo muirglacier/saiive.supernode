@@ -67,14 +67,17 @@ namespace saiive.defi.api.Controllers
             }
 
             var nativeBalance = await GetBalanceInternal(coin, address);
-            ret.Add(new AccountModel
+            if (nativeBalance.Confirmed > 0)
             {
-                Address = address,
-                Balance = nativeBalance.Confirmed,
-                Raw = $"{nativeBalance.Confirmed}@$DFI",
-                Token = "$DFI"
-            });
-            
+                ret.Add(new AccountModel
+                {
+                    Address = address,
+                    Balance = nativeBalance.Confirmed,
+                    Raw = $"{nativeBalance.Confirmed}@$DFI",
+                    Token = "$DFI"
+                });
+            }
+
             return ret;
 
         }
