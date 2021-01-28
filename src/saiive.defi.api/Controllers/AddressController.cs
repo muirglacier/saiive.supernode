@@ -321,6 +321,56 @@ namespace saiive.defi.api.Controllers
             }
         }
 
+        [HttpGet("{coin}/unspent/{address}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> GetUnspentTransactionOutput(string coin, string address)
+        {
+            try
+            {
+                return Ok(await GetUnspentTransactionOutputsInternal(coin, address));
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
+        }
+
+        [HttpPost("{coin}/unspent")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> GetMultiUnspentTransactionOutput(string coin, AddressesBodyRequest request)
+        {
+            try
+            {
+                var ret = new List<TransactionModel>();
+
+                foreach (var address in request.Addresses)
+                {
+                    ret.AddRange(await GetUnspentTransactionOutputsInternal(coin, address));
+                }
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
+        }
+
+        private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}?unspent=true");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+
+            return obj;
+
+        }
+
         [HttpGet("{coin}/fee")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeeEstimateModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
