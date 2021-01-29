@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +14,7 @@ using saiive.defi.api.Model;
 namespace saiive.defi.api.Controllers
 {
     [ApiController]
-    [Route("v1/api/")]
+    [Route("/api/v1/")]
     public class TransactionController : BaseController
     {
         public TransactionController(ILogger<TransactionController> logger, IConfiguration config) : base(logger, config)
@@ -20,13 +22,13 @@ namespace saiive.defi.api.Controllers
           
         }
 
-        [HttpGet("{coin}/tx/id/{txId}")]
+        [HttpGet("{network}/{coin}/tx/id/{txId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(TransactionModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionById(string coin, string txId)
+        public async Task<IActionResult> GetTransactionById(string coin, string network, string txId)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/tx/{txId}");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}");
 
             try
             {
@@ -48,13 +50,13 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpGet("{coin}/tx/block/{block}")]
+        [HttpGet("{network}/{coin}/tx/block/{block}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionsByBlock(string coin, string block)
+        public async Task<IActionResult> GetTransactionsByBlock(string coin, string network, string block)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/tx?blockHash={block}");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHash={block}");
 
             try
             {
@@ -76,13 +78,13 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpGet("{coin}/tx/height/{height}")]
+        [HttpGet("{network}/{coin}/tx/height/{height}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, int height)
+        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/tx?blockHeight={height}");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}");
 
             try
             {
@@ -99,6 +101,32 @@ namespace saiive.defi.api.Controllers
                 {
                     return NotFound(new ErrorModel($"block with height {height} could not be found"));
                 }
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
+        }
+
+        [HttpPost("{network}/{coin}/tx/raw")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TransactionResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> SendRawTransaction(string coin, string network, TransactionRequest request)
+        {
+
+            var httpContent =
+                new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{ApiUrl}/api/{coin}/{network}/tx/send", httpContent);
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
+                return Ok(obj);
+            }
+            catch (Exception e)
+            {
                 Logger.LogError($"{e}");
                 return BadRequest(new ErrorModel(e.Message));
             }

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using saiive.defi.api.Model;
 
 namespace saiive.defi.api.Controllers
 {
     [ApiController]
-    [Route("v1/api/")]
+    [Route("/api/v1/")]
     public class TokenController : BaseController
     {
         public TokenController(ILogger<TokenController> logger, IConfiguration config) : base(logger, config)
@@ -21,12 +19,12 @@ namespace saiive.defi.api.Controllers
         }
 
 
-        [HttpGet("{coin}/tokens")]
+        [HttpGet("{network}/{coin}/tokens")]
         [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(IDictionary<int, TokenModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> ListTokens(string coin)
+        public async Task<IActionResult> ListTokens(string coin, string network)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/token/list");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/token/list");
 
             try
             {
@@ -43,12 +41,12 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpGet("{coin}/tokens/{token}")]
+        [HttpGet("{network}/{coin}/tokens/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TokenModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTokens(string coin, string token)
+        public async Task<IActionResult> GetTokens(string coin, string network, string token)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/token/get/{token}");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/token/get/{token}");
 
             try
             {
