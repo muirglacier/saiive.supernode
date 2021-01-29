@@ -128,7 +128,7 @@ namespace saiive.defi.api.Controllers
             catch (Exception e)
             {
                 Logger.LogError($"{e} ({data})");
-                return BadRequest(new ErrorModel(e.Message));
+                return BadRequest(new ErrorModel($"{e.Message} ({data})"));
             }
         }
     }
