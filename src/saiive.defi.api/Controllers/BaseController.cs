@@ -9,7 +9,6 @@ namespace saiive.defi.api.Controllers
     {
         protected readonly ILogger Logger;
         protected readonly string ApiUrl;
-        protected readonly string Network;
 
         protected readonly HttpClient _client = new HttpClient();
 
@@ -17,9 +16,8 @@ namespace saiive.defi.api.Controllers
         {
             Logger = logger;
             ApiUrl = config["BITCORE_URL"];
-            Network = config["NETWORK"];
 
-            Logger.LogInformation($"Using bitcore {ApiUrl} on network {Network}");
+            Logger.LogInformation($"Using bitcore {ApiUrl}");
         }
     }
 }

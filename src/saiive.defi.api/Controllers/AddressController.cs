@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using saiive.defi.api.Model;
@@ -16,7 +13,7 @@ using saiive.defi.api.Requests;
 namespace saiive.defi.api.Controllers
 {
     [ApiController]
-    [Route("v1/api/")]
+    [Route("/api/v1/")]
     public class AddressController : BaseController
     {
         
@@ -25,9 +22,9 @@ namespace saiive.defi.api.Controllers
         {
         }
         
-        private async Task<BalanceModel> GetBalanceInternal(string coin, string address)
+        private async Task<BalanceModel> GetBalanceInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/balance");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/balance");
 
             response.EnsureSuccessStatusCode();
 
@@ -40,9 +37,9 @@ namespace saiive.defi.api.Controllers
 
         }
         
-        private async Task<List<AccountModel>> GetAccountInternal(string coin, string address)
+        private async Task<List<AccountModel>> GetAccountInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/account");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/account");
 
             response.EnsureSuccessStatusCode();
 
@@ -66,7 +63,7 @@ namespace saiive.defi.api.Controllers
                 ret.Add(account);
             }
 
-            var nativeBalance = await GetBalanceInternal(coin, address);
+            var nativeBalance = await GetBalanceInternal(coin, network, address);
             if (nativeBalance.Confirmed > 0)
             {
                 ret.Add(new AccountModel
@@ -83,17 +80,17 @@ namespace saiive.defi.api.Controllers
         }
 
 
-        [HttpGet("{coin}/balance-all/{address}")]
+        [HttpGet("{network}/{coin}/balance-all/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BalanceModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
 
-        public async Task<IActionResult> GetTotalBalance(string coin, string address)
+        public async Task<IActionResult> GetTotalBalance(string coin, string network, string address)
         {
 
             try
             {
-                var balanceNative = await GetBalanceInternal(coin, address);
-                var balanceTokens = await GetAccountInternal(coin, address);
+                var balanceNative = await GetBalanceInternal(coin, network, address);
+                var balanceTokens = await GetAccountInternal(coin, network, address);
                 
                 balanceTokens.Add(new AccountModel
                 {
@@ -115,10 +112,10 @@ namespace saiive.defi.api.Controllers
                 return BadRequest(new ErrorModel(e.Message));
             }
         }
-        [HttpPost("{coin}/balance-all")]
+        [HttpPost("{network}/{coin}/balance-all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Dictionary<string, AccountModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTotalBalance(string coin, AddressesBodyRequest addresses)
+        public async Task<IActionResult> GetTotalBalance(string coin, string network, AddressesBodyRequest addresses)
         {
             try
             {
@@ -127,7 +124,7 @@ namespace saiive.defi.api.Controllers
 
                 foreach (var address in addresses.Addresses)
                 {
-                    var accountModel = await GetAccountInternal(coin, address);
+                    var accountModel = await GetAccountInternal(coin, network, address);
                     accounts.Add(address, accountModel);
 
                     foreach (var account in accountModel)
@@ -149,7 +146,7 @@ namespace saiive.defi.api.Controllers
                 
                 foreach (var address in addresses.Addresses)
                 {
-                    var balanceNative = await GetBalanceInternal(coin, address);
+                    var balanceNative = await GetBalanceInternal(coin, network, address);
                     var account = new AccountModel
                     {
                         Balance = balanceNative.Balance,
@@ -177,16 +174,16 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpGet("{coin}/balance/{address}")]
+        [HttpGet("{network}/{coin}/balance/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BalanceModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type=typeof(ErrorModel))]
 
-        public async Task<IActionResult> GetBalance(string coin, string address)
+        public async Task<IActionResult> GetBalance(string coin, string network, string address)
         {
             
             try
             {
-                return Ok(await GetBalanceInternal(coin, address));
+                return Ok(await GetBalanceInternal(coin, network, address));
             }
             catch (Exception e)
             {
@@ -194,10 +191,10 @@ namespace saiive.defi.api.Controllers
                 return BadRequest(new ErrorModel(e.Message));
             }
         }
-        [HttpPost("{coin}/balances")]
+        [HttpPost("{network}/{coin}/balances")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetBalances(string coin, AddressesBodyRequest addresses)
+        public async Task<IActionResult> GetBalances(string coin, string network, AddressesBodyRequest addresses)
         {
             try
             {
@@ -205,7 +202,7 @@ namespace saiive.defi.api.Controllers
 
                 foreach (var address in addresses.Addresses)
                 {
-                    ret.Add(await GetBalanceInternal(coin, address));
+                    ret.Add(await GetBalanceInternal(coin, network, address));
                 }
 
                 return Ok(ret);
@@ -218,15 +215,15 @@ namespace saiive.defi.api.Controllers
         }
 
 
-        [HttpGet("{coin}/account/{address}")]
+        [HttpGet("{network}/{coin}/account/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<AccountModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetAccount(string coin, string address)
+        public async Task<IActionResult> GetAccount(string coin, string network, string address)
         {
 
             try
             {
-                return Ok(await GetAccountInternal(coin, address));
+                return Ok(await GetAccountInternal(coin, network, address));
             }
             catch (Exception e)
             {
@@ -235,10 +232,10 @@ namespace saiive.defi.api.Controllers
             }
         }
         
-        [HttpPost("{coin}/accounts")]
+        [HttpPost("{network}/{coin}/accounts")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<Account>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetAccounts(string coin, AddressesBodyRequest request)
+        public async Task<IActionResult> GetAccounts(string coin, string network, AddressesBodyRequest request)
         {
             try
             {
@@ -246,7 +243,7 @@ namespace saiive.defi.api.Controllers
 
                 foreach (var address in request.Addresses)
                 {
-                    var accountModel = await GetAccountInternal(coin, address);
+                    var accountModel = await GetAccountInternal(coin, network, address);
 
                     if (accountModel.Count > 0)
                     {
@@ -270,9 +267,9 @@ namespace saiive.defi.api.Controllers
 
 
 
-        private async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string address)
+        private async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}/txs");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -283,14 +280,14 @@ namespace saiive.defi.api.Controllers
         }
 
 
-        [HttpGet("{coin}/txs/{address}")]
+        [HttpGet("{network}/{coin}/txs/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactions(string coin, string address)
+        public async Task<IActionResult> GetTransactions(string coin, string network, string address)
         {
             try
             {
-                return Ok(await GetTransactionsInternal(coin, address));
+                return Ok(await GetTransactionsInternal(coin, network, address));
             }
             catch (Exception e)
             {
@@ -299,10 +296,10 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpPost("{coin}/txs")]
+        [HttpPost("{network}/{coin}/txs")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetMultiTransactions(string coin, AddressesBodyRequest request)
+        public async Task<IActionResult> GetMultiTransactions(string coin, string network, AddressesBodyRequest request)
         {
             try
             {
@@ -310,7 +307,7 @@ namespace saiive.defi.api.Controllers
 
                 foreach (var address in request.Addresses)
                 {
-                    ret.AddRange(await GetTransactionsInternal(coin, address));
+                    ret.AddRange(await GetTransactionsInternal(coin, network, address));
                 }
                 return Ok(ret);
             }
@@ -321,14 +318,14 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpGet("{coin}/unspent/{address}")]
+        [HttpGet("{network}/{coin}/unspent/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetUnspentTransactionOutput(string coin, string address)
+        public async Task<IActionResult> GetUnspentTransactionOutput(string coin, string network, string address)
         {
             try
             {
-                return Ok(await GetUnspentTransactionOutputsInternal(coin, address));
+                return Ok(await GetUnspentTransactionOutputsInternal(coin, network, address));
             }
             catch (Exception e)
             {
@@ -337,10 +334,10 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpPost("{coin}/unspent")]
+        [HttpPost("{network}/{coin}/unspent")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetMultiUnspentTransactionOutput(string coin, AddressesBodyRequest request)
+        public async Task<IActionResult> GetMultiUnspentTransactionOutput(string coin, string network, AddressesBodyRequest request)
         {
             try
             {
@@ -348,7 +345,7 @@ namespace saiive.defi.api.Controllers
 
                 foreach (var address in request.Addresses)
                 {
-                    ret.AddRange(await GetUnspentTransactionOutputsInternal(coin, address));
+                    ret.AddRange(await GetUnspentTransactionOutputsInternal(coin, network, address));
                 }
                 return Ok(ret);
             }
@@ -359,9 +356,9 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string address)
+        private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/address/{address}?unspent=true");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}?unspent=true");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -371,12 +368,12 @@ namespace saiive.defi.api.Controllers
 
         }
 
-        [HttpGet("{coin}/fee")]
+        [HttpGet("{network}/{coin}/fee")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeeEstimateModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetEstimateFee(string coin)
+        public async Task<IActionResult> GetEstimateFee(string coin, string network)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/fee/30");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/fee/30");
             try
             {
                 var data = await response.Content.ReadAsStringAsync();
