@@ -11,7 +11,7 @@ using saiive.defi.api.Model;
 namespace saiive.defi.api.Controllers
 {
     [ApiController]
-    [Route("v1/api/")]
+    [Route("/api/v1/")]
     public class BlockController : BaseController
     {
         public BlockController(ILogger<BlockController> logger, IConfiguration config) : base(logger, config)
@@ -20,13 +20,13 @@ namespace saiive.defi.api.Controllers
         }
 
 
-        [HttpGet("{coin}/block/{height}")]
+        [HttpGet("{network}/{coin}/block/{height}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BlockModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetCurrentBlock(string coin, int height)
+        public async Task<IActionResult> GetCurrentBlock(string coin, string network, int height)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/block/{height}");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/{height}");
 
             try
             {
@@ -48,12 +48,12 @@ namespace saiive.defi.api.Controllers
             }
         }
 
-        [HttpGet("{coin}/block/tip")]
+        [HttpGet("{network}/{coin}/block/tip")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BlockModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetCurrentHeight(string coin)
+        public async Task<IActionResult> GetCurrentHeight(string coin, string network)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{Network}/block/tip");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
 
             try
             {
