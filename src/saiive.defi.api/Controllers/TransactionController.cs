@@ -116,18 +116,18 @@ namespace saiive.defi.api.Controllers
                 new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync($"{ApiUrl}/api/{coin}/{network}/tx/send", httpContent);
 
+            var data = await response.Content.ReadAsStringAsync();
             try
             {
                 response.EnsureSuccessStatusCode();
 
-                var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
                 return Ok(obj);
             }
             catch (Exception e)
             {
-                Logger.LogError($"{e}");
+                Logger.LogError($"{e} ({data})");
                 return BadRequest(new ErrorModel(e.Message));
             }
         }
