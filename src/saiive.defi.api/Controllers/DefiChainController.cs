@@ -25,7 +25,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> ListYieldFarming(string coin, string network)
         {
-            var response = await _client.GetAsync($"{DefiChainApiUrl}/v1/listyieldfarming?network={network}net");
+            var response = await _client.GetAsync($"{DefiChainApiUrl}/v1/listyieldfarming?network={network}");
 
             try
             {
