@@ -35,16 +35,13 @@ namespace saiive.defi.api.Controllers
                 var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<Dictionary<string, PoolPairModel>>(data);
-                List<PoolPairModel> result = new List<PoolPairModel>();
-
+                
                 foreach (KeyValuePair<string, PoolPairModel> entry in obj)
                 {
                     entry.Value.ID = entry.Key;
-
-                    result.Add(entry.Value);
                 }
 
-                return Ok(result);
+                return Ok(obj);
             }
             catch (Exception e)
             {
@@ -73,20 +70,18 @@ namespace saiive.defi.api.Controllers
                 var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<Dictionary<string, PoolPairModel>>(data);
-                List<PoolPairModel> result = new List<PoolPairModel>();
-
+                
                 foreach (KeyValuePair<string, PoolPairModel> entry in obj)
                 {
                     entry.Value.ID = entry.Key;
 
-                    result.Add(entry.Value);
                 }
 
-                if (result.Count == 0) {
+                if (obj.Count == 0) {
                     return NotFound(new ErrorModel($"Pool with ID {poolID} could not be found"));
                 }
 
-                return Ok(result[0]);
+                return Ok(obj);
             }
             catch (Exception e)
             {
