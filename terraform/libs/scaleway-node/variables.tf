@@ -44,10 +44,6 @@ variable "node_count" {
   
 }
 
-variable "network" {
-  
-}
-
 variable "public_endpoint" {
   
 }

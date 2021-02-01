@@ -37,7 +37,8 @@ locals {
 module "chain_scaleway_network_nodes" {
   source = "./libs/scaleway-node"
 
-  node_count = 2
+  server_type=var.scaleway_server_type
+  node_count = var.scaleway_node_count
   prefix = var.prefix
   environment = var.environment
   cloud_init = data.template_file.cloud_init.rendered
@@ -46,7 +47,6 @@ module "chain_scaleway_network_nodes" {
   dns_zone_resource_group = var.dns_zone_resource_group
   
   resource_group = azurerm_resource_group.rg.name
-  network="testnet"
 
   ssh_key = base64decode(data.azurerm_key_vault_secret.scalway_private_key.value)
 

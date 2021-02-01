@@ -38,7 +38,8 @@ services:
     depends_on:
       - docker-socket-proxy-ro
       - database
-      - defichain
+      - defichain_testnet
+      - defichain_mainnet
       - bitcore_node
       - super_node
     logging:
@@ -98,7 +99,7 @@ services:
       - db_data:/data/db
     restart: unless-stopped
 
-  defichain:
+  defichain_testnet:
     image: defiwallet.azurecr.io/defichain:latest
     command:
       defid
@@ -107,18 +108,34 @@ services:
     networks:
       - default
     environment:
-      - NETWORK=$${NETWORK:?NETWORK env required}
+      - NETWORK=testnet
     volumes:
-      - node_data:/data
-      - ./defi.$${NETWORK}.conf:/data/defi.conf
+      - node_data_testnet:/data/testnet
+      - ./testnet/defi.testnet.conf:/data/defi.conf
     restart: unless-stopped
     ports:
-      - 8555:8555
-      - 8554:8554
       - 18555:18555
       - 18554:18554
       - 19555:19555
       - 19554:19554
+
+  defichain_mainnet:
+    image: defiwallet.azurecr.io/defichain:latest
+    command:
+      defid
+      -printtoconsole
+
+    networks:
+      - default
+    environment:
+      - NETWORK=mainnet
+    volumes:
+      - node_data_mainnet:/data/mainnet
+      - ./mainnet/defi.mainnet.conf:/data/defi.conf
+    restart: unless-stopped
+    ports:
+      - 8555:8555
+      - 8554:8554
 
   bitcore_node:
     container_name: bitcore_node
@@ -134,7 +151,7 @@ services:
       timeout: 5s
       retries: 3
     environment:
-      - NETWORK=$${NETWORK:?NETWORK env required}
+      - NETWORK=all
       - API_PORT=3000
       - DB_HOST=database
       - CHAIN=DFI
@@ -143,10 +160,11 @@ services:
       - BITCORE_NODE_SENTRY_DNS=$${BITCORE_NODE_SENTRY_DNS:-false}
       - DISABLE_HEALTH_CRON=$${DISABLE_HEALTH_CRON:-false}
     volumes:
-      - ./bitcore.$${NETWORK}.config.json:/usr/src/app/bitcore.config.json
+      - ./bitcore.all.config.json:/usr/src/app/bitcore.config.json
     depends_on:
       - database
-      - defichain
+      - defichain_mainnet
+      - defichain_testnet
     restart: unless-stopped
     
   super_node:
@@ -155,7 +173,6 @@ services:
     networks:
       - default
     environment:
-      - NETWORK=$${NETWORK:?NETWORK env required}
       - BITCORE_URL=http://bitcore_node:3000
     labels:
       - "traefik.enable=true"
@@ -189,7 +206,8 @@ services:
 
 volumes:
   db_data:
-  node_data:
+  node_data_testnet:
+  node_data_mainnet:
 
 networks:
   private-docker-socks-proxy-ro:

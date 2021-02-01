@@ -53,13 +53,10 @@ resource "scaleway_instance_server" "node" {
 
    provisioner "remote-exec" {
     inline = [
-      "mkdir /opt/node"
+      "mkdir /opt/node",
+      "mkdir /opt/node/mainnet",
+      "mkdir /opt/node/testnet"
     ]
-  }
-  
-  provisioner "file" {
-    content = element(data.template_file.env.*.rendered, count.index)
-    destination = "/opt/node/.env"
   }
 
   provisioner "file" {
@@ -69,20 +66,25 @@ resource "scaleway_instance_server" "node" {
 
   provisioner "file" {
     content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
-    destination = "/opt/node/bitcore.mainnet.config.json"
+    destination = "/opt/node/mainnet/bitcore.mainnet.config.json"
+  }
+  
+  provisioner "file" {
+    content = element(data.template_file.bitcore_all.*.rendered, count.index)
+    destination = "/opt/node/bitcore.all.config.json"
   }
 
   provisioner "file" {
     content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
-    destination = "/opt/node/bitcore.testnet.config.json"
+    destination = "/opt/node/testnet/bitcore.testnet.config.json"
   }
   provisioner "file" {
     content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
-    destination = "/opt/node/defi.mainnet.conf"
+    destination = "/opt/node/mainnet/defi.mainnet.conf"
   }
   provisioner "file" {
     content = element(data.template_file.defi_testnet.*.rendered, count.index)
-    destination = "/opt/node/defi.testnet.conf"
+    destination = "/opt/node/testnet/defi.testnet.conf"
   }
 
   provisioner "remote-exec" {
