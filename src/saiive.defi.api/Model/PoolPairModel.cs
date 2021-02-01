@@ -28,8 +28,8 @@ namespace saiive.defi.api.Model
         [JsonProperty("reserveB")]
         public double ReserveB { get; set; }
 
-        [JsonProperty("comission")]
-        public double Commision { get; set; }
+        [JsonProperty("commission")]
+        public double Commission { get; set; }
 
         [JsonProperty("totalLiquidity")]
         public double TotalLiquidity { get; set; }
