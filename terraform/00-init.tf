@@ -49,7 +49,6 @@ provider "scaleway" {
 }
 
 provider "uptimerobot" {
-  api_key = "u707091-0c22f47410b0bd4bdd44d520"
 }
 
 

@@ -177,7 +177,7 @@ services:
     environment:
       - CLEANUP=true
       - INTERVAL=300
-      - LOG_LEVEL=info
+      - LOG_LEVEL=debug
       - SELF_UPDATE=true
       - IGNORE=mongo defiwallet.azurecr.io/bitcorenode tecnativa/docker-socket-proxy docker-socket-proxy defiwallet.azurecr.io/defichain
       - DOCKER_SOCKETS=tcp://docker-socket-proxy-ro:2375
