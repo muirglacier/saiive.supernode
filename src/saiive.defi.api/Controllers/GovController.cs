@@ -15,7 +15,7 @@ namespace saiive.defi.api.Controllers
     [Route("/api/v1/")]
     public class GovController : BaseController
     {
-        public GovController(ILogger<PoolPairController> logger, IConfiguration config) : base(logger, config)
+        public GovController(ILogger<GovController> logger, IConfiguration config) : base(logger, config)
         {
 
         }
