@@ -20,10 +20,10 @@ namespace saiive.defi.api.Controllers
         }
 
 
-        [HttpGet("coin-price/{currency}")]
+        [HttpGet("{network}/{coin}/coin-price/{currency}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(IDictionary<int, CoinPrice>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> ListYieldFarming(string currency)
+        public async Task<IActionResult> ListYieldFarming(string coin, string network, string currency)
         {
 
             //We control the coins server-side, so we can update faster if new pairs come along
