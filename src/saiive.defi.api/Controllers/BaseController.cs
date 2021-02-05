@@ -10,6 +10,7 @@ namespace saiive.defi.api.Controllers
         protected readonly ILogger Logger;
         protected readonly string ApiUrl;
         protected readonly string DefiChainApiUrl;
+        protected readonly string CoingeckoApiUrl;
 
         protected readonly HttpClient _client = new HttpClient();
 
@@ -18,9 +19,11 @@ namespace saiive.defi.api.Controllers
             Logger = logger;
             ApiUrl = config["BITCORE_URL"];
             DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
+            CoingeckoApiUrl = config["COINGECKO_API_URL"];
 
             Logger.LogInformation($"Using bitcore {ApiUrl}");
             Logger.LogInformation($"Using DefiChainApi {DefiChainApiUrl}");
+            Logger.LogInformation($"Using CoingeckoApi {CoingeckoApiUrl}");
         }
     }
 }
