@@ -27,7 +27,7 @@ namespace saiive.defi.api.Controllers
         {
 
             //We control the coins server-side, so we can update faster if new pairs come along
-            var response = await _client.GetAsync($"{CoingeckoApiUrl}//simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin&vs_currencies={currency}");
+            var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin&vs_currencies={currency}");
 
             try
             {
