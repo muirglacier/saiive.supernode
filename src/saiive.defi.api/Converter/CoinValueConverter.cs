@@ -21,7 +21,7 @@ namespace saiive.defi.api.Converter
                 {
                     return 0.0;
                 }
-                return (double)longValue / 100000000;
+                return (double)longValue;
             }
 
             return 0;
