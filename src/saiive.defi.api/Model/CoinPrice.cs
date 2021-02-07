@@ -9,7 +9,10 @@ namespace saiive.defi.api.Model
         public string Coin { get; set; }
 
         [JsonProperty("fiat")]
-        public double fiat { get; set; }
+        public double Fiat { get; set; }
+
+        [JsonProperty("idToken")]
+        public string IdToken { get; set; }
 
         [JsonProperty("currency")]
         public string Currency { get; set; }

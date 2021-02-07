@@ -29,6 +29,25 @@ namespace saiive.defi.api.Controllers
             //We control the coins server-side, so we can update faster if new pairs come along
             var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin&vs_currencies={currency}");
 
+            var map = new Dictionary<string, string>();
+
+            if (network == "testnet") {
+                map.Add("defichain", "0");
+                map.Add("bitcoin", "1");
+                map.Add("ethereum", "2");
+                map.Add("tether", "5");
+                map.Add("dogecoin", "7");
+                map.Add("litecoin", "9");
+            }
+            else {
+                map.Add("defichain", "0");
+                map.Add("bitcoin", "2");
+                map.Add("ethereum", "1");
+                map.Add("tether", "3");
+                map.Add("dogecoin", "7");
+                map.Add("litecoin", "9");
+            }
+
             try
             {
                 var data = await response.Content.ReadAsStringAsync();
@@ -43,7 +62,8 @@ namespace saiive.defi.api.Controllers
                     var coinPrice = new CoinPrice();
                     coinPrice.Coin = item.Key;
                     coinPrice.Currency = currency;
-                    coinPrice.fiat = item.Value[currency.ToLower()];
+                    coinPrice.Fiat = item.Value[currency.ToLower()];
+                    coinPrice.IdToken = map.ContainsKey(item.Key) ? map[item.Key] : null;
 
                     ret.Add(item.Key, coinPrice);  
                 }
