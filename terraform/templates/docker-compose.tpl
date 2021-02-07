@@ -110,7 +110,7 @@ services:
     environment:
       - NETWORK=testnet
     volumes:
-      - node_data_testnet:/data/testnet
+      - node_data_testnet:/data
       - ./testnet/defi.testnet.conf:/data/defi.conf
     restart: unless-stopped
     ports:
@@ -130,7 +130,7 @@ services:
     environment:
       - NETWORK=mainnet
     volumes:
-      - node_data_mainnet:/data/mainnet
+      - node_data_mainnet:/data
       - ./mainnet/defi.mainnet.conf:/data/defi.conf
     restart: unless-stopped
     ports:
