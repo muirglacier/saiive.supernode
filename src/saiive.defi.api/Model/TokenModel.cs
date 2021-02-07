@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace saiive.defi.api.Model
 {
@@ -15,6 +16,8 @@ namespace saiive.defi.api.Model
 
         [JsonProperty("decimal")]
         public int Decimal { get; set; }
+
+        public int Multiplier => Decimal <= 1 ? 1 : Convert.ToInt32(Math.Pow(10, Decimal));
 
         [JsonProperty("mintable")]
         public bool Mintable { get; set; }
