@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using saiive.defi.api.Application;
 using saiive.defi.api.Model;
 using saiive.defi.api.Requests;
 
@@ -16,10 +17,12 @@ namespace saiive.defi.api.Controllers
     [Route("/api/v1/")]
     public class AddressController : BaseController
     {
-        
+        private readonly ITokenStore _tokenStore;
 
-        public AddressController(ILogger<AddressController> logger, IConfiguration config) : base(logger, config)
+
+        public AddressController(ILogger<AddressController> logger, IConfiguration config, ITokenStore tokenStore) : base(logger, config)
         {
+            _tokenStore = tokenStore;
         }
         
         private async Task<BalanceModel> GetBalanceInternal(string coin, string network, string address)
@@ -41,9 +44,9 @@ namespace saiive.defi.api.Controllers
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/account");
 
+            var data = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
 
             var ret = new  List<AccountModel>();
             var obj = JsonConvert.DeserializeObject<List<string>>(data);
@@ -52,11 +55,14 @@ namespace saiive.defi.api.Controllers
             foreach (var acc in obj)
             {
                 var split = acc.Split("@");
+
+                var token = await _tokenStore.GetToken(coin, network, split[1]);
+
                 var account = new AccountModel
                 {
                     Address = address,
                     Raw = acc,
-                    Balance = Convert.ToDouble(split[0], CultureInfo.InvariantCulture),
+                    Balance = Convert.ToDouble(split[0], CultureInfo.InvariantCulture) * token.Multiplier,
                     Token = split[1]
                 };
 

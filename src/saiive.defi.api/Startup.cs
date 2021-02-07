@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using saiive.defi.api.Application;
 
 namespace saiive.defi.api
 {
@@ -34,6 +35,8 @@ namespace saiive.defi.api
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             }));
+
+            services.AddSingleton<ITokenStore, TokenStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

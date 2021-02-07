@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using saiive.defi.api.Application;
 using saiive.defi.api.Model;
 
 namespace saiive.defi.api.Controllers
@@ -13,9 +14,11 @@ namespace saiive.defi.api.Controllers
     [Route("/api/v1/")]
     public class TokenController : BaseController
     {
-        public TokenController(ILogger<TokenController> logger, IConfiguration config) : base(logger, config)
+        private readonly ITokenStore _store;
+
+        public TokenController(ILogger<TokenController> logger, IConfiguration config, ITokenStore store) : base(logger, config)
         {
-          
+            _store = store;
         }
 
 
@@ -46,14 +49,10 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTokens(string coin, string network, string token)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/token/get/{token}");
-
             try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                response.EnsureSuccessStatusCode();
-                
-                return Ok(data);
+
+                return Ok(await _store.GetToken(coin, network, token));
             }
             catch (Exception e)
             {
