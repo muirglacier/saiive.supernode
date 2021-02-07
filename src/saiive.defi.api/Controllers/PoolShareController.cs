@@ -93,6 +93,11 @@ namespace saiive.defi.api.Controllers
                     {
                         if (addresses.Addresses.Contains(poolShare.Owner))
                         {
+                            if (ret.ContainsKey(poolShare.Key))
+                            {
+                                continue;
+                            }
+
                             ret.Add(poolShare.Key, poolShare);
                         }
                     }
@@ -115,7 +120,7 @@ namespace saiive.defi.api.Controllers
             try
             {
                 var ret = new Dictionary<string, PoolShareModel>();
-                var poolShares = await this.GetAllPoolSharesInternal(coin, network);
+                var poolShares = await this.GetPoolSharesInternal(coin, network, start, limit, including_start);
 
                 foreach (var poolShare in poolShares)
                 {
