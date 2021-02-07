@@ -61,18 +61,15 @@ namespace saiive.defi.api.Controllers
                 loopResult = await this.GetPoolSharesInternal(coin, network, start, limit);
 
                 if (loopResult.Count == 0) {
-                    continue;
+                    break;
                 }
-
-                PoolShareModel last = null;
 
                 foreach (PoolShareModel entry in loopResult)
                 {
-                    last = entry;
                     ret.Add(entry);
                 }
 
-                var startString = last.Key.Split('@')[0];
+                var startString = loopResult[loopResult.Count - 1].Key.Split('@')[0];
                 start = int.Parse(startString);
 
             } while (loopResult.Count > 0);
