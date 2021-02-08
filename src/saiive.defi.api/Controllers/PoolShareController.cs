@@ -112,6 +112,35 @@ namespace saiive.defi.api.Controllers
             }
         }
 
+        [HttpGet("{network}/{coin}/listpoolshares")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Dictionary<string, PoolShareModel>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> GetAllPoolShares(string coin, string network)
+        {
+            try
+            {
+                var ret = new Dictionary<string, PoolShareModel>();
+                var poolShares = await this.GetAllPoolSharesInternal(coin, network);
+
+                foreach (var poolShare in poolShares)
+                {
+                    if (ret.ContainsKey(poolShare.Key))
+                    {
+                        continue;
+                    }
+
+                    ret.Add(poolShare.Key, poolShare);
+                }
+
+                return Ok(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
+        }
+
         [HttpGet("{network}/{coin}/listpoolshares/{start}/{limit}/{including_start}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Dictionary<string, PoolShareModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
