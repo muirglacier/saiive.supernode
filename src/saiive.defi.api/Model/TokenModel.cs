@@ -7,6 +7,9 @@ namespace saiive.defi.api.Model
     {
         [JsonProperty("symbol")]
         public string Symbol { get; set; }
+        
+        [JsonProperty("id")] 
+        public int Id { get; set; }
 
         [JsonProperty("symbolKey")]
         public string SymbolKey { get; set; }
