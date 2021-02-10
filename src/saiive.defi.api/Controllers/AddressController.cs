@@ -17,11 +17,13 @@ namespace saiive.defi.api.Controllers
     [Route("/api/v1/")]
     public class AddressController : BaseController
     {
+        private readonly ILogger<AddressController> _logger;
         private readonly ITokenStore _tokenStore;
 
 
         public AddressController(ILogger<AddressController> logger, IConfiguration config, ITokenStore tokenStore) : base(logger, config)
         {
+            _logger = logger;
             _tokenStore = tokenStore;
         }
         
@@ -271,7 +273,14 @@ namespace saiive.defi.api.Controllers
             }
         }
 
+        private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
 
+            var data = await response.Content.ReadAsStringAsync();
+            var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+            return tx;
+        }
 
         private async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string network, string address)
         {
@@ -279,9 +288,26 @@ namespace saiive.defi.api.Controllers
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            var retTxs = new List<TransactionModel>();
+            
+            foreach(var tx in txs)
+            {
+                if (!tx.Coinbase && String.IsNullOrEmpty(tx.SpentTxId) && tx.SpentHeight < 0)
+                {
+                    var details = await GetTransactionDetails(coin, network, tx.MintTxId);
 
-            return obj;
+                    if (details.Inputs == null || details.Inputs.Count == 0)
+                    {
+                        _logger.LogError($"Found invalid tx at height {tx.MintHeight}. TX inputs already spent, tx will never get confirmed. Ignore it here.... ({tx.MintTxId})");
+                        continue;
+                    }
+                }
+                
+                retTxs.Add(tx);
+            }
+            
+            return retTxs;
 
         }
 
