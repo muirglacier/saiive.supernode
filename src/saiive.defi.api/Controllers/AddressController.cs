@@ -289,9 +289,18 @@ namespace saiive.defi.api.Controllers
             var data = await response.Content.ReadAsStringAsync();
 
             var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+
+            var retTxs = await CheckValidTransactions(txs, coin, network);
+            return retTxs;
+
+        }
+
+        private async Task<List<TransactionModel>> CheckValidTransactions(List<TransactionModel> txs, string coin,
+            string network)
+        {
             var retTxs = new List<TransactionModel>();
-            
-            foreach(var tx in txs)
+
+            foreach (var tx in txs)
             {
                 if (!tx.Coinbase && String.IsNullOrEmpty(tx.SpentTxId) && tx.SpentHeight < 0)
                 {
@@ -304,21 +313,14 @@ namespace saiive.defi.api.Controllers
                     }
                 }
 
-                if (tx.MintHeight < 0)
-                {
-                    _logger.LogError($"Found invalid tx at height {tx.MintHeight}. Mint height is smaller than 0.... ({tx.MintTxId})");
-                    continue;
-                }
-                
                 retTxs.Add(tx);
             }
-            
-            return retTxs;
 
+            return retTxs;
         }
 
 
-        [HttpGet("{network}/{coin}/txs/{address}")]
+       [HttpGet("{network}/{coin}/txs/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTransactions(string coin, string network, string address)
@@ -400,9 +402,10 @@ namespace saiive.defi.api.Controllers
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-
-            return obj;
+            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            var retTxs = await CheckValidTransactions(txs, coin, network);
+            return retTxs;
+            
 
         }
 
