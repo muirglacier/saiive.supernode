@@ -303,6 +303,12 @@ namespace saiive.defi.api.Controllers
                         continue;
                     }
                 }
+
+                if (tx.MintHeight < 0)
+                {
+                    _logger.LogError($"Found invalid tx at height {tx.MintHeight}. Mint height is smaller than 0.... ({tx.MintTxId})");
+                    continue;
+                }
                 
                 retTxs.Add(tx);
             }
