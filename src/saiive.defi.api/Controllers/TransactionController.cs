@@ -22,6 +22,15 @@ namespace saiive.defi.api.Controllers
           
         }
 
+        private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
+
+            var data = await response.Content.ReadAsStringAsync();
+            var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+            return tx;
+        }
+
         [HttpGet("{network}/{coin}/tx/id/{txId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(TransactionModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -37,6 +46,7 @@ namespace saiive.defi.api.Controllers
                 var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<TransactionModel>(data);
+                obj.Details = await GetTransactionDetails(coin, network, txId);
                 return Ok(obj);
             }
             catch (Exception e)

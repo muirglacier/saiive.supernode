@@ -44,5 +44,8 @@ namespace saiive.defi.api.Model
 
         [JsonProperty("confirmations")]
         public int Confirmations { get; set; }
+        
+        [JsonProperty("details")] 
+        public TransactionDetailModel Details { get; set; }
     }
 }

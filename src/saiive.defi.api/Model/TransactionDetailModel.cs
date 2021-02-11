@@ -10,5 +10,6 @@ namespace saiive.defi.api.Model
         
         [JsonProperty("outputs")]
         public List<TransactionModel> Outputs { get; set; }
+
     }
 }
