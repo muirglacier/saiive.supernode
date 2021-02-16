@@ -284,7 +284,7 @@ namespace saiive.defi.api.Controllers
 
         private async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs?limit=1000");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -398,7 +398,7 @@ namespace saiive.defi.api.Controllers
 
         private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}?unspent=true");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}?unspent=true&limit=1000");
 
             var data = await response.Content.ReadAsStringAsync();
 
