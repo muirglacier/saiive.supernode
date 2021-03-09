@@ -21,7 +21,7 @@ namespace saiive.defi.api.Controllers
 
         }
 
-        private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string? limit, string? maxBlockHeight)
+        private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool? noRewards)
         {
             string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{token}";
 
@@ -37,6 +37,8 @@ namespace saiive.defi.api.Controllers
                 dict.Add("limit", limit);
             }
 
+            dict.Add("no_rewards", noRewards.ToString());
+
             var response = await _client.GetAsync(Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(query, dict));
 
             response.EnsureSuccessStatusCode();
@@ -51,11 +53,11 @@ namespace saiive.defi.api.Controllers
         [HttpPost("{network}/{coin}/accounthistory/{address}/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AccountHistory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetAccountHistory(string coin, string network, string address, string token, string? limit, string? maxBlockHeight)
+        public async Task<IActionResult> GetAccountHistory(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool? no_rewards)
         {
             try
             {
-                var history = await GetAccountHistoryInternal(coin, network, address, token, limit, maxBlockHeight);
+                var history = await GetAccountHistoryInternal(coin, network, address, token, limit, maxBlockHeight, no_rewards);
 
                 return Ok(history);
             }
@@ -70,7 +72,7 @@ namespace saiive.defi.api.Controllers
         [HttpPost("{network}/{coin}/history-all/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AccountHistory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTotalBalance(string coin, string network, string token, string? limit, string? maxBlockHeight, AddressesBodyRequest addresses)
+        public async Task<IActionResult> GetTotalBalance(string coin, string network, string token, string? limit, string? maxBlockHeight, bool? no_rewards, AddressesBodyRequest addresses)
         {
             try
             {
@@ -78,7 +80,7 @@ namespace saiive.defi.api.Controllers
 
                 foreach (var address in addresses.Addresses)
                 {
-                    var histories = await GetAccountHistoryInternal(coin, network, address, token, limit, maxBlockHeight);
+                    var histories = await GetAccountHistoryInternal(coin, network, address, token, limit, maxBlockHeight, no_rewards);
 
                     retHistory.AddRange(histories);
                 }

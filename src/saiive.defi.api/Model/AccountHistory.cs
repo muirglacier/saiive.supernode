@@ -23,6 +23,12 @@ namespace saiive.defi.api.Model
         [JsonProperty("poolID")]
         public string PoolID { get; set; }
 
+        [JsonProperty("txn")]
+        public int Txn { get; set; }
+
+        [JsonProperty("txid")]
+        public string TxId { get; set; }
+
         [JsonProperty("amounts")]
         public IList<string> Amounts { get; set; }
     }
