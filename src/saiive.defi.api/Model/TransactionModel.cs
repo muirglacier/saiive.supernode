@@ -39,7 +39,6 @@ namespace saiive.defi.api.Model
         public string Script { get; set; }
 
         [JsonProperty("value")]
-        [JsonConverter(typeof(CoinValueConverter))]
         public double Value { get; set; }
 
         [JsonProperty("confirmations")]
