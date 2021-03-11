@@ -32,7 +32,7 @@ resource "scaleway_instance_security_group" "node" {
   }
 }
 
-resource "scaleway_instance_server" "node" {
+resource "scaleway_instance_server" "supernode" {
   count = var.node_count
   name = "${local.node_name}-${count.index}"
   depends_on = [scaleway_instance_ip.node_ip]
@@ -97,19 +97,19 @@ resource "scaleway_instance_server" "node" {
 
 resource "azurerm_dns_a_record" "custom_domain_cname" {
   count = var.node_count
-  name                = element(scaleway_instance_server.node.*.name, count.index)
+  name                = element(scaleway_instance_server.supernode.*.name, count.index)
   zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
   ttl                 = 300
-  records             = [element(scaleway_instance_server.node.*.public_ip, count.index)]
+  records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
 }
 resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
   count = var.node_count
-  name                = "traefik.${element(scaleway_instance_server.node.*.name, count.index)}"
+  name                = "traefik.${element(scaleway_instance_server.supernode.*.name, count.index)}"
   zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
   ttl                 = 300
-  records             = [element(scaleway_instance_server.node.*.public_ip, count.index)]
+  records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
 }
 
 data "uptimerobot_account" "account" {}
@@ -120,9 +120,9 @@ data "uptimerobot_alert_contact" "default_alert_contact" {
 
 resource "uptimerobot_monitor" "main" {
   count = var.node_count
-  friendly_name = element(scaleway_instance_server.node.*.name, count.index)
+  friendly_name = element(scaleway_instance_server.supernode.*.name, count.index)
   type          = "http"
-  url           = "https://${element(scaleway_instance_server.node.*.name, count.index)}.${var.dns_zone}/v1/api/health"
+  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/v1/api/health"
   # pro allows 60 seconds
   interval      = 300
   sub_type      = "https"
