@@ -103,6 +103,7 @@ services:
     image: defiwallet.azurecr.io/defichain:latest
     command:
       defid
+      -acindex
       -printtoconsole
 
     networks:
@@ -123,6 +124,7 @@ services:
     image: defiwallet.azurecr.io/defichain:latest
     command:
       defid
+      -acindex
       -printtoconsole
 
     networks:
