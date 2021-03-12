@@ -30,6 +30,16 @@ resource "scaleway_instance_security_group" "node" {
     action = "accept"
     port   = "443"
   }
+  
+  inbound_rule {
+    action = "accept"
+    port   = "18555"
+  }
+
+  inbound_rule {
+    action = "accept"
+    port   = "8555"
+  }
 }
 
 resource "scaleway_instance_server" "supernode" {
