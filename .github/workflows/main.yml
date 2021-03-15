@@ -52,6 +52,6 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"DeFiCh-WalletApp_super-node" /o:"defich-walletapp" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet restore **/*.csproj
-          dotnet build **/*.csproj
+          dotnet restore src/saiive.defi.sln
+          dotnet build src/saiive.defi.sln
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
