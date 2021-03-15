@@ -116,6 +116,18 @@ namespace saiive.defi.api.Controllers
             }
         }
 
+        private async Task<BlockModel> GetCurrentHeight(string coin, string network)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<BlockModel>(data);
+            return obj;
+        }
+
         [HttpPost("{network}/{coin}/tx/raw")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TransactionResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -138,7 +150,9 @@ namespace saiive.defi.api.Controllers
             }
             catch
             {
-                Logger.LogError("{coin}+{network}: Error commiting tx to blockchain ({response} for {txHex})", coin, network, data, request.RawTx);
+                var currentBlock = await GetCurrentHeight(coin, network);
+
+                Logger.LogError("{coin}+{network}: Error commiting tx to blockchain ({response} for {txHex}) @ {blockHeight} block", coin, network, data, request.RawTx, currentBlock.Height);
                 return BadRequest(new ErrorModel($"{data}"));
             }
         }
