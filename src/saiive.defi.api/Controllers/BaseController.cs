@@ -25,9 +25,9 @@ namespace saiive.defi.api.Controllers
             DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
             CoingeckoApiUrl = config["COINGECKO_API_URL"];
 
-            Logger.LogInformation($"Using bitcore {ApiUrl}");
-            Logger.LogInformation($"Using DefiChainApi {DefiChainApiUrl}");
-            Logger.LogInformation($"Using CoingeckoApi {CoingeckoApiUrl}");
+            Logger.LogTrace($"Using bitcore {ApiUrl}");
+            Logger.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
+            Logger.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
         }
     }
 }
