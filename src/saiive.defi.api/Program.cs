@@ -21,7 +21,7 @@ namespace saiive.defi.api
 
                     if (!String.IsNullOrEmpty(ikey))
                     {
-                        builder.AddApplicationInsights(Environment.GetEnvironmentVariable(ikey));
+                        builder.AddApplicationInsights(ikey);
                     }
                 })
                 .ConfigureAppConfiguration((hostingContext, config) =>
