@@ -17,7 +17,7 @@ namespace saiive.defi.api
             Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(builder =>
                 {
-                    var ikey = Environment.GetEnvironmentVariable("APPLICATION_INSIGHTS_IKEY");
+                    var ikey = Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY");
 
                     if (!String.IsNullOrEmpty(ikey))
                     {

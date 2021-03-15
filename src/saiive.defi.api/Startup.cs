@@ -37,6 +37,8 @@ namespace saiive.defi.api
             }));
 
             services.AddSingleton<ITokenStore, TokenStore>();
+
+            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
