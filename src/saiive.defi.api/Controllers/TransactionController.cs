@@ -130,14 +130,15 @@ namespace saiive.defi.api.Controllers
             try
             {
                 response.EnsureSuccessStatusCode();
-
-
-                var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
+                var obj = JsonConvert.DeserializeObject<TransactionResponse>(data); 
+                
+                Logger.LogInformation("{coin}+{network}: Committed tx to blockchain, {txId} {txHex}", coin, network, obj?.TxId, request.RawTx);
+                
                 return Ok(obj);
             }
             catch
             {
-                Logger.LogError($"{data} for {request.RawTx}");
+                Logger.LogError("{coin}+{network}: Error commiting tx to blockchain ({response} for {txHex})", coin, network, data, request.RawTx);
                 return BadRequest(new ErrorModel($"{data}"));
             }
         }
