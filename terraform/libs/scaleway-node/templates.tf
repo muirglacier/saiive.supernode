@@ -17,9 +17,10 @@ data "template_file" "docker_compose" {
   template   = file("${path.root}/templates/docker-compose.tpl")
 
   vars = {
-    public_url      = "${local.node_name}-${count.index}.${var.dns_zone}"
-    repo_user       = var.docker_user
-    repo_pass       = var.docker_password
+    public_url                  = "${local.node_name}-${count.index}.${var.dns_zone}"
+    repo_user                   = var.docker_user
+    repo_pass                   = var.docker_password
+    application_insights_ikey   = var.application_insights_ikey
   }
 }
 

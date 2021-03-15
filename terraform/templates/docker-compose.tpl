@@ -178,6 +178,7 @@ services:
       - BITCORE_URL=http://bitcore_node:3000
       - DEFI_CHAIN_API_URL=https://api.defichain.io
       - COINGECKO_API_URL=https://api.coingecko.com/api/v3
+      - APPLICATION_INSIGHTS_IKEY=${application_insights_ikey}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.super_node.loadbalancer.server.port=5000"

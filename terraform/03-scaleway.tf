@@ -19,6 +19,11 @@ data "azurerm_key_vault_secret" "scalway_private_key" {
   key_vault_id = var.key_vault_id
 }
 
+data "azurerm_key_vault_secret" "application_insights_ikey" {
+  name         = "${var.environment}-supernode-insights-instrumentation-key"
+  key_vault_id = var.key_vault_id
+}
+
 data "template_file" "cloud_init" {
   template   = file("${path.root}/cloud-init/cloud-init.yml")
 
@@ -37,7 +42,7 @@ locals {
 module "chain_scaleway_network_nodes" {
   source = "./libs/scaleway-node"
 
-  server_type=var.scaleway_server_type
+  server_type = var.scaleway_server_type
   node_count = var.scaleway_node_count
   prefix = var.prefix
   environment = var.environment
@@ -54,4 +59,6 @@ module "chain_scaleway_network_nodes" {
 
   docker_user = data.azurerm_key_vault_secret.docker_registry_username.value
   docker_password = data.azurerm_key_vault_secret.docker_registry_password.value
+
+  application_insights_ikey = data.azurerm_key_vault_secret.application_insights_ikey.value
 }

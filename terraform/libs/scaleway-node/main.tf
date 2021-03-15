@@ -135,7 +135,6 @@ resource "uptimerobot_monitor" "main" {
   url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/v1/api/health"
   # pro allows 60 seconds
   interval      = 300
-  sub_type      = "https"
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id

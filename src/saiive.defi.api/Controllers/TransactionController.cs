@@ -135,9 +135,9 @@ namespace saiive.defi.api.Controllers
                 var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
                 return Ok(obj);
             }
-            catch (Exception e)
+            catch
             {
-                Logger.LogError($"{e} ({data})");
+                Logger.LogError($"{data} for {request.RawTx}");
                 return BadRequest(new ErrorModel($"{data}"));
             }
         }

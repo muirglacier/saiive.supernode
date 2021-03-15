@@ -1,6 +1,8 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace saiive.defi.api
 {
@@ -13,6 +15,15 @@ namespace saiive.defi.api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(builder =>
+                {
+                    var ikey = Environment.GetEnvironmentVariable("APPLICATION_INSIGHTS_IKEY");
+
+                    if (!String.IsNullOrEmpty(ikey))
+                    {
+                        builder.AddApplicationInsights(Environment.GetEnvironmentVariable(ikey));
+                    }
+                })
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddEnvironmentVariables();
