@@ -12,16 +12,11 @@ namespace saiive.defi.api.Controllers
     [Route("v1/api/health")]
     public class HealthCheckController : BaseController
     {
-        private readonly IConfiguration _config;
-        private readonly ILogger _logger;
-
         public HealthCheckController(IConfiguration config, ILogger<HealthCheckController> logger) : base(logger, config)
         {
-            _config = config;
-            _logger = logger;
         }
+        
         [HttpGet]
-
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> HealthCheck()
         {
