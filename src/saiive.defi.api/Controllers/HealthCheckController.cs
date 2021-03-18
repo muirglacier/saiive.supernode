@@ -21,7 +21,8 @@ namespace saiive.defi.api.Controllers
         [HttpGet("health")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult HealthCheck()
-        {
+        { 
+            AddBaseResponseHeaders();
             return Ok();
         }
         
@@ -30,6 +31,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> HealthCheckNetwork(string network, string coin)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
 
             try

@@ -27,6 +27,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> ListTokens(string coin, string network)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/token/list");
 
             try
@@ -49,6 +50,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTokens(string coin, string network, string token)
         {
+            AddBaseResponseHeaders();
             try
             {
 

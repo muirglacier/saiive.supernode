@@ -23,6 +23,6 @@ variable "dns_zone_resource_group" {
 
 }
 
-variable "scaleway_nodes" {
+variable "nodes" {
     
 }

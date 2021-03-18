@@ -23,6 +23,7 @@ namespace saiive.defi.api.Controllers
 
         private async Task<List<PoolShareModel>> GetPoolSharesInternal(string coin, string network, int start = 0, int limit = 1, bool including_start = false)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/lp/listpoolshares?start={start}&limit={limit}&including_start={including_start}");
 
             response.EnsureSuccessStatusCode();
@@ -82,6 +83,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetMinePoolShares(string coin, string network, AddressesBodyRequest addresses)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var ret = new Dictionary<string, PoolShareModel>();
@@ -117,6 +119,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetAllPoolShares(string coin, string network)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var ret = new Dictionary<string, PoolShareModel>();
@@ -146,6 +149,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetPoolShares(string coin, string network, int start, int limit, bool including_start)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var ret = new Dictionary<string, PoolShareModel>();

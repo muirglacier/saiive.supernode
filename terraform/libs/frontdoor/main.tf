@@ -12,7 +12,6 @@ resource "azurerm_dns_cname_record" "frontdoor_cname" {
 
 resource "azurerm_frontdoor" "frontdoor" {
   name                                         ="${var.prefix}-${var.environment}"
-  location                                     = "global"
   resource_group_name                          = var.resource_group
   enforce_backend_pools_certificate_name_check = true
 
@@ -26,18 +25,6 @@ resource "azurerm_frontdoor" "frontdoor" {
     redirect_configuration {
       redirect_protocol = "HttpsOnly"
       redirect_type       = "Found"
-    }
-  }
-
-  routing_rule {
-    name               = "${var.prefix}-${var.environment}-be-swagger"
-    accepted_protocols = ["Https"]
-    patterns_to_match  = ["/swagger/*"]
-    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
-    
-    forwarding_configuration {
-      forwarding_protocol = "HttpsOnly"
-      backend_pool_name   = "${var.prefix}-${var.environment}-backend"
     }
   }
 
@@ -62,6 +49,18 @@ resource "azurerm_frontdoor" "frontdoor" {
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "${var.prefix}-${var.environment}-backend-dfi-testnet"
+    }
+  }
+
+  routing_rule {
+    name               = "${var.prefix}-${var.environment}-be-swagger"
+    accepted_protocols = ["Https"]
+    patterns_to_match  = ["/swagger/*"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
+    forwarding_configuration {
+      forwarding_protocol = "HttpsOnly"
+      backend_pool_name   = "${var.prefix}-${var.environment}-backend"
     }
   }
 
@@ -103,7 +102,7 @@ resource "azurerm_frontdoor" "frontdoor" {
     name = "${var.prefix}-${var.environment}-backend"
     
     dynamic "backend" {
-      for_each = var.scaleway_nodes
+      for_each = var.nodes
       content {
         address     = "${backend.value}.${var.dns_zone}"
         host_header = "${backend.value}.${var.dns_zone}"
@@ -119,7 +118,7 @@ resource "azurerm_frontdoor" "frontdoor" {
     name = "${var.prefix}-${var.environment}-backend-dfi-mainnet"
     
     dynamic "backend" {
-      for_each = var.scaleway_nodes
+      for_each = var.nodes
       content {
         address     = "${backend.value}.${var.dns_zone}"
         host_header = "${backend.value}.${var.dns_zone}"
@@ -135,7 +134,7 @@ resource "azurerm_frontdoor" "frontdoor" {
     name = "${var.prefix}-${var.environment}-backend-dfi-testnet"
     
     dynamic "backend" {
-      for_each = var.scaleway_nodes
+      for_each = var.nodes
       content {
         address     = "${backend.value}.${var.dns_zone}"
         host_header = "${backend.value}.${var.dns_zone}"

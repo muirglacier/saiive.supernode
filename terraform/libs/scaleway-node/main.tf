@@ -5,7 +5,7 @@ data "scaleway_image" "image" {
 }
 
 locals {
-    node_name = "${var.prefix}-${var.environment}"
+    node_name = "${var.prefix}-scw-${var.environment}"
 }
 
 resource "scaleway_instance_ip" "node_ip" {
@@ -57,50 +57,97 @@ resource "scaleway_instance_server" "supernode" {
 
   connection {
     host = self.public_ip
-    user = var.username
+    user = "root"
     private_key = var.ssh_key
   }
 
    provisioner "remote-exec" {
     inline = [
-      "mkdir /opt/node",
-      "mkdir /opt/node/mainnet",
-      "mkdir /opt/node/testnet"
+      "mkdir ~/node",
+      "mkdir ~/node/mainnet",
+      "mkdir ~/node/testnet"
     ]
   }
 
   provisioner "file" {
     content = element(data.template_file.docker_compose.*.rendered, count.index)
-    destination = "/opt/node/docker-compose.yml"
+    destination = "~/node/docker-compose.yml"
   }
 
   provisioner "file" {
     content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
-    destination = "/opt/node/mainnet/bitcore.mainnet.config.json"
+    destination = "~/node/mainnet/bitcore.mainnet.config.json"
   }
   
   provisioner "file" {
     content = element(data.template_file.bitcore_all.*.rendered, count.index)
-    destination = "/opt/node/bitcore.all.config.json"
+    destination = "~/node/bitcore.all.config.json"
   }
 
   provisioner "file" {
     content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
-    destination = "/opt/node/testnet/bitcore.testnet.config.json"
+    destination = "~/node/testnet/bitcore.testnet.config.json"
   }
   provisioner "file" {
     content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
-    destination = "/opt/node/mainnet/defi.mainnet.conf"
+    destination = "~/node/mainnet/defi.mainnet.conf"
   }
   provisioner "file" {
     content = element(data.template_file.defi_testnet.*.rendered, count.index)
-    destination = "/opt/node/testnet/defi.testnet.conf"
+    destination = "~/node/testnet/defi.testnet.conf"
   }
 
   provisioner "remote-exec" {
     inline = [
       "tail -f /var/log/cloud-init-output.log &",
       "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do sleep 10; done;",
+    ]
+  }
+}
+
+resource "null_resource" "docker" {
+  count = var.node_count
+  triggers = {
+    always_run = timestamp()
+  }
+
+  connection {
+    host = element(scaleway_instance_server.supernode.*.public_ip, count.index)
+    user = "root"
+    private_key = var.ssh_key
+  }
+  
+  provisioner "file" {
+    content = element(data.template_file.docker_compose.*.rendered, count.index)
+    destination = "~/node/docker-compose.yml"
+  }
+
+  provisioner "file" {
+    content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/bitcore.mainnet.config.json"
+  }
+  
+  provisioner "file" {
+    content = element(data.template_file.bitcore_all.*.rendered, count.index)
+    destination = "~/node/bitcore.all.config.json"
+  }
+
+  provisioner "file" {
+    content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/bitcore.testnet.config.json"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/defi.mainnet.conf"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/defi.testnet.conf"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "docker-compose -f ~/node/docker-compose.yml pull &",
+      "docker-compose -f ~/node/docker-compose.yml up -d ",
     ]
   }
 }
@@ -128,13 +175,27 @@ data "uptimerobot_alert_contact" "default_alert_contact" {
   friendly_name = data.uptimerobot_account.account.email
 }
 
-resource "uptimerobot_monitor" "main" {
+resource "uptimerobot_monitor" "dfi_mainnet" {
+
   count = var.node_count
-  friendly_name = element(scaleway_instance_server.supernode.*.name, count.index)
+  friendly_name = "${element(scaleway_instance_server.supernode.*.name, count.index)}-mainnet"
   type          = "http"
-  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/v1/api/health"
-  # pro allows 60 seconds
-  interval      = 300
+  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/mainnet/DFI/health"
+  
+  interval      = 60
+
+  alert_contact {
+    id = data.uptimerobot_alert_contact.default_alert_contact.id
+  }
+}
+
+resource "uptimerobot_monitor" "dfi_testnet" {
+  count = var.node_count
+  friendly_name = "${element(scaleway_instance_server.supernode.*.name, count.index)}-testnet"
+  type          = "http"
+  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/testnet/DFI/health"
+  
+  interval      = 60
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id

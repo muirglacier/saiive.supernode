@@ -39,7 +39,7 @@ terraform {
 }
 
 provider "azurerm" {
-  version = "=2.0.0"
+  version = "=2.51.0"
   features {}
 }
 
@@ -92,6 +92,11 @@ variable "key_vault_id" {
 
 variable "scaleway_node_count" {
   default = 2
+  type = number
+}
+variable "azure_node_count" {
+  default = 2
+  type = number
 }
 variable "scaleway_server_type" {
   default = "DEV1-S"

@@ -26,6 +26,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> Testpoolswap(string coin, string network, TestPoolSwapBodyRequest request)
         {
+            AddBaseResponseHeaders();
             var httpContent =
                 new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync($"{ApiUrl}/api/{coin}/{network}/lp/testpoolswap", httpContent);

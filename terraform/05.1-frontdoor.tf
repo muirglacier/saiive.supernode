@@ -1,6 +1,10 @@
 
-
 module "frontdoor" {
+  depends_on = [
+    module.chain_scaleway_network_nodes,
+    module.chain_azure_network_nodes
+  ]
+  
   source = "./libs/frontdoor"
 
   name = "supernode"
@@ -12,5 +16,5 @@ module "frontdoor" {
   dns_zone = var.dns_zone
   dns_zone_resource_group = var.dns_zone_resource_group
 
-  scaleway_nodes = module.chain_scaleway_network_nodes.nodes
+  nodes = local.nodes
 }

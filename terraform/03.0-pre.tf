@@ -24,16 +24,8 @@ data "azurerm_key_vault_secret" "application_insights_ikey" {
   key_vault_id = var.key_vault_id
 }
 
-data "template_file" "cloud_init" {
-  template   = file("${path.root}/cloud-init/cloud-init.yml")
-
-  vars = {
-    docker_registry      = data.azurerm_key_vault_secret.docker_registry.value
-    docker_registry_username = data.azurerm_key_vault_secret.docker_registry_username.value
-    docker_registry_password = data.azurerm_key_vault_secret.docker_registry_password.value
-  }
-}
-
 locals {
     cname = var.environment == "prod" ? "supernode" :  "${var.environment}-supernode"
+    uptime_cname_prefix = var.environment == "prod" ? "" :  "${var.environment}-"
+    vm_username = "defi"
 }

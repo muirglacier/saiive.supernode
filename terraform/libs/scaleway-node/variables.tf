@@ -26,7 +26,7 @@ variable "ssh_key" {
 }
 
 variable "username" {
-  default = "root"
+
 }
 
 variable "dns_zone" {

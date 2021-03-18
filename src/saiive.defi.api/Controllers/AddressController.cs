@@ -94,9 +94,9 @@ namespace saiive.defi.api.Controllers
 
         public async Task<IActionResult> GetTotalBalance(string coin, string network, string address)
         {
-
             try
             {
+                AddBaseResponseHeaders();
                 var balanceNative = await GetBalanceInternal(coin, network, address);
                 var balanceTokens = await GetAccountInternal(coin, network, address);
                 
@@ -127,6 +127,7 @@ namespace saiive.defi.api.Controllers
         {
             try
             {
+                AddBaseResponseHeaders();
                 var retAccountList = new Dictionary<string, AccountModel>();
                 var accounts = new Dictionary<string, List<AccountModel>>();
 
@@ -188,7 +189,7 @@ namespace saiive.defi.api.Controllers
 
         public async Task<IActionResult> GetBalance(string coin, string network, string address)
         {
-            
+            AddBaseResponseHeaders();
             try
             {
                 return Ok(await GetBalanceInternal(coin, network, address));
@@ -204,6 +205,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetBalances(string coin, string network, AddressesBodyRequest addresses)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var ret = new List<BalanceModel>();
@@ -228,7 +230,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetAccount(string coin, string network, string address)
         {
-
+            AddBaseResponseHeaders();
             try
             {
                 return Ok(await GetAccountInternal(coin, network, address));
@@ -245,6 +247,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetAccounts(string coin, string network, AddressesBodyRequest request)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var retList = new List<Account>();
@@ -325,6 +328,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTransactions(string coin, string network, string address)
         {
+            AddBaseResponseHeaders();
             try
             {
                 return Ok(await GetTransactionsInternal(coin, network, address));
@@ -341,6 +345,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetMultiTransactions(string coin, string network, AddressesBodyRequest request)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var ret = new List<TransactionModel>();
@@ -363,6 +368,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetUnspentTransactionOutput(string coin, string network, string address)
         {
+            AddBaseResponseHeaders();
             try
             {
                 return Ok(await GetUnspentTransactionOutputsInternal(coin, network, address));
@@ -379,6 +385,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetMultiUnspentTransactionOutput(string coin, string network, AddressesBodyRequest request)
         {
+            AddBaseResponseHeaders();
             try
             {
                 var ret = new List<TransactionModel>();
@@ -414,6 +421,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetEstimateFee(string coin, string network)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/fee/30");
             try
             {

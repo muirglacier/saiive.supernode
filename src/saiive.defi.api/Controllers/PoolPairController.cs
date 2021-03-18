@@ -26,6 +26,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> ListPoolPairs(string coin, string network)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/lp/listpoolpairs");
 
             try
@@ -61,6 +62,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetPoolPair(string coin, string network, string poolID)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/lp/getpoolpair/{poolID}");
 
             try

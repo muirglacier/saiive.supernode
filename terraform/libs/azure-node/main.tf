@@ -1,142 +1,311 @@
-# data "scaleway_image" "image" {
-#   architecture = var.server_arch
-#   name         = var.server_image
-#   most_recent = true
-# }
 
-# locals {
-#     node_name = "${var.prefix}-${var.environment}"
-# }
+locals {
+    node_name = "${var.prefix}-azure-${var.environment}"
+}
 
-# resource "scaleway_instance_ip" "node_ip" {
-#   count = var.node_count
-# }
+resource "azurerm_virtual_network" "main" {
+  name                = "${local.node_name}-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = var.location
+  resource_group_name = var.resource_group
+}
 
-# resource "scaleway_instance_security_group" "node" {
-#   inbound_default_policy  = "drop"
-#   outbound_default_policy = "accept"
+resource "azurerm_subnet" "internal" {
+  name                 = local.node_name
+  resource_group_name  = var.resource_group
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
 
-#   inbound_rule {
-#     action = "accept"
-#     port   = "22"
-#   }
+resource "azurerm_network_security_group" "sg" {
+    name                = "${local.node_name}-security-group"
+    location            = var.location
+    resource_group_name = var.resource_group
 
-#   inbound_rule {
-#     action = "accept"
-#     port   = "80"
-#   }
+    security_rule {
+        name                       = "SSH"
+        priority                   = 1001
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "22"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
 
-#   inbound_rule {
-#     action = "accept"
-#     port   = "443"
-#   }
+    security_rule {
+        name                       = "DFI-Mainnet"
+        priority                   = 100
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "8555"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+    security_rule {
+        name                       = "DFI-Testnet"
+        priority                   = 200
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "18555"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+
+    security_rule {
+        name                       = "HTTPS"
+        priority                   = 300
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "443"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+    security_rule {
+        name                       = "HTTP"
+        priority                   = 301
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "443"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+
+    tags = {
+        environment = var.environment
+    }
+}
+
+
+resource "azurerm_public_ip" "node_public_ip" {
+    count = var.node_count
+    name                         = "${local.node_name}-${count.index}-public-ip"
+    location                     = var.location
+    resource_group_name          = var.resource_group
+    allocation_method            = "Dynamic"
+
+    tags = {
+        environment = var.environment
+    }
+}
+
+resource "azurerm_network_interface" "nic" {
+    count = var.node_count
+    name                        = "${local.node_name}-${count.index}-nic"
+    location                    = var.location
+    resource_group_name         = var.resource_group
+
+    ip_configuration {
+        name                          = "${local.node_name}-${count.index}-nic-config"
+        subnet_id                     = azurerm_subnet.internal.id
+        private_ip_address_allocation = "Dynamic"
+        public_ip_address_id          = element(azurerm_public_ip.node_public_ip.*.id, count.index)
+    }
+
+    tags = {
+        environment = var.environment
+    }
+}
+
+resource "azurerm_network_interface_security_group_association" "sg_link" {
+    count = var.node_count
+    network_interface_id      = element(azurerm_network_interface.nic.*.id, count.index)
+    network_security_group_id = azurerm_network_security_group.sg.id
+}
+
+resource "azurerm_linux_virtual_machine" "supernode" {
+    count = var.node_count
+    name                  = "${local.node_name}-${count.index}"
+    location              = var.location
+    resource_group_name   = var.resource_group
+    network_interface_ids = [element(azurerm_network_interface.nic.*.id, count.index)]
+    size                  = var.server_type
+
+    os_disk {
+        name              = "${local.node_name}-${count.index}-disk"
+        caching           = "ReadWrite"
+        storage_account_type = "Premium_LRS"
+    }
+
+    source_image_reference {
+        publisher = "Canonical"
+        offer     = var.server_image
+        sku       = var.server_version
+        version   = "latest"
+    }
+
+    computer_name  = "${local.node_name}-${count.index}"
+    admin_username = var.username
+    disable_password_authentication = true
+
+    admin_ssh_key {
+        username       = var.username
+        public_key     = var.ssh_pub_key
+    }
+
+    custom_data = base64encode(var.cloud_init)
+
+
+    connection {
+        host = self.public_ip_address
+        user = var.username
+        private_key = var.ssh_key
+    }
+
+    provisioner "remote-exec" {
+     inline = [
+      "mkdir ~/node",
+      "mkdir ~/node/mainnet",
+      "mkdir ~/node/testnet"
+     ]
+    }
+
+  provisioner "file" {
+    content = element(data.template_file.docker_compose.*.rendered, count.index)
+    destination = "~/node/docker-compose.yml"
+  }
+
+  provisioner "file" {
+    content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/bitcore.mainnet.config.json"
+  }
   
-#   inbound_rule {
-#     action = "accept"
-#     port   = "18555"
-#   }
+  provisioner "file" {
+    content = element(data.template_file.bitcore_all.*.rendered, count.index)
+    destination = "~/node/bitcore.all.config.json"
+  }
 
-#   inbound_rule {
-#     action = "accept"
-#     port   = "8555"
-#   }
-# }
+  provisioner "file" {
+    content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/bitcore.testnet.config.json"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/defi.mainnet.conf"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/defi.testnet.conf"
+  }
 
-# resource "scaleway_instance_server" "supernode" {
-#   count = var.node_count
-#   name = "${local.node_name}-${count.index}"
-#   depends_on = [scaleway_instance_ip.node_ip]
+  provisioner "remote-exec" {
+    inline = [
+      "tail -f /var/log/cloud-init-output.log &",
+      "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do sleep 10; done;",
+    ]
+  }
 
-#   image               = data.scaleway_image.image.id
-#   type                = var.server_type
-#   enable_dynamic_ip   = true
-#   ip_id = element(scaleway_instance_ip.node_ip.*.id, count.index)
-#   security_group_id = scaleway_instance_security_group.node.id
-#   # initialization sequence
-#   cloud_init = var.cloud_init
+    tags = {
+        environment = var.environment
+    }
+}
 
-#   connection {
-#     host = self.public_ip
-#     user = var.username
-#     private_key = var.ssh_key
-#   }
+resource "null_resource" "docker" {
+  count = var.node_count
+  triggers = {
+    always_run = timestamp()
+  }
 
-#    provisioner "remote-exec" {
-#     inline = [
-#       "mkdir /opt/node",
-#       "mkdir /opt/node/mainnet",
-#       "mkdir /opt/node/testnet"
-#     ]
-#   }
-
-#   provisioner "file" {
-#     content = element(data.template_file.docker_compose.*.rendered, count.index)
-#     destination = "/opt/node/docker-compose.yml"
-#   }
-
-#   provisioner "file" {
-#     content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
-#     destination = "/opt/node/mainnet/bitcore.mainnet.config.json"
-#   }
+  connection {
+    host = element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)
+    user = var.username
+    private_key = var.ssh_key
+  }
   
-#   provisioner "file" {
-#     content = element(data.template_file.bitcore_all.*.rendered, count.index)
-#     destination = "/opt/node/bitcore.all.config.json"
-#   }
+  provisioner "file" {
+    content = element(data.template_file.docker_compose.*.rendered, count.index)
+    destination = "~/node/docker-compose.yml"
+  }
 
-#   provisioner "file" {
-#     content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
-#     destination = "/opt/node/testnet/bitcore.testnet.config.json"
-#   }
-#   provisioner "file" {
-#     content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
-#     destination = "/opt/node/mainnet/defi.mainnet.conf"
-#   }
-#   provisioner "file" {
-#     content = element(data.template_file.defi_testnet.*.rendered, count.index)
-#     destination = "/opt/node/testnet/defi.testnet.conf"
-#   }
+  provisioner "file" {
+    content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/bitcore.mainnet.config.json"
+  }
+  
+  provisioner "file" {
+    content = element(data.template_file.bitcore_all.*.rendered, count.index)
+    destination = "~/node/bitcore.all.config.json"
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "tail -f /var/log/cloud-init-output.log &",
-#       "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do sleep 10; done;",
-#     ]
-#   }
-# }
+  provisioner "file" {
+    content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/bitcore.testnet.config.json"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/defi.mainnet.conf"
+  }
+  provisioner "file" {
+    content = element(data.template_file.defi_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/defi.testnet.conf"
+  }
 
-# resource "azurerm_dns_a_record" "custom_domain_cname" {
-#   count = var.node_count
-#   name                = element(scaleway_instance_server.supernode.*.name, count.index)
-#   zone_name           = var.dns_zone
-#   resource_group_name = var.dns_zone_resource_group
-#   ttl                 = 300
-#   records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
-# }
-# resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
-#   count = var.node_count
-#   name                = "traefik.${element(scaleway_instance_server.supernode.*.name, count.index)}"
-#   zone_name           = var.dns_zone
-#   resource_group_name = var.dns_zone_resource_group
-#   ttl                 = 300
-#   records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
-# }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo docker-compose -f ~/node/docker-compose.yml pull &",
+      "sudo docker-compose -f ~/node/docker-compose.yml up -d ",
+    ]
+  }
 
-# data "uptimerobot_account" "account" {}
+}
 
-# data "uptimerobot_alert_contact" "default_alert_contact" {
-#   friendly_name = data.uptimerobot_account.account.email
-# }
 
-# resource "uptimerobot_monitor" "main" {
-#   count = var.node_count
-#   friendly_name = element(scaleway_instance_server.supernode.*.name, count.index)
-#   type          = "http"
-#   url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/v1/api/health"
-#   # pro allows 60 seconds
-#   interval      = 300
+resource "azurerm_dns_a_record" "custom_domain_cname" {
+  count = var.node_count
+  name                = element(azurerm_linux_virtual_machine.supernode.*.name, count.index)
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
+}
+resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
+  count = var.node_count
+  name                = "traefik.${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
+}
 
-#   alert_contact {
-#     id = data.uptimerobot_alert_contact.default_alert_contact.id
-#   }
-# }
+
+data "uptimerobot_account" "account" {}
+
+data "uptimerobot_alert_contact" "default_alert_contact" {
+  friendly_name = data.uptimerobot_account.account.email
+}
+
+resource "uptimerobot_monitor" "dfi_mainnet" {
+
+  count = var.node_count
+  friendly_name = "${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}-mainnet"
+  type          = "http"
+  url           = "https://${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/mainnet/DFI/health"
+  
+  interval      = 60
+
+  alert_contact {
+    id = data.uptimerobot_alert_contact.default_alert_contact.id
+  }
+}
+
+resource "uptimerobot_monitor" "dfi_testnet" {
+  count = var.node_count
+  friendly_name = "${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}-testnet"
+  type          = "http"
+  url           = "https://${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/testnet/DFI/health"
+  
+  interval      = 60
+
+  alert_contact {
+    id = data.uptimerobot_alert_contact.default_alert_contact.id
+  }
+}

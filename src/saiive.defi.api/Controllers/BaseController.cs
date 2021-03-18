@@ -29,5 +29,10 @@ namespace saiive.defi.api.Controllers
             Logger.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
             Logger.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
         }
+
+        public void AddBaseResponseHeaders()
+        {
+            Response.Headers.Add("X-DEFI-WORKER", Environment.GetEnvironmentVariable("MACHINE_NAME"));
+        }
     }
 }

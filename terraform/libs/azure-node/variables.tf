@@ -1,61 +1,67 @@
 
-# variable "environment" {
-# }
+variable "environment" {
+}
 
-# variable "cloud_init" {
-# }
+variable "location" {
+}
 
-# variable "prefix" {
-# }
-
-
-# variable "server_arch" {
-#   default = "x86_64"
-# }
-
-# variable "server_image" {
-#   default = "Debian Buster"
-# }
-
-# variable "server_type" {
-#   default = "DEV1-S"
-# }
-
-# variable "ssh_key" {
-
-# }
-
-# variable "username" {
-#   default = "root"
-# }
-
-# variable "dns_zone" {
+variable "cloud_init" {
   
-# }
-# variable "dns_zone_resource_group" {
+}
 
-# }
+variable "prefix" {
+}
 
-# variable "resource_group" {
+variable "server_image" {
+  default = "UbuntuServer"
+}
+variable "server_version" {
+  default = "18.04-LTS"
+}
+
+variable "server_type" {
+  default = "Standard_DS1_v2"
+}
+
+variable "ssh_key" {
+
+}
+
+variable "ssh_pub_key" {
+
+}
+
+variable "username" {
+
+}
+
+variable "dns_zone" {
+  
+}
+variable "dns_zone_resource_group" {
+
+}
+
+variable "resource_group" {
 	
-# }
+}
 
-# variable "node_count" {
+variable "node_count" {
   
-# }
+}
 
-# variable "public_endpoint" {
+variable "public_endpoint" {
   
-# }
+}
 
 
-# variable "docker_user" {
+variable "docker_user" {
   
-# }
-# variable "docker_password" {
+}
+variable "docker_password" {
   
-# }
+}
 
-# variable "application_insights_ikey" {
+variable "application_insights_ikey" {
   
-# }
+}

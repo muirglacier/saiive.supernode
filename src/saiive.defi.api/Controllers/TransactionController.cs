@@ -37,6 +37,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTransactionById(string coin, string network, string txId)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}");
 
             try
@@ -66,6 +67,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTransactionsByBlock(string coin, string network, string block)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHash={block}");
 
             try
@@ -94,6 +96,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height)
         {
+            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}");
 
             try
@@ -133,6 +136,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> SendRawTransaction(string coin, string network, TransactionRequest request)
         {
+            AddBaseResponseHeaders();
 
             var httpContent =
                 new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
