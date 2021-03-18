@@ -11,21 +11,21 @@ using saiive.defi.api.Model;
 namespace saiive.defi.api.Controllers
 {
     [ApiController]
-    [Route("v1/api/health")]
+    [Route("v1/api")]
     public class HealthCheckController : BaseController
     {
         public HealthCheckController(IConfiguration config, ILogger<HealthCheckController> logger) : base(logger, config)
         {
         }
 
-        [HttpGet]
+        [HttpGet("health")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public IActionResult HealthCheck()
         {
             return NoContent();
         }
         
-        [HttpGet("{coin}/{network}")]
+        [HttpGet("{coin}/{network}/health")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> HealthCheckNetwork(string coin, string network)
         {

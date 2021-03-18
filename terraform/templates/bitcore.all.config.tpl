@@ -15,6 +15,10 @@
             {
               "host": "defichain_mainnet",
               "port": 8555
+            },
+            {
+              "host": "seed.defichain.io",
+              "port": 8555
             }
           ],
           "rpc": {
