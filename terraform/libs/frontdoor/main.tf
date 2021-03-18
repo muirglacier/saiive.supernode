@@ -89,13 +89,13 @@ resource "azurerm_frontdoor" "frontdoor" {
 
   backend_pool_health_probe {
     name = "${var.prefix}-${var.environment}-health-dfi-mainnet"
-    path = "/v1/api/DFI/mainnet/health"
+    path = "/v1/api/mainnet/DFI/health"
     protocol = "Https"
   }
 
   backend_pool_health_probe {
     name = "${var.prefix}-${var.environment}-health-dfi-testnet"
-    path = "/v1/api/DFI/testnet/health"
+    path = "/v1/api/testnet/DFI/health"
     protocol = "Https"
   }
 
