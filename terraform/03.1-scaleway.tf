@@ -30,8 +30,9 @@ module "chain_scaleway_network_nodes" {
 
   public_endpoint = "${local.cname}.${var.dns_zone}"
 
-  docker_user = data.azurerm_key_vault_secret.docker_registry_username.value
+  docker_user     = data.azurerm_key_vault_secret.docker_registry_username.value
   docker_password = data.azurerm_key_vault_secret.docker_registry_password.value
+  docker_registry = data.azurerm_key_vault_secret.docker_registry.value
 
   application_insights_ikey = data.azurerm_key_vault_secret.application_insights_ikey.value
 }

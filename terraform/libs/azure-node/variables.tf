@@ -61,6 +61,9 @@ variable "docker_user" {
 variable "docker_password" {
   
 }
+variable "docker_registry" {
+  
+}
 
 variable "application_insights_ikey" {
   

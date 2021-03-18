@@ -12,9 +12,7 @@ services:
       - "--providers.docker.endpoint=tcp://docker-socket-proxy-ro:2375"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      # global redirect for http to https
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      # certificate resolver using HTTP-challenge for Let"s Encrypt verification
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge=true"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.email=office@p3-software.eu"
@@ -188,6 +186,7 @@ services:
       - "traefik.http.routers.super_node.entrypoints=websecure"
       - "traefik.http.routers.super_node.tls=true"
       - "traefik.http.routers.super_node.tls.certresolver=letsEncryptHttpChallenge"
+      - "traefik.http.middlewares.testHeader.headers.customrequestheaders.X-DEFI-WORKER=${machine_name}"
     ports:
       - 5000:5000
     depends_on:

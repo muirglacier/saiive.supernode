@@ -146,6 +146,7 @@ resource "null_resource" "docker" {
   }
   provisioner "remote-exec" {
     inline = [
+      "docker login ${var.docker_registry} --username ${var.docker_user} --password ${var.docker_password} &", 
       "docker-compose -f ~/node/docker-compose.yml pull &",
       "docker-compose -f ~/node/docker-compose.yml up -d ",
     ]
@@ -194,6 +195,19 @@ resource "uptimerobot_monitor" "dfi_testnet" {
   friendly_name = "${element(scaleway_instance_server.supernode.*.name, count.index)}-testnet"
   type          = "http"
   url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/testnet/DFI/health"
+  
+  interval      = 60
+
+  alert_contact {
+    id = data.uptimerobot_alert_contact.default_alert_contact.id
+  }
+}
+
+resource "uptimerobot_monitor" "vm" {
+  count = var.node_count
+  friendly_name = element(scaleway_instance_server.supernode.*.name, count.index)
+  type          = "http"
+  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/health"
   
   interval      = 60
 
