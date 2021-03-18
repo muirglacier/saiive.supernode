@@ -19,14 +19,15 @@ namespace saiive.defi.api.Controllers
         }
 
         [HttpGet("health")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult HealthCheck()
         {
             return Ok();
         }
         
         [HttpGet("{network}/{coin}/health")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> HealthCheckNetwork(string network, string coin)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
@@ -57,7 +58,7 @@ namespace saiive.defi.api.Controllers
                     return Ok(obj);
                 }
 
-                return BadRequest("Chain is not synced yet!");
+                return Problem("Chain is not synced yet!");
             }
             catch (Exception e)
             {
