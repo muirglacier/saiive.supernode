@@ -11,7 +11,7 @@ using saiive.defi.api.Model;
 namespace saiive.defi.api.Controllers
 {
     [ApiController]
-    [Route("v1/api")]
+    [Route("/api/v1/")]
     public class HealthCheckController : BaseController
     {
         public HealthCheckController(IConfiguration config, ILogger<HealthCheckController> logger) : base(logger, config)
