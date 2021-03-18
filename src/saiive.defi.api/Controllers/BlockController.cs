@@ -26,7 +26,6 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentBlock(string coin, string network, int height)
         {
-            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/{height}");
 
             try
@@ -54,7 +53,6 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentHeight(string coin, string network)
         {
-            AddBaseResponseHeaders();
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
 
             try
