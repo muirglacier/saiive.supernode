@@ -22,7 +22,7 @@ namespace saiive.defi.api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public IActionResult HealthCheck()
         {
-            return NoContent();
+            return Ok();
         }
         
         [HttpGet("{network}/{coin}/health")]
