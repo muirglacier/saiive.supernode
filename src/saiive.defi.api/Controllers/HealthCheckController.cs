@@ -27,7 +27,7 @@ namespace saiive.defi.api.Controllers
         
         [HttpGet("{coin}/{network}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> HealthCheckNetwork(string network, string coin)
+        public async Task<IActionResult> HealthCheckNetwork(string coin, string network)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
 
