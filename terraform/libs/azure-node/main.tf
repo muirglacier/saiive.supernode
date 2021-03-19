@@ -133,7 +133,8 @@ resource "azurerm_linux_virtual_machine" "supernode" {
     os_disk {
         name              = "${local.node_name}-${count.index}-disk"
         caching           = "ReadWrite"
-        storage_account_type = "Premium_LRS"
+        storage_account_type = "Standard_LRS"
+        disk_size_gb = 200
     }
 
     source_image_reference {
