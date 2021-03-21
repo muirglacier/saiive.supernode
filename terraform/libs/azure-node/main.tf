@@ -80,6 +80,18 @@ resource "azurerm_network_security_group" "sg" {
         destination_address_prefix = "*"
     }
 
+    security_rule {
+        name                       = "PING"
+        priority                   = 1000
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "ICMP"
+        source_port_range          = "*"
+        destination_port_range     = "*"
+        source_address_prefix      = "*"
+        destination_address_prefix = "*"
+    }
+
     tags = {
         environment = var.environment
     }
@@ -278,50 +290,11 @@ resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
   records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
 }
 
+module "uptime_robot" {
+  source = "../uptime"
 
-data "uptimerobot_account" "account" {}
+  count     = var.node_count
+  dns_zone  = var.dns_zone
+  node_name = element(azurerm_linux_virtual_machine.supernode.*.name, count.index)
 
-data "uptimerobot_alert_contact" "default_alert_contact" {
-  friendly_name = data.uptimerobot_account.account.email
-}
-
-resource "uptimerobot_monitor" "dfi_mainnet" {
-
-  count = var.node_count
-  friendly_name = "${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}-mainnet"
-  type          = "http"
-  url           = "https://${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/mainnet/DFI/health"
-  
-  interval      = 60
-
-  alert_contact {
-    id = data.uptimerobot_alert_contact.default_alert_contact.id
-  }
-}
-
-resource "uptimerobot_monitor" "dfi_testnet" {
-  count = var.node_count
-  friendly_name = "${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}-testnet"
-  type          = "http"
-  url           = "https://${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/testnet/DFI/health"
-  
-  interval      = 60
-
-  alert_contact {
-    id = data.uptimerobot_alert_contact.default_alert_contact.id
-  }
-}
-
-
-resource "uptimerobot_monitor" "vm" {
-  count = var.node_count
-  friendly_name = element(azurerm_linux_virtual_machine.supernode.*.name, count.index)
-  type          = "http"
-  url           = "https://${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/health"
-  
-  interval      = 60
-
-  alert_contact {
-    id = data.uptimerobot_alert_contact.default_alert_contact.id
-  }
 }

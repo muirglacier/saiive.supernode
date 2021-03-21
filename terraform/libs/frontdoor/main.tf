@@ -161,3 +161,8 @@ resource "azurerm_frontdoor" "frontdoor" {
     custom_https_provisioning_enabled = false
   }
 }
+
+
+output "id" {
+  value = azurerm_frontdoor.frontdoor.id
+}

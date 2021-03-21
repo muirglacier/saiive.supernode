@@ -2,13 +2,22 @@
 
 package_update: true
 packages:
-  - docker
-  - docker-compose
   - gnupg2
   - pass
+  - gdb 
 
 
 runcmd:
- - sleep 10
- - docker login ${docker_registry} --username ${docker_registry_username} --password ${docker_registry_password}
- - docker-compose -f ${root_directory}/docker-compose.yml up -d
+  - sleep 5
+  - curl https://get.docker.com | sh
+  - usermod -aG docker $USER
+  - systemctl start docker
+  - systemctl enable docker
+  - curl -L "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+  - chmod +x /usr/bin/docker-compose
+  - sleep 1
+  - docker login ${docker_registry} --username ${docker_registry_username} --password ${docker_registry_password}
+  - wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w ${analytics_id} -s ${analytics_key}  -d opinsights.azure.com
+  - /opt/microsoft/omsagent/bin/service_control restart ${analytics_id} 2>/dev/null 
+  - docker-compose -f ${root_directory}/docker-compose.yml up -d
+ 

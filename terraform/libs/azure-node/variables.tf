@@ -20,7 +20,7 @@ variable "server_version" {
 }
 
 variable "server_type" {
-  default = "Standard_DS1_v2"
+  default = "Standard_B2ms"
 }
 
 variable "ssh_key" {

@@ -5,7 +5,7 @@ data "scaleway_image" "image" {
 }
 
 locals {
-    node_name = "${var.prefix}-scw-${var.environment}"
+    node_name = "${var.prefix}-scaleway-${var.environment}"
 }
 
 resource "scaleway_instance_ip" "node_ip" {
@@ -39,6 +39,12 @@ resource "scaleway_instance_security_group" "node" {
   inbound_rule {
     action = "accept"
     port   = "8555"
+  }
+
+  inbound_rule {
+    action = "accept"
+    port   = "0"
+    protocol = "ICMP"
   }
 }
 
@@ -170,48 +176,11 @@ resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
   records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
 }
 
-data "uptimerobot_account" "account" {}
+module "uptime_robot" {
+  source = "../uptime"
 
-data "uptimerobot_alert_contact" "default_alert_contact" {
-  friendly_name = data.uptimerobot_account.account.email
-}
+  count     = var.node_count
+  dns_zone  = var.dns_zone
+  node_name = element(scaleway_instance_server.supernode.*.name, count.index)
 
-resource "uptimerobot_monitor" "dfi_mainnet" {
-
-  count = var.node_count
-  friendly_name = "${element(scaleway_instance_server.supernode.*.name, count.index)}-mainnet"
-  type          = "http"
-  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/mainnet/DFI/health"
-  
-  interval      = 60
-
-  alert_contact {
-    id = data.uptimerobot_alert_contact.default_alert_contact.id
-  }
-}
-
-resource "uptimerobot_monitor" "dfi_testnet" {
-  count = var.node_count
-  friendly_name = "${element(scaleway_instance_server.supernode.*.name, count.index)}-testnet"
-  type          = "http"
-  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/testnet/DFI/health"
-  
-  interval      = 60
-
-  alert_contact {
-    id = data.uptimerobot_alert_contact.default_alert_contact.id
-  }
-}
-
-resource "uptimerobot_monitor" "vm" {
-  count = var.node_count
-  friendly_name = element(scaleway_instance_server.supernode.*.name, count.index)
-  type          = "http"
-  url           = "https://${element(scaleway_instance_server.supernode.*.name, count.index)}.${var.dns_zone}/api/v1/health"
-  
-  interval      = 60
-
-  alert_contact {
-    id = data.uptimerobot_alert_contact.default_alert_contact.id
-  }
 }

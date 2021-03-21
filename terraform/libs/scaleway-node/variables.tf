@@ -14,7 +14,7 @@ variable "server_arch" {
 }
 
 variable "server_image" {
-  default = "Debian Buster"
+  default = "Ubuntu Bionic"
 }
 
 variable "server_type" {
