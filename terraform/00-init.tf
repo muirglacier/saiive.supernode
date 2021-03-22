@@ -82,9 +82,6 @@ variable "dns_zone" {
 variable "dns_zone_resource_group" {
 
 }
-variable "network" {
-  
-}
 
 variable "key_vault_id" {
   default = "/subscriptions/551ab192-148c-445b-ae4f-0d0107e6f5de/resourceGroups/defi-wallet-common/providers/Microsoft.KeyVault/vaults/defichain-wallet"

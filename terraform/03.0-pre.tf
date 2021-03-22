@@ -20,6 +20,9 @@ data "azurerm_key_vault_secret" "scalway_private_key" {
 }
 
 data "azurerm_key_vault_secret" "application_insights_ikey" {
+  depends_on = [
+    azurerm_key_vault_secret.supernode_insights_key
+  ]
   name         = "${var.environment}-supernode-insights-instrumentation-key"
   key_vault_id = var.key_vault_id
 }
