@@ -11,6 +11,8 @@ variable "cloud_init" {
 
 variable "prefix" {
 }
+variable "uptime_prefix" {
+}
 
 variable "server_image" {
   default = "UbuntuServer"
@@ -21,6 +23,9 @@ variable "server_version" {
 
 variable "server_type" {
   default = "Standard_B2ms"
+}
+variable "disk_size" {
+  default = 200
 }
 
 variable "ssh_key" {

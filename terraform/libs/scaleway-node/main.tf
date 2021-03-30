@@ -5,7 +5,8 @@ data "scaleway_image" "image" {
 }
 
 locals {
-    node_name = "${var.prefix}-scaleway-${var.environment}"
+    node_name = "${var.prefix}-${var.environment}"
+    short_name = "${var.uptime_prefix}-${var.environment}"
 }
 
 resource "scaleway_instance_ip" "node_ip" {
@@ -161,6 +162,15 @@ resource "null_resource" "docker" {
 
 resource "azurerm_dns_a_record" "custom_domain_cname" {
   count = var.node_count
+  name                = "api.${element(scaleway_instance_server.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
+}
+
+resource "azurerm_dns_a_record" "ping_omain_cname" {
+  count = var.node_count
   name                = element(scaleway_instance_server.supernode.*.name, count.index)
   zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
@@ -175,6 +185,30 @@ resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
   ttl                 = 300
   records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
 }
+resource "azurerm_dns_a_record" "explorer_custom_domain_cname" {
+  count = var.node_count
+  name                = "mainnet.${element(scaleway_instance_server.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
+}
+resource "azurerm_dns_a_record" "explorer_testnet_custom_domain_cname" {
+  count = var.node_count
+  name                = "testnet.${element(scaleway_instance_server.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
+}
+resource "azurerm_dns_a_record" "bitcore_testnet_custom_domain_cname" {
+  count = var.node_count
+  name                = "bitcore.${element(scaleway_instance_server.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(scaleway_instance_server.supernode.*.public_ip, count.index)]
+}
 
 module "uptime_robot" {
   source = "../uptime"
@@ -182,5 +216,7 @@ module "uptime_robot" {
   count     = var.node_count
   dns_zone  = var.dns_zone
   node_name = element(scaleway_instance_server.supernode.*.name, count.index)
+  node_name_short = local.short_name
+  index = count.index
 
 }

@@ -1,8 +1,7 @@
 
 module "frontdoor" {
   depends_on = [
-    module.chain_scaleway_network_nodes,
-    module.chain_azure_network_nodes
+    local.nodes
   ]
   
   source = "./libs/frontdoor"

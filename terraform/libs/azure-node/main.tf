@@ -1,6 +1,7 @@
 
 locals {
-    node_name = "${var.prefix}-azure-${var.environment}"
+    node_name = "${var.prefix}-${var.environment}"
+    short_name = "${var.uptime_prefix}-${var.environment}"
 }
 
 resource "azurerm_virtual_network" "main" {
@@ -103,7 +104,7 @@ resource "azurerm_public_ip" "node_public_ip" {
     name                         = "${local.node_name}-${count.index}-public-ip"
     location                     = var.location
     resource_group_name          = var.resource_group
-    allocation_method            = "Dynamic"
+    allocation_method            = "Static"
 
     tags = {
         environment = var.environment
@@ -146,7 +147,7 @@ resource "azurerm_linux_virtual_machine" "supernode" {
         name              = "${local.node_name}-${count.index}-disk"
         caching           = "ReadWrite"
         storage_account_type = "Standard_LRS"
-        disk_size_gb = 200
+        disk_size_gb = var.disk_size
     }
 
     source_image_reference {
@@ -275,6 +276,15 @@ resource "null_resource" "docker" {
 
 resource "azurerm_dns_a_record" "custom_domain_cname" {
   count = var.node_count
+  name                = "api.${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
+}
+
+resource "azurerm_dns_a_record" "ping_domain_cname" {
+  count = var.node_count
   name                = element(azurerm_linux_virtual_machine.supernode.*.name, count.index)
   zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
@@ -289,12 +299,38 @@ resource "azurerm_dns_a_record" "traefik_custom_domain_cname" {
   ttl                 = 300
   records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
 }
+resource "azurerm_dns_a_record" "explorer_custom_domain_cname" {
+  count = var.node_count
+  name                = "mainnet.${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
+}
+resource "azurerm_dns_a_record" "explorer_testnet_custom_domain_cname" {
+  count = var.node_count
+  name                = "testnet.${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
+}
+resource "azurerm_dns_a_record" "bitcore_testnet_custom_domain_cname" {
+  count = var.node_count
+  name                = "bitcore.${element(azurerm_linux_virtual_machine.supernode.*.name, count.index)}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  records             = [element(azurerm_linux_virtual_machine.supernode.*.public_ip_address, count.index)]
+}
 
 module "uptime_robot" {
   source = "../uptime"
 
   count     = var.node_count
   dns_zone  = var.dns_zone
-  node_name = element(azurerm_linux_virtual_machine.supernode.*.name, count.index)
+  node_name = element(azurerm_linux_virtual_machine.supernode.*.name, count.index)  
+  node_name_short = local.short_name
+  index = count.index
 
 }

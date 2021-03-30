@@ -6,9 +6,9 @@ data "uptimerobot_alert_contact" "default_alert_contact" {
 }
 
 resource "uptimerobot_monitor" "dfi_mainnet" {
-  friendly_name = "${var.node_name}-mainnet"
+  friendly_name = "${var.node_name_short}-${var.index}-mainnet"
   type          = "http"
-  url           = "https://${var.node_name}.${var.dns_zone}/api/v1/mainnet/DFI/health"
+  url           = "https://api.${var.node_name}.${var.dns_zone}/api/v1/mainnet/DFI/health"
   
   interval      = 60
 
@@ -18,9 +18,9 @@ resource "uptimerobot_monitor" "dfi_mainnet" {
 }
 
 resource "uptimerobot_monitor" "dfi_testnet" {
-  friendly_name = "${var.node_name}-testnet"
+  friendly_name = "${var.node_name_short}-${var.index}-testnet"
   type          = "http"
-  url           = "https://${var.node_name}.${var.dns_zone}/api/v1/testnet/DFI/health"
+  url           = "https://api.${var.node_name}.${var.dns_zone}/api/v1/testnet/DFI/health"
   
   interval      = 60
 
@@ -30,9 +30,9 @@ resource "uptimerobot_monitor" "dfi_testnet" {
 }
 
 resource "uptimerobot_monitor" "vm" {
-  friendly_name = "${var.node_name}-supernode"
+  friendly_name = "${var.node_name_short}-${var.index}-supernode"
   type          = "http"
-  url           = "https://${var.node_name}.${var.dns_zone}/api/v1/health"
+  url           = "https://api.${var.node_name}.${var.dns_zone}/api/v1/health"
   
   interval      = 60
 
@@ -42,7 +42,7 @@ resource "uptimerobot_monitor" "vm" {
 }
 
 resource "uptimerobot_monitor" "ping" {
-  friendly_name = var.node_name
+  friendly_name = "${var.node_name_short}-${var.index}"
   type          = "ping"
   url           = "${var.node_name}.${var.dns_zone}"
   

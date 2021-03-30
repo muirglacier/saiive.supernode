@@ -23,13 +23,15 @@ data "template_file" "cloud_init_azure" {
   }
 }
 
-
-
-module "chain_azure_network_nodes" {
+module "chain_az_network_nodes" {
   source = "./libs/azure-node"
 
   node_count = var.azure_node_count
-  prefix = var.prefix
+  prefix = "az"
+  uptime_prefix = "az"
+
+  disk_size = 1000
+
   environment = var.environment
   location = var.location
   cloud_init = data.template_file.cloud_init_azure.rendered

@@ -1,10 +1,17 @@
 
 data "uptimerobot_account" "account" {}
 
+locals {
+  uptime_robot_name = "DeFiChain Wallet Supernode"
+}
+locals {
+    env_name = var.environment == "prod" ? local.uptime_robot_name :  "${var.environment}-${local.uptime_robot_name}"
+}
+
 resource "uptimerobot_status_page" "defichain_status_page" {
-  friendly_name  = "${var.prefix} DeFiChain Wallet Supernode"
+  friendly_name  = local.env_name
   custom_domain  = "${local.uptime_cname_prefix}stats.defichain-wallet.com"
-  monitors       = concat(module.chain_scaleway_network_nodes.uptime,  module.chain_azure_network_nodes.uptime)
+  monitors       = concat(local.uptime_nodes)
 }
 
 

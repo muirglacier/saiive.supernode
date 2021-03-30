@@ -11,6 +11,9 @@ resource "azurerm_dns_cname_record" "frontdoor_cname" {
 }
 
 resource "azurerm_frontdoor" "frontdoor" {
+  depends_on = [
+    azurerm_dns_cname_record.frontdoor_cname
+  ]
   name                                         ="${var.prefix}-${var.environment}"
   resource_group_name                          = var.resource_group
   enforce_backend_pools_certificate_name_check = true
@@ -104,8 +107,8 @@ resource "azurerm_frontdoor" "frontdoor" {
     dynamic "backend" {
       for_each = var.nodes
       content {
-        address     = "${backend.value}.${var.dns_zone}"
-        host_header = "${backend.value}.${var.dns_zone}"
+        address     = "api.${backend.value}.${var.dns_zone}"
+        host_header = "api.${backend.value}.${var.dns_zone}"
         http_port   = 80
         https_port  = 443
       }
@@ -120,8 +123,8 @@ resource "azurerm_frontdoor" "frontdoor" {
     dynamic "backend" {
       for_each = var.nodes
       content {
-        address     = "${backend.value}.${var.dns_zone}"
-        host_header = "${backend.value}.${var.dns_zone}"
+        address     = "api.${backend.value}.${var.dns_zone}"
+        host_header = "api.${backend.value}.${var.dns_zone}"
         http_port   = 80
         https_port  = 443
       }
@@ -136,8 +139,8 @@ resource "azurerm_frontdoor" "frontdoor" {
     dynamic "backend" {
       for_each = var.nodes
       content {
-        address     = "${backend.value}.${var.dns_zone}"
-        host_header = "${backend.value}.${var.dns_zone}"
+        address     = "api.${backend.value}.${var.dns_zone}"
+        host_header = "api.${backend.value}.${var.dns_zone}"
         http_port   = 80
         https_port  = 443
       }

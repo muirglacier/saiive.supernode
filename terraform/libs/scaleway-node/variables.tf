@@ -7,6 +7,8 @@ variable "cloud_init" {
 
 variable "prefix" {
 }
+variable "uptime_prefix" {
+}
 
 
 variable "server_arch" {

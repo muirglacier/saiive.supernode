@@ -145,11 +145,6 @@ services:
       - default
     ports:
       - 3000:3000
-    healthcheck:
-      test: [ "CMD", "bash", "-c", "curl http://bitcore_node:3000/api/status/enabled-chains"]
-      interval: 3s
-      timeout: 5s
-      retries: 3
     environment:
       - NETWORK=all
       - API_PORT=3000
@@ -159,6 +154,14 @@ services:
       - BITCORE_NODE_FILE_LOG=$${BITCORE_NODE_FILE_LOG:-false}
       - BITCORE_NODE_SENTRY_DNS=$${BITCORE_NODE_SENTRY_DNS:-false}
       - DISABLE_HEALTH_CRON=$${DISABLE_HEALTH_CRON:-false}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.bitcore_node.loadbalancer.server.port=3000"
+      - "traefik.http.routers.bitcore_node.service=bitcore_node"
+      - "traefik.http.routers.bitcore_node.rule=Host(`bitcore.${public_url}`)"
+      - "traefik.http.routers.bitcore_node.entrypoints=websecure"
+      - "traefik.http.routers.bitcore_node.tls=true"
+      - "traefik.http.routers.bitcore_node.tls.certresolver=letsEncryptHttpChallenge"
     volumes:
       - ./bitcore.all.config.json:/usr/src/app/bitcore.config.json
     depends_on:
@@ -182,7 +185,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.super_node.loadbalancer.server.port=5000"
       - "traefik.http.routers.super_node.service=super_node"
-      - "traefik.http.routers.super_node.rule=Host(`${public_url}`)"
+      - "traefik.http.routers.super_node.rule=Host(`api.${public_url}`)"
       - "traefik.http.routers.super_node.entrypoints=websecure"
       - "traefik.http.routers.super_node.tls=true"
       - "traefik.http.routers.super_node.tls.certresolver=letsEncryptHttpChallenge"
@@ -191,6 +194,63 @@ services:
       - 5000:5000
     depends_on:
       - bitcore_node
+
+  insight_testnet:
+    image: defiwallet.azurecr.io/bitcorenode:latest
+    command: ['npm', 'run', 'insight-previous:prod']
+    networks:
+      - default
+    ports:
+      - 6000:5000
+    environment:
+      - NETWORK=testnet
+      - ENV=prod
+      - CHAIN=DFI
+      - BITCORE_CONFIG_PATH=bitcore.config.json
+      - API_PREFIX=https://bitcore.${public_url}/api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.insight_testnet.loadbalancer.server.port=5000"
+      - "traefik.http.routers.insight_testnet.service=insight_testnet"
+      - "traefik.http.routers.insight_testnet.rule=Host(`testnet.${public_url}`)"
+      - "traefik.http.routers.insight_testnet.entrypoints=websecure"
+      - "traefik.http.routers.insight_testnet.tls=true"
+      - "traefik.http.routers.insight_testnet.tls.certresolver=letsEncryptHttpChallenge"
+      - "traefik.http.middlewares.testHeader.headers.customrequestheaders.X-DEFI-WORKER=${machine_name}"
+    volumes:
+      - ./bitcore.all.config.json:/usr/src/app/bitcore.config.json
+    depends_on:
+      - bitcore_node
+    restart: unless-stopped
+
+
+  insight_mainnet:
+    image: defiwallet.azurecr.io/bitcorenode:latest
+    command: ['npm', 'run', 'insight-previous:prod']
+    networks:
+      - default
+    ports:
+      - 6001:5000
+    environment:
+      - NETWORK=mainnet
+      - ENV=prod
+      - CHAIN=DFI
+      - BITCORE_CONFIG_PATH=bitcore.config.json
+      - API_PREFIX=https://bitcore.${public_url}/api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.insight_mainnet.loadbalancer.server.port=5000"
+      - "traefik.http.routers.insight_mainnet.service=insight_mainnet"
+      - "traefik.http.routers.insight_mainnet.rule=Host(`mainnet.${public_url}`)"
+      - "traefik.http.routers.insight_mainnet.entrypoints=websecure"
+      - "traefik.http.routers.insight_mainnet.tls=true"
+      - "traefik.http.routers.insight_mainnet.tls.certresolver=letsEncryptHttpChallenge"
+      - "traefik.http.middlewares.testHeader.headers.customrequestheaders.X-DEFI-WORKER=${machine_name}"
+    volumes:
+      - ./bitcore.all.config.json:/usr/src/app/bitcore.config.json
+    depends_on:
+      - bitcore_node
+    restart: unless-stopped
 
   ouroboros:
     container_name: ouroboros
