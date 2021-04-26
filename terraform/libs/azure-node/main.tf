@@ -175,6 +175,10 @@ resource "azurerm_linux_virtual_machine" "supernode" {
         private_key = var.ssh_key
     }
 
+    lifecycle {
+      ignore_changes = [custom_data]
+    }
+
     provisioner "remote-exec" {
      inline = [
       "mkdir ~/node",
