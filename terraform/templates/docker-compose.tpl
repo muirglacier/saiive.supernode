@@ -102,6 +102,7 @@ services:
     command:
       defid
       -acindex
+      -txindex
       -printtoconsole
 
     networks:
@@ -109,7 +110,9 @@ services:
     environment:
       - NETWORK=testnet
     volumes:
-      - node_data_testnet:/data
+      - type: ${volume_type}
+        source: ${volume_testnet}
+        target: /data
       - ./testnet/defi.testnet.conf:/data/defi.conf
     restart: unless-stopped
     ports:
@@ -123,6 +126,7 @@ services:
     command:
       defid
       -acindex
+      -txindex
       -printtoconsole
 
     networks:
@@ -130,7 +134,9 @@ services:
     environment:
       - NETWORK=mainnet
     volumes:
-      - node_data_mainnet:/data
+      - type: ${volume_type}
+        source: ${volume_mainnet}
+        target: /data
       - ./mainnet/defi.mainnet.conf:/data/defi.conf
     restart: unless-stopped
     ports:

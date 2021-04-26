@@ -68,6 +68,30 @@ resource "azurerm_frontdoor" "frontdoor" {
   }
 
   routing_rule {
+    name               = "${var.prefix}-${var.environment}-explorer-mainnet"
+    accepted_protocols = ["Https"]
+    patterns_to_match  = ["/explorer/*"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
+    forwarding_configuration {
+      forwarding_protocol = "HttpsOnly"
+      backend_pool_name   = "${var.prefix}-${var.environment}-explorer-mainnet"
+    }
+  }
+
+  routing_rule {
+    name               = "${var.prefix}-${var.environment}-explorer-testnet"
+    accepted_protocols = ["Https"]
+    patterns_to_match  = ["/testnet/*"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
+    forwarding_configuration {
+      forwarding_protocol = "HttpsOnly"
+      backend_pool_name   = "${var.prefix}-${var.environment}-explorer-testnet"
+    }
+  }
+
+  routing_rule {
     name               = "${var.prefix}-${var.environment}-be-default"
     accepted_protocols = ["Https"]
     patterns_to_match  = ["/*"]
@@ -78,6 +102,7 @@ resource "azurerm_frontdoor" "frontdoor" {
       backend_pool_name   = "${var.prefix}-${var.environment}-backend"
     }
   }
+
 
   backend_pool_load_balancing {
     name = "${var.prefix}-${var.environment}-lb"
@@ -99,6 +124,20 @@ resource "azurerm_frontdoor" "frontdoor" {
     name = "${var.prefix}-${var.environment}-health-dfi-testnet"
     path = "/api/v1/testnet/DFI/health"
     protocol = "Https"
+  }
+
+  backend_pool_health_probe {
+    name = "${var.prefix}-${var.environment}-health-explorer-mainnet"
+    path = "/"
+    protocol = "Https"
+    probe_method = "HEAD"
+  }
+
+  backend_pool_health_probe {
+    name = "${var.prefix}-${var.environment}-health-explorer-testnet"
+    path = "/"
+    protocol = "Https"
+    probe_method = "HEAD"
   }
 
   backend_pool {
@@ -147,6 +186,38 @@ resource "azurerm_frontdoor" "frontdoor" {
     } 
     load_balancing_name =  "${var.prefix}-${var.environment}-lb"
     health_probe_name   =  "${var.prefix}-${var.environment}-health-dfi-testnet"
+  }
+
+  backend_pool {
+    name = "${var.prefix}-${var.environment}-explorer-mainnet"
+    
+    dynamic "backend" {
+      for_each = var.nodes
+      content {
+        address     = "mainnet.${backend.value}.${var.dns_zone}"
+        host_header = "mainnet.${backend.value}.${var.dns_zone}"
+        http_port   = 80
+        https_port  = 443
+      }
+    } 
+    load_balancing_name =  "${var.prefix}-${var.environment}-lb"
+    health_probe_name   =  "${var.prefix}-${var.environment}-health-explorer-mainnet"
+  }
+
+  backend_pool {
+    name = "${var.prefix}-${var.environment}-explorer-testnet"
+    
+    dynamic "backend" {
+      for_each = var.nodes
+      content {
+        address     = "testnet.${backend.value}.${var.dns_zone}"
+        host_header = "testnet.${backend.value}.${var.dns_zone}"
+        http_port   = 80
+        https_port  = 443
+      }
+    } 
+    load_balancing_name =  "${var.prefix}-${var.environment}-lb"
+    health_probe_name   =  "${var.prefix}-${var.environment}-health-explorer-testnet"
   }
 
   frontend_endpoint {

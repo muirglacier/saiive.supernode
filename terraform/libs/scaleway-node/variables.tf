@@ -16,7 +16,7 @@ variable "server_arch" {
 }
 
 variable "server_image" {
-  default = "Ubuntu Bionic"
+  default = "ubuntu_focal"
 }
 
 variable "server_type" {

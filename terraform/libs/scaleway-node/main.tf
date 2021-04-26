@@ -1,8 +1,3 @@
-data "scaleway_image" "image" {
-  architecture = var.server_arch
-  name         = var.server_image
-  most_recent = true
-}
 
 locals {
     node_name = "${var.prefix}-${var.environment}"
@@ -49,18 +44,36 @@ resource "scaleway_instance_security_group" "node" {
   }
 }
 
+resource "scaleway_instance_volume" "main" {
+    count = var.node_count
+    type       = "b_ssd"
+    name       = "${local.node_name}-${count.index}-vol-mainnet"
+    size_in_gb = 400
+}
+resource "scaleway_instance_volume" "test" {
+    count = var.node_count
+    type       = "b_ssd"
+    name       = "${local.node_name}-${count.index}-vol-testnet"
+    size_in_gb = 800
+}
+
 resource "scaleway_instance_server" "supernode" {
   count = var.node_count
   name = "${local.node_name}-${count.index}"
   depends_on = [scaleway_instance_ip.node_ip]
 
-  image               = data.scaleway_image.image.id
+  image               = var.server_image
   type                = var.server_type
   enable_dynamic_ip   = true
   ip_id = element(scaleway_instance_ip.node_ip.*.id, count.index)
   security_group_id = scaleway_instance_security_group.node.id
-  # initialization sequence
-  cloud_init = var.cloud_init
+
+  cloud_init  = var.cloud_init
+
+  root_volume {
+    delete_on_termination = false
+    size_in_gb = 120
+  }
 
   connection {
     host = self.public_ip
@@ -75,6 +88,12 @@ resource "scaleway_instance_server" "supernode" {
       "mkdir ~/node/testnet"
     ]
   }
+
+  
+  additional_volume_ids = [ 
+    element(scaleway_instance_volume.main.*.id, count.index),
+    element(scaleway_instance_volume.test.*.id, count.index) 
+  ]
 
   provisioner "file" {
     content = element(data.template_file.docker_compose.*.rendered, count.index)
@@ -111,6 +130,8 @@ resource "scaleway_instance_server" "supernode" {
     ]
   }
 }
+
+
 
 resource "null_resource" "docker" {
   count = var.node_count

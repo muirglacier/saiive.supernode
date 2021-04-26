@@ -22,6 +22,9 @@ data "template_file" "docker_compose" {
     repo_pass                   = var.docker_password
     application_insights_ikey   = var.application_insights_ikey
     machine_name                = local.node_name
+    volume_testnet              = "node_data_testnet"
+    volume_mainnet              = "node_data_mainnet"
+    volume_type                 = "volume"
   }
 }
 
