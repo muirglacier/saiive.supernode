@@ -4,7 +4,7 @@ locals {
     short_name = "${var.uptime_prefix}-${var.environment}"
 }
 
-resource "scaleway_instance_ip" "node_ip" {
+resource "scaleway_instance_ip" "node_ip_address" {
   count = var.node_count
 }
 
@@ -60,12 +60,12 @@ resource "scaleway_instance_volume" "test" {
 resource "scaleway_instance_server" "supernode" {
   count = var.node_count
   name = "${local.node_name}-${count.index}"
-  depends_on = [scaleway_instance_ip.node_ip]
+  depends_on = [scaleway_instance_ip.node_ip_address]
 
   image               = var.server_image
   type                = var.server_type
   enable_dynamic_ip   = true
-  ip_id = element(scaleway_instance_ip.node_ip.*.id, count.index)
+  ip_id = element(scaleway_instance_ip.node_ip_address.*.id, count.index)
   security_group_id = scaleway_instance_security_group.node.id
 
   cloud_init  = var.cloud_init
