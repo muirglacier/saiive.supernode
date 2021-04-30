@@ -14,7 +14,7 @@ resource "random_password" "wallet_password" {
 
 data "template_file" "docker_compose" {
   count = var.node_count
-  template   = file("${path.root}/templates/docker-compose.tpl")
+  template   = file("${path.root}/templates/${var.node_type}/docker-compose.tpl")
 
   vars = {
     public_url                  = "${local.node_name}-${count.index}.${var.dns_zone}"
@@ -25,13 +25,17 @@ data "template_file" "docker_compose" {
     volume_testnet              = "node_data_testnet"
     volume_mainnet              = "node_data_mainnet"
     volume_type                 = "volume"
+
+    data_dir                    = var.docker_node_data_dir
+    config_dir                  = var.docker_node_config_dir
+    node_prefix                 = var.node_prefix
   }
 }
 
 
 data "template_file" "bitcore_all" {
   count = var.node_count
-  template   = file("${path.root}/templates/bitcore.all.config.tpl")
+  template   = file("${path.root}/templates/${var.node_type}/bitcore.all.config.tpl")
 
   vars = {
     wallet_user          = element(random_string.wallet_user.*.result, count.index)
@@ -39,36 +43,18 @@ data "template_file" "bitcore_all" {
   }
 }
 
-data "template_file" "bitcore_mainnnet" {
+data "template_file" "node_mainnnet" {
   count = var.node_count
-  template   = file("${path.root}/templates/bitcore.mainnet.config.tpl")
+  template   = file("${path.root}/templates/${var.node_type}/node.mainnet.tpl")
 
   vars = {
     wallet_user          = element(random_string.wallet_user.*.result, count.index)
     wallet_password      = element(random_password.wallet_password.*.result, count.index)
   }
 }
-data "template_file" "bitcore_testnet" {
+data "template_file" "node_testnet" {
   count = var.node_count
-  template   = file("${path.root}/templates/bitcore.testnet.config.tpl")
-
-  vars = {
-    wallet_user          = element(random_string.wallet_user.*.result, count.index)
-    wallet_password      = element(random_password.wallet_password.*.result, count.index)
-  }
-}
-data "template_file" "defi_mainnnet" {
-  count = var.node_count
-  template   = file("${path.root}/templates/defi.mainnet.tpl")
-
-  vars = {
-    wallet_user          = element(random_string.wallet_user.*.result, count.index)
-    wallet_password      = element(random_password.wallet_password.*.result, count.index)
-  }
-}
-data "template_file" "defi_testnet" {
-  count = var.node_count
-  template   = file("${path.root}/templates/defi.testnet.tpl")
+  template   = file("${path.root}/templates/${var.node_type}/node.testnet.tpl")
 
   vars = {
     wallet_user          = element(random_string.wallet_user.*.result, count.index)

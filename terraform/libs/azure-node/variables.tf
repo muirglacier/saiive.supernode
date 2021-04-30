@@ -11,6 +11,23 @@ variable "cloud_init" {
 
 variable "prefix" {
 }
+variable "node_type" {
+  default = "dfi"
+}
+variable "node_prefix" {
+  default = "defi"
+}
+variable "node_chain" {
+  default = "DFI"
+}
+
+variable "docker_node_config_dir" {
+  default = "/data"
+}
+variable "docker_node_data_dir" {
+  default = "/data"
+}
+
 variable "uptime_prefix" {
 }
 

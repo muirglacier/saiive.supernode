@@ -112,8 +112,8 @@ services:
     volumes:
       - type: ${volume_type}
         source: ${volume_testnet}
-        target: /data
-      - ./testnet/defi.testnet.conf:/data/defi.conf
+        target: ${data_dir}
+      - ./testnet/${node_prefix}.testnet.conf:${config_dir}/${node_prefix}.conf
     restart: unless-stopped
     ports:
       - 18555:18555
@@ -136,8 +136,8 @@ services:
     volumes:
       - type: ${volume_type}
         source: ${volume_mainnet}
-        target: /data
-      - ./mainnet/defi.mainnet.conf:/data/defi.conf
+        target: ${data_dir}
+      - ./testnet/${node_prefix}.testnet.conf:${config_dir}/${node_prefix}.conf
     restart: unless-stopped
     ports:
       - 8555:8555
@@ -187,6 +187,8 @@ services:
       - COINGECKO_API_URL=https://api.coingecko.com/api/v3
       - APPINSIGHTS_INSTRUMENTATIONKEY=${application_insights_ikey}
       - MACHINE_NAME=${machine_name}
+      - BITCOIN=false
+      - DEFICHAIN=true
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.super_node.loadbalancer.server.port=5000"

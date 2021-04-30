@@ -191,11 +191,6 @@ resource "azurerm_linux_virtual_machine" "supernode" {
     content = element(data.template_file.docker_compose.*.rendered, count.index)
     destination = "~/node/docker-compose.yml"
   }
-
-  provisioner "file" {
-    content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
-    destination = "~/node/mainnet/bitcore.mainnet.config.json"
-  }
   
   provisioner "file" {
     content = element(data.template_file.bitcore_all.*.rendered, count.index)
@@ -203,16 +198,12 @@ resource "azurerm_linux_virtual_machine" "supernode" {
   }
 
   provisioner "file" {
-    content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
-    destination = "~/node/testnet/bitcore.testnet.config.json"
+    content = element(data.template_file.node_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/${var.node_prefix}.mainnet.conf"
   }
   provisioner "file" {
-    content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
-    destination = "~/node/mainnet/defi.mainnet.conf"
-  }
-  provisioner "file" {
-    content = element(data.template_file.defi_testnet.*.rendered, count.index)
-    destination = "~/node/testnet/defi.testnet.conf"
+    content = element(data.template_file.node_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/${var.node_prefix}.testnet.conf"
   }
 
   provisioner "remote-exec" {
@@ -243,11 +234,6 @@ resource "null_resource" "docker" {
     content = element(data.template_file.docker_compose.*.rendered, count.index)
     destination = "~/node/docker-compose.yml"
   }
-
-  provisioner "file" {
-    content = element(data.template_file.bitcore_mainnnet.*.rendered, count.index)
-    destination = "~/node/mainnet/bitcore.mainnet.config.json"
-  }
   
   provisioner "file" {
     content = element(data.template_file.bitcore_all.*.rendered, count.index)
@@ -255,16 +241,12 @@ resource "null_resource" "docker" {
   }
 
   provisioner "file" {
-    content = element(data.template_file.bitcore_testnet.*.rendered, count.index)
-    destination = "~/node/testnet/bitcore.testnet.config.json"
+    content = element(data.template_file.node_mainnnet.*.rendered, count.index)
+    destination = "~/node/mainnet/${var.node_prefix}.mainnet.conf"
   }
   provisioner "file" {
-    content = element(data.template_file.defi_mainnnet.*.rendered, count.index)
-    destination = "~/node/mainnet/defi.mainnet.conf"
-  }
-  provisioner "file" {
-    content = element(data.template_file.defi_testnet.*.rendered, count.index)
-    destination = "~/node/testnet/defi.testnet.conf"
+    content = element(data.template_file.node_testnet.*.rendered, count.index)
+    destination = "~/node/testnet/${var.node_prefix}.testnet.conf"
   }
 
   provisioner "remote-exec" {
@@ -337,4 +319,5 @@ module "uptime_robot" {
   node_name_short = local.short_name
   index = count.index
 
+  node_chain = var.node_chain
 }
