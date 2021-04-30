@@ -26,3 +26,9 @@ variable "dns_zone_resource_group" {
 variable "nodes" {
     
 }
+variable "bitcoin_nodes" {
+    
+}
+variable "dfi_nodes" {
+    
+}

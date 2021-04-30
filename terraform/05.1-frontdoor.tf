@@ -16,6 +16,8 @@ module "frontdoor" {
   dns_zone_resource_group = var.dns_zone_resource_group
 
   nodes = local.nodes
+  bitcoin_nodes = local.bitcoin_nodes
+  dfi_nodes = local.dfi_nodes
 }
 
 
