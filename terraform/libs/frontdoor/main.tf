@@ -34,7 +34,7 @@ resource "azurerm_frontdoor" "frontdoor" {
   routing_rule {
     name               = "${var.prefix}-${var.environment}-be-dfi-mainnet-route"
     accepted_protocols = ["Https"]
-    patterns_to_match  = ["/api/v1//mainnet/DFI/*"]
+    patterns_to_match  = ["/api/v1/mainnet/DFI/*"]
     frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
     
     forwarding_configuration {
@@ -91,17 +91,17 @@ resource "azurerm_frontdoor" "frontdoor" {
     }
   }
 
-  routing_rule {
-    name               = "${var.prefix}-${var.environment}-be-default"
-    accepted_protocols = ["Https"]
-    patterns_to_match  = ["/*"]
-    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+  # routing_rule {
+  #   name               = "${var.prefix}-${var.environment}-be-default"
+  #   accepted_protocols = ["Https"]
+  #   patterns_to_match  = ["/*"]
+  #   frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
     
-    forwarding_configuration {
-      forwarding_protocol = "HttpsOnly"
-      backend_pool_name   = "${var.prefix}-${var.environment}-backend"
-    }
-  }
+  #   forwarding_configuration {
+  #     forwarding_protocol = "HttpsOnly"
+  #     backend_pool_name   = "${var.prefix}-${var.environment}-backend"
+  #   }
+  # }
 
 
   backend_pool_load_balancing {
@@ -112,18 +112,21 @@ resource "azurerm_frontdoor" "frontdoor" {
     name = "${var.prefix}-${var.environment}-health"
     path = "/api/v1/health"
     protocol = "Https"
+    probe_method = "GET"
   }
 
   backend_pool_health_probe {
     name = "${var.prefix}-${var.environment}-health-dfi-mainnet"
     path = "/api/v1/mainnet/DFI/health"
     protocol = "Https"
+    probe_method = "GET"
   }
 
   backend_pool_health_probe {
     name = "${var.prefix}-${var.environment}-health-dfi-testnet"
     path = "/api/v1/testnet/DFI/health"
     protocol = "Https"
+    probe_method = "GET"
   }
 
   backend_pool_health_probe {
