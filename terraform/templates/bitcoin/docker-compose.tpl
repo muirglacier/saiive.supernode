@@ -94,7 +94,9 @@ services:
     expose:
       - 27017
     volumes:
-      - db_data:/data/db
+      - type: ${volume_type}
+        source: ${volume_db}
+        target: ${db_dir}
     restart: unless-stopped
 
   bitcoin_testnet:
@@ -102,6 +104,7 @@ services:
     command:
       -txindex
       -printtoconsole
+      -conf=${config_dir}/${node_prefix}.conf
     networks:
       - default
     environment:
@@ -113,16 +116,15 @@ services:
       - ./testnet/${node_prefix}.testnet.conf:${config_dir}/${node_prefix}.conf
     restart: unless-stopped
     ports:
-      - 18555:18555
-      - 18554:18554
-      - 19555:19555
-      - 19554:19554
+      - 18333:18333
+      - 18334:18334
 
   bitcoin_mainnet:
     image: kylemanna/bitcoind:latest
     command:
       -txindex
       -printtoconsole
+      -conf=${config_dir}/${node_prefix}.conf
 
     networks:
       - default
@@ -135,8 +137,8 @@ services:
       - ./mainnet/${node_prefix}.mainnet.conf:${config_dir}/${node_prefix}.conf
     restart: unless-stopped
     ports:
-      - 8555:8555
-      - 8554:8554
+      - 8333:8333
+      - 8334:8334
 
   bitcore_node:
     container_name: bitcore_node

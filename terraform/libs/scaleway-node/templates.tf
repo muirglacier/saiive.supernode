@@ -24,10 +24,12 @@ data "template_file" "docker_compose" {
     machine_name                = local.node_name
     volume_testnet              = "/mnt/block/testnet"
     volume_mainnet              = "/mnt/block/mainnet"
+    volume_db                   = "/mnt/block/db"
     volume_type                 = "bind"
     
     data_dir                    = var.docker_node_data_dir
     config_dir                  = var.docker_node_config_dir
+    db_dir                      = var.docker_db_dir
     node_prefix                 = var.node_prefix
   }
 }
@@ -50,6 +52,7 @@ data "template_file" "node_mainnnet" {
   vars = {
     wallet_user          = element(random_string.wallet_user.*.result, count.index)
     wallet_password      = element(random_password.wallet_password.*.result, count.index)
+    chain_dir            = var.docker_node_data_dir
   }
 }
 data "template_file" "node_testnet" {
@@ -59,5 +62,6 @@ data "template_file" "node_testnet" {
   vars = {
     wallet_user          = element(random_string.wallet_user.*.result, count.index)
     wallet_password      = element(random_password.wallet_password.*.result, count.index)
+    chain_dir            = var.docker_node_data_dir
   }
 }

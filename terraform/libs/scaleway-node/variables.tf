@@ -18,10 +18,13 @@ variable "node_prefix" {
   default = "defi"
 }
 variable "docker_node_config_dir" {
-  default = "/data"
+  default = "/data/config"
 }
 variable "docker_node_data_dir" {
-  default = "/data"
+  default = "/data/chain"
+}
+variable "docker_db_dir" {
+  default = "/data/db"
 }
 
 variable "uptime_prefix" {

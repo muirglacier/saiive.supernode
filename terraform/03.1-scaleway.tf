@@ -53,8 +53,8 @@ module "chain_btc_scw_network_nodes" {
   node_type = "bitcoin"
   node_prefix = "bitcoin"
   node_chain = "bitcoin"
-  docker_node_config_dir = "/bitcoin/.bitcoin"
-  docker_node_data_dir = "/bitcoin/.bitcoin"
+  docker_node_config_dir = "/bitcoin/.bitcoin/config"
+  docker_node_data_dir = "/bitcoin/.bitcoin/chain"
 
   environment = var.environment
   cloud_init = data.template_file.cloud_init_scaleway.rendered

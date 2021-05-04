@@ -28,6 +28,10 @@ variable "docker_node_data_dir" {
   default = "/data"
 }
 
+variable "docker_db_dir" {
+  default = "/data/db"
+}
+
 variable "uptime_prefix" {
 }
 

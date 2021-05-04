@@ -56,6 +56,12 @@ resource "scaleway_instance_volume" "test" {
     name       = "${local.node_name}-${count.index}-vol-testnet"
     size_in_gb = 800
 }
+resource "scaleway_instance_volume" "db" {
+    count = var.node_count
+    type       = "b_ssd"
+    name       = "${local.node_name}-${count.index}-vol-db"
+    size_in_gb = 600
+}
 
 resource "scaleway_instance_server" "supernode" {
   count = var.node_count
@@ -92,7 +98,8 @@ resource "scaleway_instance_server" "supernode" {
   
   additional_volume_ids = [ 
     element(scaleway_instance_volume.main.*.id, count.index),
-    element(scaleway_instance_volume.test.*.id, count.index) 
+    element(scaleway_instance_volume.test.*.id, count.index), 
+    element(scaleway_instance_volume.db.*.id, count.index) 
   ]
 
   provisioner "file" {

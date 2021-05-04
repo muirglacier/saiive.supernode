@@ -94,7 +94,9 @@ services:
     expose:
       - 27017
     volumes:
-      - db_data:/data/db
+      - type: ${volume_type}
+        source: ${volume_db}
+        target: ${db_dir}
     restart: unless-stopped
 
   defichain_testnet:
@@ -104,6 +106,7 @@ services:
       -acindex
       -txindex
       -printtoconsole
+      -conf=${config_dir}/${node_prefix}.conf
 
     networks:
       - default
@@ -128,6 +131,7 @@ services:
       -acindex
       -txindex
       -printtoconsole
+      -conf=${config_dir}/${node_prefix}.conf
 
     networks:
       - default
@@ -137,7 +141,7 @@ services:
       - type: ${volume_type}
         source: ${volume_mainnet}
         target: ${data_dir}
-      - ./testnet/${node_prefix}.testnet.conf:${config_dir}/${node_prefix}.conf
+      - ./mainnet/${node_prefix}.mainnet.conf:${config_dir}/${node_prefix}.conf
     restart: unless-stopped
     ports:
       - 8555:8555

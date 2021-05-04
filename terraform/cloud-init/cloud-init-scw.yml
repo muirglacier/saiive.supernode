@@ -20,13 +20,17 @@ runcmd:
   - echo "----scaleway---"
   - mkfs.ext4 /dev/sda
   - mkfs.ext4 /dev/sdb
+  - mkfs.ext4 /dev/sdc
   - mkdir /mnt/block
   - mkdir /mnt/block/mainnet
   - mkdir /mnt/block/testnet
+  - mkdir /mnt/block/db
   - echo '/dev/sdb /mnt/block/mainnet ext4 defaults 0 0' >> /etc/fstab
   - echo '/dev/sda /mnt/block/testnet ext4 defaults 0 0' >> /etc/fstab
+  - echo '/dev/sdc /mnt/block/testnet ext4 defaults 0 0' >> /etc/fstab
   - mount -o defaults /dev/sdb /mnt/block/mainnet
   - mount -o defaults /dev/sda /mnt/block/testnet
+  - mount -o defaults /dev/sdc /mnt/block/db
   - chmod 777 -R /mnt/block
 
   - docker login ${docker_registry} --username ${docker_registry_username} --password ${docker_registry_password}

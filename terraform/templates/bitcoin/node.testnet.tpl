@@ -7,3 +7,4 @@ rpcbind=0.0.0.0
 
 rpcuser=${wallet_user}
 rpcpassword=${wallet_password}
+datadir=${chain_dir}

@@ -10,6 +10,22 @@ resource "azurerm_dns_cname_record" "frontdoor_cname" {
   record              = "${var.prefix}-${var.environment}.azurefd.net"
 }
 
+resource "azurerm_dns_cname_record" "frontdoor_cname_explorer_testnet" {
+  name                = "testnet-${local.cname}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  record              = "${var.prefix}-${var.environment}.azurefd.net"
+}
+resource "azurerm_dns_cname_record" "frontdoor_cname_explorer_mainnet" {
+  name                = "mainnet-${local.cname}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  record              = "${var.prefix}-${var.environment}.azurefd.net"
+}
+
+
 resource "azurerm_frontdoor" "frontdoor" {
   depends_on = [
     azurerm_dns_cname_record.frontdoor_cname
@@ -23,7 +39,7 @@ resource "azurerm_frontdoor" "frontdoor" {
     name               = "${var.prefix}-${var.environment}-http-https"
     accepted_protocols = ["Http"]
     patterns_to_match  = ["/*"]
-    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend", "${var.prefix}-${var.environment}-frontend-mainnet-explorer", "${var.prefix}-${var.environment}-frontend-testnet-explorer"]
     
     redirect_configuration {
       redirect_protocol = "HttpsOnly"
@@ -95,11 +111,12 @@ resource "azurerm_frontdoor" "frontdoor" {
     name               = "${var.prefix}-${var.environment}-explorer-mainnet"
     accepted_protocols = ["Https"]
     patterns_to_match  = ["/explorer/*"]
-    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend", "${var.prefix}-${var.environment}-frontend-mainnet-explorer"]
     
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "${var.prefix}-${var.environment}-explorer-mainnet"
+      custom_forwarding_path = "/"
     }
   }
 
@@ -107,11 +124,37 @@ resource "azurerm_frontdoor" "frontdoor" {
     name               = "${var.prefix}-${var.environment}-explorer-testnet"
     accepted_protocols = ["Https"]
     patterns_to_match  = ["/testnet/*"]
-    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend", "${var.prefix}-${var.environment}-frontend-testnet-explorer"]
     
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "${var.prefix}-${var.environment}-explorer-testnet"
+      custom_forwarding_path = "/"
+    }
+  }
+  
+  routing_rule {
+    name               = "${var.prefix}-${var.environment}-bitcore-dfi"
+    accepted_protocols = ["Https"]
+    patterns_to_match  = ["/bitcore/dfi/*"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
+    forwarding_configuration {
+      forwarding_protocol = "HttpsOnly"
+      backend_pool_name   = "${var.prefix}-${var.environment}-dfi-bitcore"
+      custom_forwarding_path = "/"
+    }
+  }
+  routing_rule {
+    name               = "${var.prefix}-${var.environment}-bitcore-bitcoin"
+    accepted_protocols = ["Https"]
+    patterns_to_match  = ["/bitcore/bitcoin/*"]
+    frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
+    
+    forwarding_configuration {
+      forwarding_protocol = "HttpsOnly"
+      backend_pool_name   = "${var.prefix}-${var.environment}-bitcoin-bitcore"
+      custom_forwarding_path = "/"
     }
   }
 
@@ -153,7 +196,7 @@ resource "azurerm_frontdoor" "frontdoor" {
     probe_method = "GET"
   }
 
-    backend_pool_health_probe {
+  backend_pool_health_probe {
     name = "${var.prefix}-${var.environment}-health-bitcoin-mainnet"
     path = "/api/v1/mainnet/bitcoin/health"
     protocol = "Https"
@@ -179,6 +222,18 @@ resource "azurerm_frontdoor" "frontdoor" {
     path = "/"
     protocol = "Https"
     probe_method = "GET"
+  }
+  backend_pool_health_probe {
+    name = "${var.prefix}-${var.environment}-health-bitcoin-bitcore"
+    path = "/"
+    protocol = "Https"
+    probe_method = "HEAD"
+  }
+  backend_pool_health_probe {
+    name = "${var.prefix}-${var.environment}-health-dfi-bitcore"
+    path = "/"
+    protocol = "Https"
+    probe_method = "HEAD"
   }
 
   backend_pool {
@@ -292,10 +347,56 @@ resource "azurerm_frontdoor" "frontdoor" {
     load_balancing_name =  "${var.prefix}-${var.environment}-lb"
     health_probe_name   =  "${var.prefix}-${var.environment}-health-explorer-testnet"
   }
+  backend_pool {
+    name = "${var.prefix}-${var.environment}-dfi-bitcore"
+    
+    dynamic "backend" {
+      for_each = var.dfi_nodes
+      content {
+        address     = "bitcore.${backend.value}.${var.dns_zone}"
+        host_header = "bitcore.${backend.value}.${var.dns_zone}"
+        http_port   = 80
+        https_port  = 443
+      }
+    } 
+    load_balancing_name =  "${var.prefix}-${var.environment}-lb"
+    health_probe_name   =  "${var.prefix}-${var.environment}-health-dfi-bitcore"
+  }
+  backend_pool {
+    name = "${var.prefix}-${var.environment}-bitcoin-bitcore"
+    
+    dynamic "backend" {
+      for_each = var.dfi_nodes
+      content {
+        address     = "bitcore.${backend.value}.${var.dns_zone}"
+        host_header = "bitcore.${backend.value}.${var.dns_zone}"
+        http_port   = 80
+        https_port  = 443
+      }
+    } 
+    load_balancing_name =  "${var.prefix}-${var.environment}-lb"
+    health_probe_name   =  "${var.prefix}-${var.environment}-health-bitcoin-bitcore"
+  }
 
   frontend_endpoint {
     name                              = "${var.prefix}-${var.environment}-frontend"
     host_name                         = "${local.cname}.${var.dns_zone}"
+    custom_https_provisioning_enabled = true
+    custom_https_configuration {
+      certificate_source                         = "FrontDoor"
+    }
+  }
+  frontend_endpoint {
+    name                              = "${var.prefix}-${var.environment}-frontend-testnet-explorer"
+    host_name                         = "testnet-${local.cname}.${var.dns_zone}"
+    custom_https_provisioning_enabled = true
+    custom_https_configuration {
+      certificate_source                         = "FrontDoor"
+    }
+  }
+  frontend_endpoint {
+    name                              = "${var.prefix}-${var.environment}-frontend-mainnet-explorer"
+    host_name                         = "mainnet-${local.cname}.${var.dns_zone}"
     custom_https_provisioning_enabled = true
     custom_https_configuration {
       certificate_source                         = "FrontDoor"

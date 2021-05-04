@@ -13,13 +13,13 @@
           "chainSource": "p2p",
           "trustedPeers": [
             {
-              "host": "btc_mainnet",
-              "port": 8555
+              "host": "bitcoin_mainnet",
+              "port": 8333
             }
           ],
           "rpc": {
-            "host": "btc_mainnet",
-            "port": 8554,
+            "host": "bitcoin_mainnet",
+            "port": 8334,
             "username": "${wallet_user}",
             "password": "${wallet_password}"
           }
@@ -28,13 +28,13 @@
           "chainSource": "p2p",
           "trustedPeers": [
             {
-              "host": "btc_testnet",
-              "port": 18555
+              "host": "bitcoin_testnet",
+              "port": 18333
             }
           ],
           "rpc": {
-            "host": "btc_testnet",
-            "port": 18554,
+            "host": "bitcoin_testnet",
+            "port": 18334,
             "username": "${wallet_user}",
             "password": "${wallet_password}"
           }
