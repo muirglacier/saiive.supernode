@@ -52,7 +52,7 @@ module "chain_btc_scw_network_nodes" {
 
   node_type = "bitcoin"
   node_prefix = "bitcoin"
-  node_chain = "bitcoin"
+  node_chain = "BTC"
   docker_node_config_dir = "/bitcoin/.bitcoin/config"
   docker_node_data_dir = "/bitcoin/.bitcoin/chain"
 
