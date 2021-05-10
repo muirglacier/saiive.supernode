@@ -32,6 +32,7 @@ namespace saiive.defi.api.Controllers
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
 
+            var data = await response.Content.ReadAsStringAsync();
             try
             {
                 response.EnsureSuccessStatusCode();
@@ -41,7 +42,6 @@ namespace saiive.defi.api.Controllers
                     throw new ArgumentException("Node is not synced or running...");
                 }
 
-                var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<BlockModel>(data);
 
@@ -62,7 +62,7 @@ namespace saiive.defi.api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError($"{e}");
+                Logger.LogError($"{data}\n{e}", e);
                 return BadRequest(new ErrorModel(e.Message));
             }
         }
