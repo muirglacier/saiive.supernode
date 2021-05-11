@@ -9,6 +9,7 @@ resource "scaleway_instance_ip" "node_ip_address" {
 }
 
 resource "scaleway_instance_security_group" "node" {
+  count = var.node_count > 0 ? 1 : 0
   inbound_default_policy  = "drop"
   outbound_default_policy = "accept"
 
@@ -72,7 +73,7 @@ resource "scaleway_instance_server" "supernode" {
   type                = var.server_type
   enable_dynamic_ip   = true
   ip_id = element(scaleway_instance_ip.node_ip_address.*.id, count.index)
-  security_group_id = scaleway_instance_security_group.node.id
+  security_group_id = scaleway_instance_security_group.node[0].id
 
   cloud_init  = var.cloud_init
 

@@ -46,7 +46,7 @@ module "chain_btc_scw_network_nodes" {
   source = "./libs/scaleway-node"
 
   server_type = var.scaleway_server_type
-  node_count = var.scaleway_node_count
+  node_count = var.scaleway_btc_node_count
   prefix = "btcscw"
   uptime_prefix = "btcscw"
 

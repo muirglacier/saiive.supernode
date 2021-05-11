@@ -90,6 +90,10 @@ variable "scaleway_node_count" {
   default = 2
   type = number
 }
+variable "scaleway_btc_node_count" {
+  default = 0
+  type = number
+}
 variable "azure_node_count" {
   default = 2
   type = number
