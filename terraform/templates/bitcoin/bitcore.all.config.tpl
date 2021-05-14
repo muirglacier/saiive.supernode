@@ -19,7 +19,7 @@
           ],
           "rpc": {
             "host": "bitcoin_mainnet",
-            "port": 8334,
+            "port": 8332,
             "username": "${wallet_user}",
             "password": "${wallet_password}"
           }
@@ -34,7 +34,7 @@
           ],
           "rpc": {
             "host": "bitcoin_testnet",
-            "port": 18334,
+            "port": 18332,
             "username": "${wallet_user}",
             "password": "${wallet_password}"
           }
