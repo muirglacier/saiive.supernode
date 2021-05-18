@@ -316,6 +316,18 @@ namespace Saiive.SuperNode.Controllers
                 retTxs.Add(tx);
             }
 
+            foreach (var tx in retTxs)
+            {
+                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{tx.MintTxId}");
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<TransactionModel>(data);
+
+                tx.Confirmations = obj.Confirmations;
+            }
+
             return retTxs;
         }
 
