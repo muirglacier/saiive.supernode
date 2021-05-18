@@ -29,14 +29,12 @@ variables:
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags') }}:
     addImageTags: |
       beta
-      $(RELEASE_VERSION)
       
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/main') }}:
     addImageTags: |
       beta
       stable
       latest
-      $(RELEASE_VERSION)
       
   # add docker image tags for builds triggered from release branch
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
@@ -56,6 +54,7 @@ stages:
     - script: |
         VERSION=$(echo "$(Build.SourceBranch)" | grep -o '[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?')
         echo "##vso[task.setvariable variable=RELEASE_VERSION;]$VERSION"
+        echo $VERSION
       
     displayName: 'Parse and set release version'
     condition: or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release'), startsWith(variables['Build.SourceBranch'], 'refs/tags'), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))

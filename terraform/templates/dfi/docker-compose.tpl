@@ -100,7 +100,7 @@ services:
     restart: unless-stopped
 
   defichain_testnet:
-    image: defiwallet.azurecr.io/defichain:latest
+    image: defiwallet.azurecr.io/defichain:alpha
     command:
       defid
       -acindex
@@ -182,7 +182,7 @@ services:
     
   super_node:
     container_name: super_node
-    image: defiwallet.azurecr.io/supernode:latest
+    image: defiwallet.azurecr.io/supernode:alpha}
     networks:
       - default
     environment:
