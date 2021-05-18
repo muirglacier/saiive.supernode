@@ -175,7 +175,7 @@ services:
     
   super_node:
     container_name: super_node
-    image: defiwallet.azurecr.io/supernode:latest
+    image: defiwallet.azurecr.io/supernode:alpha
     networks:
       - default
     environment:
