@@ -17,4 +17,4 @@ EXPOSE 5000
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Saiive.Supernode.dll"]
+ENTRYPOINT ["dotnet", "Saiive.SuperNode.dll"]
