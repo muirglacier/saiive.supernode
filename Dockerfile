@@ -7,7 +7,7 @@ WORKDIR /src
 COPY src .
 RUN dotnet restore
 COPY . .
-WORKDIR "/src/saiive.defi.api"
+WORKDIR "/src/Saiive.Supernode"
 RUN dotnet build -c Release -o /app/build
 
 FROM build AS publish
@@ -17,4 +17,4 @@ EXPOSE 5000
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "saiive.defi.api.dll"]
+ENTRYPOINT ["dotnet", "Saiive.Supernode.dll"]
