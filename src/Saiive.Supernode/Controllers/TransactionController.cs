@@ -88,11 +88,11 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
-        [HttpGet("{network}/{coin}/tx/height/{height}")]
+        [HttpGet("{network}/{coin}/tx/height/{height}/{includeDetails}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height)
+        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height, bool includeDetails = true)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}");
 
@@ -102,12 +102,12 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-                if (obj != null)
+                var obj = JsonConvert.DeserializeObject<List<BlockTransactionModel>>(data);
+                if (obj != null && includeDetails)
                 {
                     foreach (var tx in obj)
                     {
-                        tx.Details = await GetTransactionDetails(coin, network, tx.MintTxId);
+                        tx.Details = await GetTransactionDetails(coin, network, tx.Txid);
                     }
                 }
 
