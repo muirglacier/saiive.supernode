@@ -103,6 +103,14 @@ namespace Saiive.SuperNode.Controllers
                 var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+                if (obj != null)
+                {
+                    foreach (var tx in obj)
+                    {
+                        tx.Details = await GetTransactionDetails(coin, network, tx.MintTxId);
+                    }
+                }
+
                 return Ok(obj);
             }
             catch (Exception e)
