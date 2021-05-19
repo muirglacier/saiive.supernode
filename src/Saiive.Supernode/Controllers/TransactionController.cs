@@ -88,11 +88,21 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
+
+        [HttpGet("{network}/{coin}/tx/height/{height}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
+        public Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height)
+        {
+            return GetTransactionsByBlockHeight(coin, network, height, true);
+        }
+
         [HttpGet("{network}/{coin}/tx/height/{height}/{includeDetails}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height, bool includeDetails = true)
+        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height, bool includeDetails)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}");
 
