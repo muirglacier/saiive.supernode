@@ -24,11 +24,18 @@ namespace Saiive.SuperNode.Controllers
 
         private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
+            try
+            {
+                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
 
-            var data = await response.Content.ReadAsStringAsync();
-            var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
-            return tx;
+                var data = await response.Content.ReadAsStringAsync();
+                var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+                return tx;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         [HttpGet("{network}/{coin}/tx/id/{txId}")]
@@ -108,10 +115,11 @@ namespace Saiive.SuperNode.Controllers
 
             try
             {
-                response.EnsureSuccessStatusCode();
-
                 var data = await response.Content.ReadAsStringAsync();
 
+                response.EnsureSuccessStatusCode();
+
+              
                 var obj = JsonConvert.DeserializeObject<List<BlockTransactionModel>>(data);
                 if (obj != null && includeDetails)
                 {
