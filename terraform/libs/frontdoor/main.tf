@@ -393,32 +393,51 @@ resource "azurerm_frontdoor" "frontdoor" {
   frontend_endpoint {
     name                              = "${var.prefix}-${var.environment}-frontend"
     host_name                         = "${local.cname}.${var.dns_zone}"
-    custom_https_provisioning_enabled = true
-    custom_https_configuration {
-      certificate_source                         = "FrontDoor"
-    }
   }
   frontend_endpoint {
     name                              = "${var.prefix}-${var.environment}-frontend-testnet-explorer"
     host_name                         = "testnet-${local.cname}.${var.dns_zone}"
-    custom_https_provisioning_enabled = true
-    custom_https_configuration {
-      certificate_source                         = "FrontDoor"
-    }
   }
   frontend_endpoint {
     name                              = "${var.prefix}-${var.environment}-frontend-mainnet-explorer"
     host_name                         = "mainnet-${local.cname}.${var.dns_zone}"
-    custom_https_provisioning_enabled = true
-    custom_https_configuration {
-      certificate_source                         = "FrontDoor"
-    }
   }
 
   frontend_endpoint {
     name                              = "default"
     host_name                         = "${var.prefix}-${var.environment}.azurefd.net"
-    custom_https_provisioning_enabled = false
+  }
+}
+
+
+resource "azurerm_frontdoor_custom_https_configuration" "custom_https_frontend" {
+  frontend_endpoint_id              = azurerm_frontdoor.frontdoor.frontend_endpoints["${var.prefix}-${var.environment}-frontend"]
+  custom_https_provisioning_enabled = true
+  custom_https_configuration  {
+    certificate_source                = "FrontDoor"
+  }
+}
+resource "azurerm_frontdoor_custom_https_configuration" "custom_https_testnet_explorer" {
+  frontend_endpoint_id              = azurerm_frontdoor.frontdoor.frontend_endpoints["${var.prefix}-${var.environment}-frontend-testnet-explorer"]
+  custom_https_provisioning_enabled = true
+  custom_https_configuration  {
+    certificate_source                = "FrontDoor"
+  }
+}
+
+resource "azurerm_frontdoor_custom_https_configuration" "custom_https_mainnet_explorer" {
+  frontend_endpoint_id              = azurerm_frontdoor.frontdoor.frontend_endpoints["${var.prefix}-${var.environment}-frontend-mainnet-explorer"]
+  custom_https_provisioning_enabled = true
+  custom_https_configuration  {
+    certificate_source                = "FrontDoor"
+  }
+}
+
+resource "azurerm_frontdoor_custom_https_configuration" "default" {
+  frontend_endpoint_id              = azurerm_frontdoor.frontdoor.frontend_endpoints["default"]
+  custom_https_provisioning_enabled = true
+  custom_https_configuration  {
+    certificate_source                = "FrontDoor"
   }
 }
 

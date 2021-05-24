@@ -10,7 +10,7 @@ locals {
 
 resource "uptimerobot_status_page" "defichain_status_page" {
   friendly_name  = local.env_name
-  custom_domain  = "${local.uptime_cname_prefix}status.defichain-wallet.com"
+  custom_domain  = "${local.uptime_cname_prefix}status.saiive.live"
   monitors       = concat(local.uptime_nodes)
 }
 

@@ -165,9 +165,10 @@ resource "null_resource" "docker" {
   }
   provisioner "remote-exec" {
     inline = [
-      "docker login ${var.docker_registry} --username ${var.docker_user} --password ${var.docker_password} &", 
+      "docker login ${var.docker_registry} --username ${var.docker_user} --password ${var.docker_password} &",
+      "cd ~/node &", 
       "docker-compose -f ~/node/docker-compose.yml pull &",
-      "docker-compose -f ~/node/docker-compose.yml up -d ",
+      "docker-compose -f ~/node/docker-compose.yml up -d",
     ]
   }
 }
