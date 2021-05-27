@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -14,8 +15,14 @@ namespace Saiive.SuperNode.Controllers
     [Route("/api/v1/")]
     public class HealthCheckController : BaseController
     {
+        private readonly Dictionary<string, double> _blockchainTimeCheckMinuteInterval;
+        private const double DefaultCheckMinuteInterval = 300;
+
         public HealthCheckController(IConfiguration config, ILogger<HealthCheckController> logger) : base(logger, config)
         {
+            _blockchainTimeCheckMinuteInterval = new Dictionary<string, double>();
+            _blockchainTimeCheckMinuteInterval.Add("BTC", DefaultCheckMinuteInterval);
+            _blockchainTimeCheckMinuteInterval.Add("DFI", TimeSpan.FromMinutes(10).TotalMinutes);
         }
 
         [HttpGet("health")]
@@ -50,8 +57,15 @@ namespace Saiive.SuperNode.Controllers
                     throw new ArgumentException("block model is empty");
                 }
                 var time = Convert.ToDateTime(obj.Time);
-                var timeStartCheck = DateTime.Now.AddHours(-5);
-                var timeEndCheck = DateTime.Now.AddHours(5);
+
+                var checkInterval = DefaultCheckMinuteInterval;
+                if (_blockchainTimeCheckMinuteInterval.ContainsKey(coin))
+                {
+                    checkInterval = _blockchainTimeCheckMinuteInterval[coin];
+                }
+
+                var timeStartCheck = DateTime.Now.AddHours(checkInterval * -1);
+                var timeEndCheck = DateTime.Now.AddHours(checkInterval);
 
                 if (time >= timeStartCheck && time <= timeEndCheck)
                 {

@@ -4,7 +4,7 @@ environment_tag = "Staging"
 prefix = "saiive-supernode"
 
 
-scaleway_node_count=0
+scaleway_node_count=1
 scaleway_btc_node_count=1
 scaleway_server_type="DEV1-XL"
 
