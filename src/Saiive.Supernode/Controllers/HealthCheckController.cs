@@ -64,8 +64,8 @@ namespace Saiive.SuperNode.Controllers
                     checkInterval = _blockchainTimeCheckMinuteInterval[coin];
                 }
 
-                var timeStartCheck = DateTime.Now.AddHours(checkInterval * -1);
-                var timeEndCheck = DateTime.Now.AddHours(checkInterval);
+                var timeStartCheck = DateTime.Now.AddMinutes(checkInterval * -1);
+                var timeEndCheck = DateTime.Now.AddMinutes(checkInterval);
 
                 if (time >= timeStartCheck && time <= timeEndCheck)
                 {
