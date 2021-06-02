@@ -40,7 +40,7 @@ resource "azurerm_network_security_group" "sg" {
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
-        protocol                   = "Tcp"
+        protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "8555"
         source_address_prefix      = "*"
@@ -51,7 +51,7 @@ resource "azurerm_network_security_group" "sg" {
         priority                   = 200
         direction                  = "Inbound"
         access                     = "Allow"
-        protocol                   = "Tcp"
+        protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "18555"
         source_address_prefix      = "*"

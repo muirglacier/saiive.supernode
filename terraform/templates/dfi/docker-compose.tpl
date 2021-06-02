@@ -4,7 +4,7 @@ services:
   traefik:
     image: "traefik:v2.2.1"
     command:
-      - "--log.level=ERROR"
+      - "--log.level=INFO"
       - "--global.sendAnonymousUsage=false"
       - "--api"
       - "--providers.docker=true"
@@ -15,7 +15,7 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge=true"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsEncryptHttpChallenge.acme.email=office@p3-software.eu"
+      - "--certificatesresolvers.letsEncryptHttpChallenge.acme.email=office@saiive.live"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.storage=/letsencrypt/acme.json"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=letsEncryptHttpChallenge"
@@ -100,6 +100,7 @@ services:
     restart: unless-stopped
 
   defichain_testnet:
+    container_name: testnet
     image: defiwallet.azurecr.io/defichain:alpha
     command:
       defid
@@ -121,15 +122,15 @@ services:
     ports:
       - 18555:18555
       - 18554:18554
-      - 19555:19555
-      - 19554:19554
 
   defichain_mainnet:
+    container_name: mainnet
     image: defiwallet.azurecr.io/defichain:latest
     command:
       defid
       -acindex
       -txindex
+      -checkpoints=0
       -printtoconsole
       -conf=${config_dir}/${node_prefix}.conf
 
@@ -146,6 +147,7 @@ services:
     ports:
       - 8555:8555
       - 8554:8554
+    
 
   bitcore_node:
     container_name: bitcore_node
@@ -208,6 +210,7 @@ services:
       - bitcore_node
 
   insight_testnet:
+    container_name: explorer_testnet
     image: defiwallet.azurecr.io/bitcorenode:latest
     command: ['npm', 'run', 'insight-previous:prod']
     networks:
@@ -237,6 +240,7 @@ services:
 
 
   insight_mainnet:
+    container_name: explorer_mainnet
     image: defiwallet.azurecr.io/bitcorenode:latest
     command: ['npm', 'run', 'insight-previous:prod']
     networks:
