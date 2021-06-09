@@ -103,7 +103,6 @@ services:
     container_name: testnet
     image: defiwallet.azurecr.io/defichain:alpha
     command:
-      defid
       -acindex
       -txindex
       -printtoconsole
@@ -127,7 +126,6 @@ services:
     container_name: mainnet
     image: defiwallet.azurecr.io/defichain:latest
     command:
-      defid
       -acindex
       -txindex
       -checkpoints=0
