@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +41,7 @@ namespace Saiive.SuperNode.Application
 
         public async Task<TokenModel> GetTokenInternal(string coin, string network, string token)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{network}/token/get/{token}");
+            var response = await _client.GetAsync($"{_apiUrl}/api/{coin}/{network}/token/get/{System.Web.HttpUtility.UrlEncode(token)}");
 
             var data = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
