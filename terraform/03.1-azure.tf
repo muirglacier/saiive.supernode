@@ -18,8 +18,8 @@ data "template_file" "cloud_init_azure" {
     docker_registry_username = data.azurerm_key_vault_secret.docker_registry_username.value
     docker_registry_password = data.azurerm_key_vault_secret.docker_registry_password.value
     root_directory = "/home/${local.vm_username}/node"
-    analytics_id = azurerm_log_analytics_workspace.analytics.workspace_id
-    analytics_key =  azurerm_log_analytics_workspace.analytics.primary_shared_key
+    analytics_id = var.analytics_id
+    analytics_key = var.analytics_key
   }
 }
 

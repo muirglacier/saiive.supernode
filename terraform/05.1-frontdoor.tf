@@ -21,28 +21,28 @@ module "frontdoor" {
 }
 
 
-resource "azurerm_monitor_diagnostic_setting" "frontdoor_log_storage" {
+# resource "azurerm_monitor_diagnostic_setting" "frontdoor_log_storage" {
 
-  name               = "${var.prefix}-${var.environment}"
-  target_resource_id = module.frontdoor.id
+#   name               = "${var.prefix}-${var.environment}"
+#   target_resource_id = module.frontdoor.id
 
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics.id 
+#   log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics.id 
 
-  log {
-    category = "FrontdoorAccessLog"
+#   log {
+#     category = "FrontdoorAccessLog"
 
-    retention_policy {
-      enabled = true
-      days    = 60
-    }
-  }
+#     retention_policy {
+#       enabled = true
+#       days    = 60
+#     }
+#   }
 
-  metric {
-    category = "AllMetrics"
+#   metric {
+#     category = "AllMetrics"
 
-    retention_policy {
-      enabled = true
-      days    = 60
-    }
-  }
-}
+#     retention_policy {
+#       enabled = true
+#       days    = 60
+#     }
+#   }
+# }
