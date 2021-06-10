@@ -22,7 +22,7 @@ namespace Saiive.SuperNode.Controllers
         {
             _blockchainTimeCheckMinuteInterval = new Dictionary<string, double>();
             _blockchainTimeCheckMinuteInterval.Add("BTC", DefaultCheckMinuteInterval);
-            _blockchainTimeCheckMinuteInterval.Add("DFI", TimeSpan.FromMinutes(30).TotalMinutes);
+            _blockchainTimeCheckMinuteInterval.Add("DFI", TimeSpan.FromMinutes(60).TotalMinutes);
         }
 
         [HttpGet("health")]
