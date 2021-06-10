@@ -8,6 +8,7 @@ namespace Saiive.SuperNode.Controllers
 {
     public abstract class BaseController : ControllerBase
     {
+        public IConfiguration Config { get; }
         protected readonly ILogger Logger;
         protected readonly string ApiUrl;
         protected readonly string DefiChainApiUrl;
@@ -17,6 +18,7 @@ namespace Saiive.SuperNode.Controllers
 
         protected BaseController(ILogger logger, IConfiguration config)
         {
+            Config = config;
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromMinutes(5);
             
