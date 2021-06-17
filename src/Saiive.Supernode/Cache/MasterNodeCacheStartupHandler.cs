@@ -20,11 +20,18 @@ namespace Saiive.SuperNode.Cache
 
         private async Task UpdateCache()
         {
-            _logger.LogInformation("Update masternode cache...");
-            var mainnet = _cache.GetMasterNodes("mainnet", "DFI");
-            var testnet = _cache.GetMasterNodes("testnet", "DFI");
+            try
+            {
+                _logger.LogInformation("Update masternode cache...");
+                var mainnet = _cache.GetMasterNodes("mainnet", "DFI");
+                var testnet = _cache.GetMasterNodes("testnet", "DFI");
 
-            await Task.WhenAll(mainnet, testnet);
+                await Task.WhenAll(mainnet, testnet);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("Error starting up", e);
+            }
 
             _logger.LogInformation("Update masternode cache...done");
         }
