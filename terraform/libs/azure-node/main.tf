@@ -40,7 +40,7 @@ resource "azurerm_network_security_group" "sg" {
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
-        protocol                   = "Tcp"
+        protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "8555"
         source_address_prefix      = "*"
@@ -51,7 +51,7 @@ resource "azurerm_network_security_group" "sg" {
         priority                   = 200
         direction                  = "Inbound"
         access                     = "Allow"
-        protocol                   = "Tcp"
+        protocol                   = "*"
         source_port_range          = "*"
         destination_port_range     = "18555"
         source_address_prefix      = "*"
@@ -252,8 +252,9 @@ resource "null_resource" "docker" {
   provisioner "remote-exec" {
     inline = [
       "sudo docker login ${var.docker_registry} --username ${var.docker_user} --password ${var.docker_password} &", 
+      "cd ~/node &", 
       "sudo docker-compose -f ~/node/docker-compose.yml pull &",
-      "sudo docker-compose -f ~/node/docker-compose.yml up -d ",
+      "sudo docker-compose -f ~/node/docker-compose.yml up -d",
     ]
   }
 

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Saiive.DeFiChain.Sharp.Parser;
+using Saiive.DeFiChain.Sharp.Parser.Txs;
 using Saiive.SuperNode.Application;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Requests;
@@ -311,9 +313,49 @@ namespace Saiive.SuperNode.Controllers
                         _logger.LogError($"Found invalid tx at height {tx.MintHeight}. TX inputs already spent, tx will never get confirmed. Ignore it here.... ({tx.MintTxId})");
                         continue;
                     }
+
+                    var useTx = true;
+                    foreach(var output in details.Outputs)
+                    {
+                        var script = output.Script.Substring(4, output.Script.Length-4);
+
+                        var byteArray = script.ToByteArray();
+                        if (!DefiScriptParser.IsDeFiTransaction(byteArray))
+                        {
+                            continue;
+                        }
+                        var dfiScript = DefiScriptParser.Parse(byteArray);
+
+                        if (dfiScript is CreateMasterNode)
+                        {
+                            _logger.LogInformation(
+                                $"This transaction is a create masternode tx - we can't spent them, so discard them!");
+                            useTx = false;
+                            break;
+                        }
+                    }
+
+                    if (!useTx)
+                    {
+                        continue;
+                    }
+                    
                 }
 
-                retTxs.Add(tx);
+                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{tx.MintTxId}");
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
+
+
+                if (obj.BlockHeight > 0)
+                {
+                    tx.Confirmations = obj.Confirmations;
+
+                    retTxs.Add(tx);
+                }
             }
 
             return retTxs;

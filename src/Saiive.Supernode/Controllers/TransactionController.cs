@@ -24,11 +24,18 @@ namespace Saiive.SuperNode.Controllers
 
         private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
+            try
+            {
+                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
 
-            var data = await response.Content.ReadAsStringAsync();
-            var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
-            return tx;
+                var data = await response.Content.ReadAsStringAsync();
+                var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+                return tx;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         [HttpGet("{network}/{coin}/tx/id/{txId}")]
@@ -88,21 +95,40 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
+
         [HttpGet("{network}/{coin}/tx/height/{height}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height)
+        public Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height)
+        {
+            return GetTransactionsByBlockHeight(coin, network, height, true);
+        }
+
+        [HttpGet("{network}/{coin}/tx/height/{height}/{includeDetails}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<TransactionModel>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> GetTransactionsByBlockHeight(string coin, string network, int height, bool includeDetails)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}");
 
             try
             {
-                response.EnsureSuccessStatusCode();
-
                 var data = await response.Content.ReadAsStringAsync();
 
-                var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+                response.EnsureSuccessStatusCode();
+
+              
+                var obj = JsonConvert.DeserializeObject<List<BlockTransactionModel>>(data);
+                if (obj != null && includeDetails)
+                {
+                    foreach (var tx in obj)
+                    {
+                        tx.Details = await GetTransactionDetails(coin, network, tx.Txid);
+                    }
+                }
+
                 return Ok(obj);
             }
             catch (Exception e)

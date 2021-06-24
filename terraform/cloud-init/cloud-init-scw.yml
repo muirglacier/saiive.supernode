@@ -27,7 +27,7 @@ runcmd:
   - mkdir /mnt/block/db
   - echo '/dev/sdb /mnt/block/mainnet ext4 defaults 0 0' >> /etc/fstab
   - echo '/dev/sda /mnt/block/testnet ext4 defaults 0 0' >> /etc/fstab
-  - echo '/dev/sdc /mnt/block/testnet ext4 defaults 0 0' >> /etc/fstab
+  - echo '/dev/sdc /mnt/block/db ext4 defaults 0 0' >> /etc/fstab
   - mount -o defaults /dev/sdb /mnt/block/mainnet
   - mount -o defaults /dev/sda /mnt/block/testnet
   - mount -o defaults /dev/sdc /mnt/block/db

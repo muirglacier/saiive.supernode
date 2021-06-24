@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Saiive.SuperNode.Application;
+using Saiive.SuperNode.Cache;
 
 namespace Saiive.SuperNode
 {
@@ -37,6 +38,9 @@ namespace Saiive.SuperNode
             }));
 
             services.AddSingleton<ITokenStore, TokenStore>();
+            services.AddSingleton<IMasterNodeCache, MasterNodeCache>();
+            services.AddSingleton<MasterNodeCacheStartupHandler>();
+            services.AddHostedService(a => a.GetRequiredService<MasterNodeCacheStartupHandler>());
 
             services.AddApplicationInsightsTelemetry();
         }

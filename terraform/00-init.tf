@@ -101,3 +101,10 @@ variable "azure_node_count" {
 variable "scaleway_server_type" {
   default = "DEV1-S"
 }
+
+variable "analytics_key" {
+  
+}
+variable "analytics_id" {
+  
+}

@@ -22,7 +22,7 @@ namespace Saiive.SuperNode.Controllers
 
         private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool? noRewards)
         {
-            string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{token}";
+            string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{System.Web.HttpUtility.UrlEncode(token)}";
 
             var dict = new Dictionary<string, string>();
 

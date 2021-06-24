@@ -41,7 +41,7 @@ namespace Saiive.SuperNode.Model
         public double Value { get; set; }
 
         [JsonProperty("confirmations")]
-        public int Confirmations { get; set; }
+        public long Confirmations { get; set; }
         
         [JsonProperty("details")] 
         public TransactionDetailModel Details { get; set; }
