@@ -100,7 +100,7 @@ resource "scaleway_instance_server" "supernode" {
   additional_volume_ids = [ 
     element(scaleway_instance_volume.main.*.id, count.index),
     element(scaleway_instance_volume.test.*.id, count.index), 
-    element(scaleway_instance_volume.db.*.id, count.index) 
+    element(scaleway_instance_volume.db.*.id, count.index)
   ]
 
   provisioner "file" {
