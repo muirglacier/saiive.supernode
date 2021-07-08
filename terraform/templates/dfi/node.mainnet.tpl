@@ -5,3 +5,5 @@ rpcbind=0.0.0.0
 rpcallowip=172.28.0.0/16
 datadir=${chain_dir}
 spv=0
+rpcworkqueue=200
+dustrelayfee=0

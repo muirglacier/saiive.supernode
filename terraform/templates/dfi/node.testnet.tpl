@@ -9,3 +9,5 @@ rpcpassword=${wallet_password}
 datadir=${chain_dir}
 
 spv=0
+rpcworkqueue=200
+dustrelayfee=0
