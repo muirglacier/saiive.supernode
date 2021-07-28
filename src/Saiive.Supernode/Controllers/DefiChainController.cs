@@ -14,6 +14,8 @@ namespace Saiive.SuperNode.Controllers
     [Route("/api/v1/")]
     public class DefiChainController : BaseController
     {
+        private YieldFramingModelRequest _lastValidItem = null;
+
         public DefiChainController(ILogger<DefiChainController> logger, IConfiguration config) : base(logger, config)
         {
           
@@ -25,19 +27,26 @@ namespace Saiive.SuperNode.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> ListYieldFarming(string coin, string network)
         {
-            var response = await _client.GetAsync($"{DefiChainApiUrl}/v1/listyieldfarming?network={network}");
+            var response = await _client.GetAsync($"https://api.defichain.io/v1/listyieldfarming?network={network}");
 
             try
             {
                 var data = await response.Content.ReadAsStringAsync();
                 response.EnsureSuccessStatusCode();
 
-                YieldFramingModelRequest obj = JsonConvert.DeserializeObject<YieldFramingModelRequest>(data);  
+                YieldFramingModelRequest obj = JsonConvert.DeserializeObject<YieldFramingModelRequest>(data);
 
-                return Ok(obj.pools);
+                _lastValidItem = obj ?? throw new ArgumentException();
+
+                return Ok(_lastValidItem.pools);
             }
             catch (Exception e)
             {
+                if (_lastValidItem != null)
+                {
+                    return Ok(_lastValidItem.pools);
+                }
+
                 Logger.LogError($"{e}");
                 return BadRequest(new ErrorModel(e.Message));
             }
