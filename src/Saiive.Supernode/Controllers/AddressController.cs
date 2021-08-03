@@ -33,9 +33,16 @@ namespace Saiive.SuperNode.Controllers
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/balance");
 
-            response.EnsureSuccessStatusCode();
-
             var data = await response.Content.ReadAsStringAsync();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                throw new ArgumentException(data);
+            }
+
 
             var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
             obj.Address = address;
