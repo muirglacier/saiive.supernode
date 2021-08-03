@@ -49,7 +49,15 @@ namespace Saiive.SuperNode.Controllers
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/account");
 
             var data = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                throw new ArgumentException(data);
+            }
 
 
             var ret = new  List<AccountModel>();

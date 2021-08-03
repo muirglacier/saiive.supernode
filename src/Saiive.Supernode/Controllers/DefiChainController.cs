@@ -38,13 +38,13 @@ namespace Saiive.SuperNode.Controllers
 
                 _lastValidItem = obj ?? throw new ArgumentException();
 
-                return Ok(_lastValidItem.pools);
+                return Ok(_lastValidItem.Pools);
             }
             catch (Exception e)
             {
                 if (_lastValidItem != null)
                 {
-                    return Ok(_lastValidItem.pools);
+                    return Ok(_lastValidItem.Pools);
                 }
 
                 Logger.LogError($"{e}");
