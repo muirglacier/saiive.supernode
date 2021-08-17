@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Saiive.SuperNode.Converter;
 
 namespace Saiive.SuperNode.Model
 {
@@ -42,8 +41,7 @@ namespace Saiive.SuperNode.Model
         public string NextBlockHash { get; set; }
 
         [JsonProperty("reward")]
-        [JsonConverter(typeof(CoinValueConverter))]
-        public double Reward { get; set; }
+        public ulong Reward { get; set; }
 
         [JsonProperty("transactionCount")]
         public int TransactionCount { get; set; }
