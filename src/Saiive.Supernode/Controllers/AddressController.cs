@@ -50,42 +50,45 @@ namespace Saiive.SuperNode.Controllers
             return obj;
 
         }
-        
+
         private async Task<List<AccountModel>> GetAccountInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/account");
+            var ret = new List<AccountModel>();
 
-            var data = await response.Content.ReadAsStringAsync();
-
-            try
+            if (coin == "DFI")
             {
-                response.EnsureSuccessStatusCode();
-            }
-            catch
-            {
-                throw new ArgumentException(data);
-            }
+                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/account");
 
+                var data = await response.Content.ReadAsStringAsync();
 
-            var ret = new  List<AccountModel>();
-            var obj = JsonConvert.DeserializeObject<List<string>>(data);
-
-            
-            foreach (var acc in obj)
-            {
-                var split = acc.Split("@");
-
-                var token = await _tokenStore.GetToken(coin, network, split[1]);
-
-                var account = new AccountModel
+                try
                 {
-                    Address = address,
-                    Raw = acc,
-                    Balance = Convert.ToDouble(split[0], CultureInfo.InvariantCulture) * token.Multiplier,
-                    Token = split[1]
-                };
+                    response.EnsureSuccessStatusCode();
+                }
+                catch
+                {
+                    throw new ArgumentException(data);
+                }
 
-                ret.Add(account);
+                var obj = JsonConvert.DeserializeObject<List<string>>(data);
+
+
+                foreach (var acc in obj)
+                {
+                    var split = acc.Split("@");
+
+                    var token = await _tokenStore.GetToken(coin, network, split[1]);
+
+                    var account = new AccountModel
+                    {
+                        Address = address,
+                        Raw = acc,
+                        Balance = Convert.ToDouble(split[0], CultureInfo.InvariantCulture) * token.Multiplier,
+                        Token = split[1]
+                    };
+
+                    ret.Add(account);
+                }
             }
 
             var nativeBalance = await GetBalanceInternal(coin, network, address);
@@ -95,10 +98,11 @@ namespace Saiive.SuperNode.Controllers
                 {
                     Address = address,
                     Balance = nativeBalance.Confirmed,
-                    Raw = $"{nativeBalance.Confirmed}@$DFI",
-                    Token = "$DFI"
+                    Raw = $"{nativeBalance.Confirmed}@{coin}",
+                    Token = $"${coin}"
                 });
             }
+
 
             return ret;
 
@@ -321,6 +325,11 @@ namespace Saiive.SuperNode.Controllers
             {
                 if (!tx.Coinbase)
                 {
+                    if (tx.IsCustom && !tx.IsCustomTxApplied)
+                    {
+                        _logger.LogError("Custom tx is not applied - therefore skip it!");
+                        continue;
+                    }
                     var details = await GetTransactionDetails(coin, network, tx.MintTxId);
 
                     if (details.Inputs == null || details.Inputs.Count == 0)

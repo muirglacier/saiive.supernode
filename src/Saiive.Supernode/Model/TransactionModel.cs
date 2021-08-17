@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Saiive.SuperNode.Model
 {
@@ -6,6 +8,8 @@ namespace Saiive.SuperNode.Model
     {
         [JsonProperty("_id")]
         public string Id { get; set; }
+
+        [JsonProperty("id")] public string IdV1 => Id;
 
         [JsonProperty("chain")]
         public string Chain { get; set; }
@@ -45,5 +49,45 @@ namespace Saiive.SuperNode.Model
         
         [JsonProperty("details")] 
         public TransactionDetailModel Details { get; set; }
+
+        [JsonProperty("isCustom")] 
+        public bool IsCustom { get; set; }
+
+        [JsonProperty("isCustomTxApplied")] 
+        public bool IsCustomTxApplied { get; set; }
+
+        [JsonProperty("txType")] 
+        public string TxType { get; set; }
+
+        [JsonProperty("customData")] 
+        public JObject CustomData { get; set; }
+
+        [JsonProperty("fee")]
+        public int Fee { get; set; }
+
+        [JsonProperty("size")]
+        public int Size { get; set; }
+
+        [JsonProperty("locktime")] 
+        public int LockTime { get; set; }
+
+        [JsonProperty("blockHash")]
+        public string BlockHash { get; set; }
+
+        [JsonProperty("blockHeight")]
+        public Int64 BlockHeight { get; set; }
+
+        [JsonProperty("bkockTime")] 
+        public string BlockTime { get; set; }
+
+        [JsonProperty("blockTimeNormalized")]
+        public string BlockTimeNormalized { get; set; }
+
+        [JsonProperty("inputCount")] 
+        public int InputCount { get; set; }
+
+        [JsonProperty("outputCount")]
+        public int OutputCount { get; set; }
+
     }
 }
