@@ -7,7 +7,7 @@ namespace Saiive.SuperNode.Converter
     {
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            writer.WriteValue(value);
+            writer.WriteValue((ulong)value);
         }
 
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
