@@ -42,7 +42,7 @@ namespace Saiive.SuperNode.Model
         public string Script { get; set; }
 
         [JsonProperty("value")]
-        public double Value { get; set; }
+        public ulong Value { get; set; }
 
         [JsonProperty("confirmations")]
         public long Confirmations { get; set; }
