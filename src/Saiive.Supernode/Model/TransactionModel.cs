@@ -24,7 +24,7 @@ namespace Saiive.SuperNode.Model
         public int MintIndex { get; set; }
 
         [JsonProperty("spentTxid")]
-        public string SpentTxId { get; set; 
+        public string SpentTxId { get; set; }
 
         [JsonProperty("spentTxId")]
         public string SpentTxId2 => SpentTxId;
