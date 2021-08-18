@@ -325,12 +325,10 @@ namespace Saiive.SuperNode.Controllers
             {
                 if (!tx.Coinbase)
                 {
-                    if (tx.IsCustom.Value && !tx.IsCustomTxApplied.Value)
-                    {
-                        _logger.LogError("Custom tx is not applied - therefore skip it!");
-                        continue;
-                    }
+                   
                     var details = await GetTransactionDetails(coin, network, tx.MintTxId);
+
+                  
 
                     if (details.Inputs == null || details.Inputs.Count == 0)
                     {
@@ -372,7 +370,11 @@ namespace Saiive.SuperNode.Controllers
                 var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
-
+                if (obj.IsCustom && !obj.IsCustomTxApplied)
+                {
+                    _logger.LogError("Custom tx is not applied - therefore skip it!");
+                    continue;
+                }
 
                 if (obj.BlockHeight > 0)
                 {

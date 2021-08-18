@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Saiive.SuperNode.Model
 {
@@ -53,11 +54,14 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("isCustom")]
         public bool IsCustom { get; set; }
 
+        [JsonProperty("isCustomTxApplied")]
+        public bool IsCustomTxApplied { get; set; }
+
         [JsonProperty("txType")]
         public object TxType { get; set; }
 
         [JsonProperty("customData")] 
-        public object CustomData { get; set; }
+        public JObject CustomData { get; set; }
 
         [JsonProperty("confirmations")] 
         public long Confirmations { get; set; }
