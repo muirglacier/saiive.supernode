@@ -373,11 +373,7 @@ namespace Saiive.SuperNode.Controllers
                 var data = await response.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
-                if (obj.IsCustom && !obj.IsCustomTxApplied)
-                {
-                    _logger.LogError("Custom tx is not applied - therefore skip it!");
-                    continue;
-                }
+               
 
                 if (obj.BlockHeight > 0)
                 {
