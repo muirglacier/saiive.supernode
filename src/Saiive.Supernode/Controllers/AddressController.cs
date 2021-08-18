@@ -379,6 +379,11 @@ namespace Saiive.SuperNode.Controllers
                 {
                     tx.Confirmations = obj.Confirmations;
 
+                    tx.IsCustom = obj.IsCustom;
+                    tx.IsCustomTxApplied = obj.IsCustomTxApplied;
+                    tx.CustomData = obj.CustomData;
+                    tx.TxType = obj.TxType;
+
                     retTxs.Add(tx);
                 }
             }

@@ -52,7 +52,19 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("confirmations")]
         public long Confirmations { get; set; }
-        
+
+        [JsonProperty("isCustom")]
+        public bool IsCustom { get; set; }
+
+        [JsonProperty("isCustomTxApplied")]
+        public bool IsCustomTxApplied { get; set; }
+
+        [JsonProperty("txType")]
+        public object TxType { get; set; }
+
+        [JsonProperty("customData")]
+        public JObject CustomData { get; set; }
+
         [JsonProperty("details")] 
         public TransactionDetailModel Details { get; set; }
     }
