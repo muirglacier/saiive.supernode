@@ -327,7 +327,10 @@ namespace Saiive.SuperNode.Controllers
                 {
                    
                     var details = await GetTransactionDetails(coin, network, tx.MintTxId);
-
+                    if(!String.IsNullOrEmpty(tx.SpentTxId)) 
+                    {
+                        continue;
+                    }
                   
 
                     if (details.Inputs == null || details.Inputs.Count == 0)
