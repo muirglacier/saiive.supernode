@@ -51,31 +51,31 @@ namespace Saiive.SuperNode.Model
         public TransactionDetailModel Details { get; set; }
 
         [JsonProperty("isCustom")] 
-        public bool IsCustom { get; set; }
+        public bool? IsCustom { get; set; }
 
         [JsonProperty("isCustomTxApplied")] 
-        public bool IsCustomTxApplied { get; set; }
+        public bool? IsCustomTxApplied { get; set; }
 
         [JsonProperty("txType")] 
-        public string TxType { get; set; }
+        public string? TxType { get; set; }
 
         [JsonProperty("customData")] 
-        public JObject CustomData { get; set; }
+        public JObject? CustomData { get; set; }
 
         [JsonProperty("fee")]
-        public int Fee { get; set; }
+        public int? Fee { get; set; }
 
         [JsonProperty("size")]
-        public int Size { get; set; }
+        public int? Size { get; set; }
 
         [JsonProperty("locktime")] 
-        public int LockTime { get; set; }
+        public int? LockTime { get; set; }
 
         [JsonProperty("blockHash")]
         public string BlockHash { get; set; }
 
         [JsonProperty("blockHeight")]
-        public Int64 BlockHeight { get; set; }
+        public Int64? BlockHeight { get; set; }
 
         [JsonProperty("bkockTime")] 
         public string BlockTime { get; set; }
@@ -84,10 +84,10 @@ namespace Saiive.SuperNode.Model
         public string BlockTimeNormalized { get; set; }
 
         [JsonProperty("inputCount")] 
-        public int InputCount { get; set; }
+        public int? InputCount { get; set; }
 
         [JsonProperty("outputCount")]
-        public int OutputCount { get; set; }
+        public int? OutputCount { get; set; }
 
     }
 }
