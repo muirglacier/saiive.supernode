@@ -12,5 +12,8 @@ namespace Saiive.SuperNode.Model
     {
         [JsonProperty("txid")]
         public string TxId { get; set; }
+
+        [JsonProperty("txId")]
+        public string TxId2 => TxId;
     }
 }
