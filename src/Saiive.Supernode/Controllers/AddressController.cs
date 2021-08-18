@@ -325,7 +325,7 @@ namespace Saiive.SuperNode.Controllers
             {
                 if (!tx.Coinbase)
                 {
-                    if (tx.IsCustom && !tx.IsCustomTxApplied)
+                    if (tx.IsCustom.Value && !tx.IsCustomTxApplied.Value)
                     {
                         _logger.LogError("Custom tx is not applied - therefore skip it!");
                         continue;
