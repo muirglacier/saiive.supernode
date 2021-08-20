@@ -5,6 +5,7 @@ namespace Saiive.SuperNode.Model
 {
     public class PoolPairModel
     {
+        [JsonProperty("id")]
         public string ID { get; set; }
 
         [JsonProperty("symbol")]
@@ -34,10 +35,10 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("totalLiquidity")]
         public double TotalLiquidity { get; set; }
 
-        [JsonProperty("reserveA/reserveB")]
+        [JsonProperty("reserveADivReserveB")]
         public double ReserveADivReserveB { get; set; }
 
-        [JsonProperty("reserveB/reserveA")]
+        [JsonProperty("reserveBDivReserveA")]
         public double ReserveBDivReserveA { get; set; }
 
         [JsonProperty("tradeEnabled")]
