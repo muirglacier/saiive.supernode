@@ -41,6 +41,12 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("reserveBDivReserveA")]
         public double ReserveBDivReserveA { get; set; }
 
+        [JsonProperty("reserveA/reserveB")]
+        public double ReserveADivReserveB2 { set => ReserveADivReserveB = value; }
+
+        [JsonProperty("reserveB/reserveA")]
+        public double ReserveBDivReserveA2 { set => ReserveBDivReserveA = value; }
+
         [JsonProperty("tradeEnabled")]
         public bool TradeEnabled { get; set; }
 
