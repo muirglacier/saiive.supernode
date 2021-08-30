@@ -118,16 +118,8 @@ namespace Saiive.SuperNode.Controllers
 
             try
             {
-                var balanceNative = await GetBalanceInternal(coin, network, address);
                 var balanceTokens = await GetAccountInternal(coin, network, address);
-                
-                balanceTokens.Add(new AccountModel
-                {
-                    Address = address,
-                    Balance = balanceNative.Balance,
-                    Token = "$DFI"
-                });
-
+               
                 foreach (var account in balanceTokens)
                 {
                     account.Address = null;
