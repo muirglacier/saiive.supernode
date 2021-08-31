@@ -164,27 +164,6 @@ namespace Saiive.SuperNode.Controllers
                     
                 }
                 
-                
-                foreach (var address in addresses.Addresses)
-                {
-                    var balanceNative = await GetBalanceInternal(coin, network, address);
-                    var account = new AccountModel
-                    {
-                        Balance = balanceNative.Balance,
-                        Token = "$DFI"
-                    };
-                    accounts[address].Add(account);
-
-
-                    if (!retAccountList.ContainsKey(account.Token))
-                    {
-                        retAccountList.Add(account.Token, account);
-                    }
-                    else
-                    {
-                        retAccountList[account.Token].Balance += account.Balance;
-                    }
-                }
 
                 return Ok(retAccountList);
             }
