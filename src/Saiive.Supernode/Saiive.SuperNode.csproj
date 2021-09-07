@@ -11,13 +11,21 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.9" />
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.17.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1-beta2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Saiive.DeFiChain.Sharp.Parser" Version="0.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
+  
+    <PackageReference Include="Saiive.BlockCypher.Core" Version="0.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Responses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Saiive.SuperNode.Bitcoin\Saiive.SuperNode.Bitcoin.csproj" />
+    <ProjectReference Include="..\Saiive.SuperNode.DeFiChain\Saiive.SuperNode.DeFiChain.csproj" />
+    <ProjectReference Include="..\Saiive.SuperNode.Model\Saiive.SuperNode.Model.csproj" />
   </ItemGroup>
 
 

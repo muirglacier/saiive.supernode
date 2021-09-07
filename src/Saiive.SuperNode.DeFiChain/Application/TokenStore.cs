@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Model;
 
-namespace Saiive.SuperNode.Application
+namespace Saiive.SuperNode.DeFiChain.Application
 {
     internal class TokenStore : ITokenStore
     {

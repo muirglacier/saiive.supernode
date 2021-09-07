@@ -183,6 +183,7 @@ services:
       - DEFI_CHAIN_API_URL=https://api.defichain.io
       - COINGECKO_API_URL=https://api.coingecko.com/api/v3
       - APPINSIGHTS_INSTRUMENTATIONKEY=${application_insights_ikey}
+      - BLOCKCYHPER_API_KEY=${blockcypher_api_key}
       - BITCOIN=true
       - DEFICHAIN=false
       - MACHINE_NAME=${machine_name}

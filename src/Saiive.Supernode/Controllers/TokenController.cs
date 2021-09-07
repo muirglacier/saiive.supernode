@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.SuperNode.Application;
+using Saiive.SuperNode.DeFiChain.Application;
 using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class TokenController : BaseController
+    public class TokenController : BaseLegacyController
     {
         private readonly ITokenStore _store;
 

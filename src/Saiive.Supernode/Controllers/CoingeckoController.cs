@@ -12,7 +12,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class CoingecokController : BaseController
+    public class CoingecokController : BaseLegacyController
     {
         public CoingecokController(ILogger<DefiChainController> logger, IConfiguration config) : base(logger, config)
         {

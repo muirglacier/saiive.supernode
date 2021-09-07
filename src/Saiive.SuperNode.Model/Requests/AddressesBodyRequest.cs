@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Saiive.SuperNode.Requests
+namespace Saiive.SuperNode.Model.Requests
 {
     public class AddressesBodyRequest
     {

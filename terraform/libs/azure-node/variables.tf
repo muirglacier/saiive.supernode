@@ -94,3 +94,7 @@ variable "docker_registry" {
 variable "application_insights_ikey" {
   
 }
+
+variable "blockcypher_api_key" {
+  
+}

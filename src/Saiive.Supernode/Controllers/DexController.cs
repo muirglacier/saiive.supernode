@@ -8,13 +8,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Model;
-using Saiive.SuperNode.Requests;
+using Saiive.SuperNode.Model.Requests;
 
 namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class DexController : BaseController
+    public class DexController : BaseLegacyController
     {
         public DexController(ILogger<DexController> logger, IConfiguration config) : base(logger, config)
         {

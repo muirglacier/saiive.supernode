@@ -12,7 +12,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class OracleController : BaseController
+    public class OracleController : BaseLegacyController
     {
         public OracleController(ILogger<OracleController> logger, IConfiguration config) : base(logger, config)
         {

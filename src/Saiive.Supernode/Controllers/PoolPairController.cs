@@ -13,7 +13,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class PoolPairController : BaseController
+    public class PoolPairController : BaseLegacyController
     {
         public PoolPairController(ILogger<PoolPairController> logger, IConfiguration config) : base(logger, config)
         {

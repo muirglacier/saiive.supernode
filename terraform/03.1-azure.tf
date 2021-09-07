@@ -52,4 +52,5 @@ module "chain_az_network_nodes" {
   docker_registry = data.azurerm_key_vault_secret.docker_registry.value
 
   application_insights_ikey = data.azurerm_key_vault_secret.application_insights_ikey.value
+  blockcypher_api_key = data.azurerm_key_vault_secret.blockcypherapikey.value
 }

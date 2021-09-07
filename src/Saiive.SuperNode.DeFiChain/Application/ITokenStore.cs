@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Saiive.SuperNode.Model;
 
-namespace Saiive.SuperNode.Application
+namespace Saiive.SuperNode.DeFiChain.Application
 {
     public interface ITokenStore
     {

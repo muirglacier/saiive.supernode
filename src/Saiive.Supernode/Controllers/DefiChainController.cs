@@ -12,7 +12,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class DefiChainController : BaseController
+    public class DefiChainController : BaseLegacyController
     {
         private YieldFramingModelRequest _lastValidItem = null;
 

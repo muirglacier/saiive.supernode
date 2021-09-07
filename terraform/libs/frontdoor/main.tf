@@ -50,7 +50,7 @@ resource "azurerm_frontdoor" "frontdoor" {
   routing_rule {
     name               = "${var.prefix}-${var.environment}-be-dfi-mainnet-route"
     accepted_protocols = ["Https"]
-    patterns_to_match  = ["/api/v1/mainnet/DFI/*"]
+    patterns_to_match  = ["/api/v1/mainnet/*"]
     frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
     
     forwarding_configuration {
@@ -59,45 +59,15 @@ resource "azurerm_frontdoor" "frontdoor" {
     }
   }
 
-  dynamic "routing_rule" {
-    for_each = length(var.bitcoin_nodes) >= 1 ? [1] : []
-    content {
-      name               = "${var.prefix}-${var.environment}-be-bitcoin-mainnet-route"
-      accepted_protocols = ["Https"]
-      patterns_to_match  = ["/api/v1/mainnet/BTC/*"]
-      frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
-      
-      forwarding_configuration {
-        forwarding_protocol = "HttpsOnly"
-        backend_pool_name   = "${var.prefix}-${var.environment}-backend-bitcoin-mainnet"
-      }
-    }
-  }
-
   routing_rule {
     name               = "${var.prefix}-${var.environment}-be-dfi-testnet-route"
     accepted_protocols = ["Https"]
-    patterns_to_match  = ["/api/v1/testnet/DFI/*"]
+    patterns_to_match  = ["/api/v1/testnet/*"]
     frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
     
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "${var.prefix}-${var.environment}-backend-dfi-testnet"
-    }
-  }
-
-  dynamic "routing_rule" {
-    for_each = length(var.bitcoin_nodes) >= 1 ? [1] : []
-    content {
-      name               = "${var.prefix}-${var.environment}-be-bitcoin-testnet-route"
-      accepted_protocols = ["Https"]
-      patterns_to_match  = ["/api/v1/testnet/BTC/*"]
-      frontend_endpoints = ["${var.prefix}-${var.environment}-frontend"]
-      
-      forwarding_configuration {
-        forwarding_protocol = "HttpsOnly"
-        backend_pool_name   = "${var.prefix}-${var.environment}-backend-bitcoin-testnet"
-      }
     }
   }
 
@@ -203,20 +173,6 @@ resource "azurerm_frontdoor" "frontdoor" {
   }
 
   backend_pool_health_probe {
-    name = "${var.prefix}-${var.environment}-health-bitcoin-mainnet"
-    path = "/api/v1/mainnet/BTC/health"
-    protocol = "Https"
-    probe_method = "GET"
-  }
-
-  backend_pool_health_probe {
-    name = "${var.prefix}-${var.environment}-health-bitcoin-testnet"
-    path = "/api/v1/testnet/BTC/health"
-    protocol = "Https"
-    probe_method = "GET"
-  }
-
-  backend_pool_health_probe {
     name = "${var.prefix}-${var.environment}-health-explorer-mainnet"
     path = "/"
     protocol = "Https"
@@ -274,25 +230,6 @@ resource "azurerm_frontdoor" "frontdoor" {
     health_probe_name   =  "${var.prefix}-${var.environment}-health-dfi-mainnet"
   }
 
-  dynamic "backend_pool" {
-    for_each = length(var.bitcoin_nodes) >= 1 ? [1] : []
-    content {
-      name = "${var.prefix}-${var.environment}-backend-bitcoin-mainnet"
-      
-      dynamic "backend" {
-        for_each = var.bitcoin_nodes
-        content {
-          address     = "api.${backend.value}.${var.dns_zone}"
-          host_header = "api.${backend.value}.${var.dns_zone}"
-          http_port   = 80
-          https_port  = 443
-        }
-      } 
-      load_balancing_name =  "${var.prefix}-${var.environment}-lb"
-      health_probe_name   =  "${var.prefix}-${var.environment}-health-bitcoin-mainnet"
-    }
-  }
-
   backend_pool {
     name = "${var.prefix}-${var.environment}-backend-dfi-testnet"
     
@@ -307,25 +244,6 @@ resource "azurerm_frontdoor" "frontdoor" {
     } 
     load_balancing_name =  "${var.prefix}-${var.environment}-lb"
     health_probe_name   =  "${var.prefix}-${var.environment}-health-dfi-testnet"
-  }
-
-   dynamic "backend_pool" {
-    for_each = length(var.bitcoin_nodes) >= 1 ? [1] : []
-    content {
-      name = "${var.prefix}-${var.environment}-backend-bitcoin-testnet"
-      
-      dynamic "backend" {
-        for_each = var.bitcoin_nodes
-        content {
-          address     = "api.${backend.value}.${var.dns_zone}"
-          host_header = "api.${backend.value}.${var.dns_zone}"
-          http_port   = 80
-          https_port  = 443
-        }
-      } 
-      load_balancing_name =  "${var.prefix}-${var.environment}-lb"
-      health_probe_name   =  "${var.prefix}-${var.environment}-health-bitcoin-testnet"
-    }
   }
 
   backend_pool {

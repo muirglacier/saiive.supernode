@@ -13,7 +13,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class MasternodeController : BaseController
+    public class MasternodeController : BaseLegacyController
     {
         private readonly IMasterNodeCache _masterNodeCache;
         private const string NULL_TX_ID = "0000000000000000000000000000000000000000000000000000000000000000";

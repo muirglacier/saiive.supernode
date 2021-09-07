@@ -23,7 +23,7 @@ namespace Saiive.SuperNode.Controllers
 
     [ApiController]
     [Route("/api/v1/")]
-    public class WalletController : BaseController
+    public class WalletController : BaseLegacyController
     {
         public WalletController(ILogger<WalletController> logger, IConfiguration config) : base(logger, config)
         {

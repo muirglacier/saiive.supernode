@@ -21,6 +21,8 @@ data "template_file" "docker_compose" {
     repo_user                   = var.docker_user
     repo_pass                   = var.docker_password
     application_insights_ikey   = var.application_insights_ikey
+    blockcypher_api_key         = var.blockcypher_api_key
+
     machine_name                = local.node_name
     volume_testnet              = "/mnt/block/testnet"
     volume_mainnet              = "/mnt/block/mainnet"

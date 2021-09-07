@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Saiive.SuperNode.Application;
+using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Cache;
+using Saiive.SuperNode.DeFiChain;
+using Saiive.SuperNode.Bitcoin;
 
 namespace Saiive.SuperNode
 {
@@ -41,12 +43,18 @@ namespace Saiive.SuperNode
                     .AllowAnyHeader();
             }));
 
-            services.AddSingleton<ITokenStore, TokenStore>();
             services.AddSingleton<IMasterNodeCache, MasterNodeCache>();
             services.AddSingleton<MasterNodeCacheStartupHandler>();
             services.AddHostedService(a => a.GetRequiredService<MasterNodeCacheStartupHandler>());
 
             services.AddApplicationInsightsTelemetry();
+
+
+            services.AddDeFiChain();
+            services.AddBitcoin();
+
+            services.AddChainProviderService();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +62,8 @@ namespace Saiive.SuperNode
         {
             app.UseSwagger();
 
+
+            app.UseChainProivderService();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DefiChain-API");

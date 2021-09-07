@@ -13,7 +13,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class HealthCheckController : BaseController
+    public class HealthCheckController : BaseLegacyController
     {
         private readonly Dictionary<string, double> _blockchainTimeCheckMinuteInterval;
         private const double DefaultCheckMinuteInterval = 300;

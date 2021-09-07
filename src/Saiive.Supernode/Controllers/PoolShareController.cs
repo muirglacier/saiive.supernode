@@ -7,13 +7,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Model;
-using Saiive.SuperNode.Requests;
+using Saiive.SuperNode.Model.Requests;
 
 namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class PoolShareController : BaseController
+    public class PoolShareController : BaseLegacyController
     {
         public PoolShareController(ILogger<PoolShareController> logger, IConfiguration config) : base(logger, config)
         {
