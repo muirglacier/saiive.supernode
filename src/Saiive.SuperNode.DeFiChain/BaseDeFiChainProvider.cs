@@ -9,7 +9,7 @@ namespace Saiive.SuperNode.DeFiChain
     internal class BaseDeFiChainProvider : BaseProvider
     {
         protected readonly ILogger Logger;
-        protected readonly string ApiUrl;
+        protected readonly string OceanUrl;
         protected readonly string DefiChainApiUrl;
         protected readonly string CoingeckoApiUrl;
 
@@ -21,11 +21,11 @@ namespace Saiive.SuperNode.DeFiChain
             _client.Timeout = TimeSpan.FromMinutes(5);
 
             Logger = logger;
-            ApiUrl = config["BITCORE_URL"];
+            OceanUrl = config["OCEAN_URL"];
             DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
             CoingeckoApiUrl = config["COINGECKO_API_URL"];
 
-            Logger.LogTrace($"Using bitcore {ApiUrl}");
+            Logger.LogTrace($"Using ocean {OceanUrl}");
             Logger.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
             Logger.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
         }

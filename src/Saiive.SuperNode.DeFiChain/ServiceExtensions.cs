@@ -9,13 +9,13 @@ namespace Saiive.SuperNode.DeFiChain
     {
         public static IServiceCollection AddDeFiChain(this IServiceCollection services)
         {
-
-
             services.AddSingleton<AccountHistoryProvider>();
             services.AddSingleton<AddressTransactionDetailProvider>();
             services.AddSingleton<AddressProvider>();
             services.AddSingleton<BlockProvider>();
             services.AddSingleton<TransactionProvider>();
+            services.AddSingleton<PoolPairProvider>();
+            services.AddSingleton<TokenProvider>();
 
             services.AddSingleton<IChainProvider, DeFiChainProvider>();
 

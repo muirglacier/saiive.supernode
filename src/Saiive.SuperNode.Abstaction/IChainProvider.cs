@@ -11,5 +11,9 @@ namespace Saiive.SuperNode.Abstaction
         public IAddressTransactionDetailProvider AddressTransactionDetailProvider { get; }
         public IBlockProvider BlockProvider { get; }
         public ITransactionProvider TransactionProvider { get; }
+
+        public IPoolPairProvider PoolPairProvider { get; }
+
+        public ITokenProvider TokenProvider { get; }
     }
 }

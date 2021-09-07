@@ -67,5 +67,8 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("details")] 
         public TransactionDetailModel Details { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
     }
 }

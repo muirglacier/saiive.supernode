@@ -38,46 +38,48 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<BlockTransactionModel>> GetTransactionsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs?limit=1000");
+            throw new NotImplementedException();
+            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/address/{address}/txs?limit=1000");
 
-            var data = await response.Content.ReadAsStringAsync();
+            //var data = await response.Content.ReadAsStringAsync();
 
-            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-            var ret = new List<BlockTransactionModel>();
+            //var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            //var ret = new List<BlockTransactionModel>();
 
-            foreach (var tx in txs)
-            {
-                try
-                {
-                    var vin = await GetBlockTransaction(coin, network, tx.MintTxId);
-                    ret.Add(vin);
+            //foreach (var tx in txs)
+            //{
+            //    try
+            //    {
+            //        var vin = await GetBlockTransaction(coin, network, tx.MintTxId);
+            //        ret.Add(vin);
 
-                    if (tx.SpentHeight > 0)
-                    {
-                        var vout = await GetBlockTransaction(coin, network, tx.SpentTxId);
-                        ret.Add(vout);
-                    }
+            //        if (tx.SpentHeight > 0)
+            //        {
+            //            var vout = await GetBlockTransaction(coin, network, tx.SpentTxId);
+            //            ret.Add(vout);
+            //        }
 
 
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "error occurred");
-                }
-            }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        _logger.LogError(e, "error occurred");
+            //    }
+            //}
 
-            return ret;
+            //return ret;
 
         }
         private async Task<BlockTransactionModel> GetBlockTransaction(string coin, string network, string txId)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}");
-            response.EnsureSuccessStatusCode();
+            throw new NotImplementedException();
+            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/tx/{txId}");
+            //response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
+            //var data = await response.Content.ReadAsStringAsync();
 
-            var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
-            return obj;
+            //var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
+            //return obj;
         }
 
     }

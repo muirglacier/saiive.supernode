@@ -36,8 +36,8 @@ namespace Saiive.SuperNode.Cache
 
         private async Task UpdateCachedList(string network, string coin)
         {
-            
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/masternodes/list");
+            return;
+            var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/masternodes/list");
 
             try
             {

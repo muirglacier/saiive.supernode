@@ -19,11 +19,12 @@ namespace Saiive.SuperNode.Controllers
         }
 
         [HttpGet("{network}/{coin}/gov")]
+        [Obsolete]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetGov(string coin, string network)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/lp/gov");
+            var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/lp/gov");
 
             try
             {

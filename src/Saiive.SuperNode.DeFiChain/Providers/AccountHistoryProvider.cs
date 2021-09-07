@@ -20,31 +20,34 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool? noRewards)
         {
-            string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{System.Web.HttpUtility.UrlEncode(token)}";
 
-            var dict = new Dictionary<string, string>();
+            throw new NotImplementedException();
 
-            if (!String.IsNullOrEmpty(maxBlockHeight))
-            {
-                dict.Add("maxBlockHeight", maxBlockHeight);
-            }
+            //string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{System.Web.HttpUtility.UrlEncode(token)}";
 
-            if (!String.IsNullOrEmpty(limit))
-            {
-                dict.Add("limit", limit);
-            }
+            //var dict = new Dictionary<string, string>();
 
-            dict.Add("no_rewards", noRewards.ToString());
+            //if (!String.IsNullOrEmpty(maxBlockHeight))
+            //{
+            //    dict.Add("maxBlockHeight", maxBlockHeight);
+            //}
 
-            var response = await _client.GetAsync(QueryHelpers.AddQueryString(query, dict));
+            //if (!String.IsNullOrEmpty(limit))
+            //{
+            //    dict.Add("limit", limit);
+            //}
 
-            response.EnsureSuccessStatusCode();
+            //dict.Add("no_rewards", noRewards.ToString());
 
-            var data = await response.Content.ReadAsStringAsync();
+            //var response = await _client.GetAsync(QueryHelpers.AddQueryString(query, dict));
 
-            var obj = JsonConvert.DeserializeObject<List<AccountHistory>>(data);
+            //response.EnsureSuccessStatusCode();
 
-            return obj;
+            //var data = await response.Content.ReadAsStringAsync();
+
+            //var obj = JsonConvert.DeserializeObject<List<AccountHistory>>(data);
+
+            //return obj;
         }
 
         public async Task<List<AccountHistory>> GetAccountHistory(string network, string address, string token, string limit, string maxBlockHeight, bool? no_rewards)

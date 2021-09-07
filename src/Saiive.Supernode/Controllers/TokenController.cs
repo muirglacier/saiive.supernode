@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.SuperNode.DeFiChain.Application;
+using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class TokenController : BaseLegacyController
+    public class TokenController : BaseController
     {
-        private readonly ITokenStore _store;
 
-        public TokenController(ILogger<TokenController> logger, IConfiguration config, ITokenStore store) : base(logger, config)
+        public TokenController(ILogger<TokenController> logger, ChainProviderCollection chainProvider) : base(logger, chainProvider)
         {
-            _store = store;
         }
 
 
@@ -27,15 +24,11 @@ namespace Saiive.SuperNode.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> ListTokens(string coin, string network)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/token/list");
+            
 
             try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                response.EnsureSuccessStatusCode();
-
-                
-                return Ok(data);
+                return Ok(await ChainProviderCollection.GetInstance(coin).TokenProvider.GetAll(network));
             }
             catch (Exception e)
             {
@@ -51,8 +44,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-
-                return Ok(await _store.GetToken(coin, network, token));
+                return Ok(await ChainProviderCollection.GetInstance(coin).TokenProvider.GetToken(network, token));
             }
             catch (Exception e)
             {

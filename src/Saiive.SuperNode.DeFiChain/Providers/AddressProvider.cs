@@ -5,6 +5,7 @@ using Saiive.DeFiChain.Sharp.Parser;
 using Saiive.DeFiChain.Sharp.Parser.Txs;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.DeFiChain.Application;
+using Saiive.SuperNode.DeFiChain.Ocean;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
 using System;
@@ -27,7 +28,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<AccountModel>> GetAccount(string network, string address)
         {
-            return await GetAccountInternal("DFI", network, address);
+            return await GetAccountInternal(network, address);
         }
 
         public async Task<IList<Account>> GetAccount(string network, AddressesBodyRequest addresses)
@@ -36,7 +37,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var address in addresses.Addresses)
             {
-                var accountModel = await GetAccountInternal("DFI", network, address);
+                var accountModel = await GetAccountInternal(network, address);
 
                 if (accountModel.Count > 0)
                 {
@@ -53,7 +54,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BalanceModel> GetBalance(string network, string address)
         {
-            return await GetBalanceInternal("DFI", network, address);
+            return await GetBalanceInternal(network, address);
         }
 
         public async Task<IList<BalanceModel>> GetBalance(string network, AddressesBodyRequest addresses)
@@ -62,14 +63,14 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var address in addresses.Addresses)
             {
-                ret.Add(await GetBalanceInternal("DFI", network, address));
+                ret.Add(await GetBalanceInternal(network, address));
             }
             return ret;
         }
 
         public async Task<IList<AccountModel>> GetTotalBalance(string network, string address)
         {
-            var balanceTokens = await GetAccountInternal("DFI", network, address);
+            var balanceTokens = await GetAccountInternal(network, address);
 
             foreach (var account in balanceTokens)
             {
@@ -86,7 +87,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var address in addresses.Addresses)
             {
-                var accountModel = await GetAccountInternal("DFI", network, address);
+                var accountModel = await GetAccountInternal(network, address);
                 accounts.Add(address, accountModel);
 
                 foreach (var account in accountModel)
@@ -110,7 +111,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<TransactionModel>> GetTransactions(string network, string address)
         {
-            return await GetTransactionsInternal("DFI", network, address);
+            return await GetTransactionsInternal(network, address);
         }
 
         public async Task<IList<TransactionModel>> GetTransactions(string network, AddressesBodyRequest addresses)
@@ -119,7 +120,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var address in addresses.Addresses)
             {
-                ret.AddRange(await GetTransactionsInternal("DFI", network, address));
+                ret.AddRange(await GetTransactionsInternal(network, address));
             }
             return ret;
         }
@@ -141,9 +142,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
 
 
-        private async Task<BalanceModel> GetBalanceInternal(string coin, string network, string address)
+        private async Task<BalanceModel> GetBalanceInternal(string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/balance");
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/balance");
 
             var data = await response.Content.ReadAsStringAsync();
             try
@@ -156,175 +157,183 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             }
 
 
-            var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
-            obj.Address = address;
+            var obj = JsonConvert.DeserializeObject<OceanBalance>(data);
+            
 
-            return obj;
+            var dfiToken = await _tokenStore.GetToken(network, "DFI");
+
+            return new BalanceModel
+            {
+                Address = address,
+                Balance = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
+                Confirmed = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
+                Unconfirmed = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
+            };
+
+
 
         }
 
-        private async Task<IList<AccountModel>> GetAccountInternal(string coin, string network, string address)
+        private async Task<IList<AccountModel>> GetAccountInternal(string network, string address)
         {
             var ret = new List<AccountModel>();
 
-            if (coin == "DFI")
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/tokens");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            try
             {
-                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/account");
-
-                var data = await response.Content.ReadAsStringAsync();
-
-                try
-                {
-                    response.EnsureSuccessStatusCode();
-                }
-                catch
-                {
-                    throw new ArgumentException(data);
-                }
-
-                var obj = JsonConvert.DeserializeObject<List<string>>(data);
-
-
-                foreach (var acc in obj)
-                {
-                    var split = acc.Split("@");
-
-                    var token = await _tokenStore.GetToken(coin, network, split[1]);
-
-                    var account = new AccountModel
-                    {
-                        Address = address,
-                        Raw = acc,
-                        Balance = Convert.ToDouble(split[0], CultureInfo.InvariantCulture) * token.Multiplier,
-                        Token = split[1]
-                    };
-
-                    ret.Add(account);
-                }
+                response.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                throw new ArgumentException(data);
             }
 
-            var nativeBalance = await GetBalanceInternal(coin, network, address);
-            if (nativeBalance.Confirmed > 0)
+            var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTokens>>>(data);
+
+
+            foreach (var acc in obj.Data)
             {
-                ret.Add(new AccountModel
+
+                var token = await _tokenStore.GetToken(network, acc.Symbol);
+
+                var account = new AccountModel
                 {
                     Address = address,
-                    Balance = nativeBalance.Confirmed,
-                    Raw = $"{nativeBalance.Confirmed}@{coin}",
-                    Token = $"${coin}"
-                });
+                    Raw = acc.Amount,
+                    Balance = Convert.ToDouble(acc.Amount, CultureInfo.InvariantCulture) * token.Multiplier,
+                    Token = acc.DisplaySymbol
+                };
+
+                ret.Add(account);
             }
+
+
+            var nativeBalance = await GetBalanceInternal(network, address);
+
+            ret.Add(new AccountModel
+            {
+                Address = address,
+                Balance = nativeBalance.Balance,
+                Raw = $"{nativeBalance.Balance}@DFI",
+                Token = $"$DFI"
+            });
+
 
 
             return ret;
 
         }
 
-        private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
+        internal async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
+            var responseVouts = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}/vouts");
+            var responseVins = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}/vins");
 
             var data = await response.Content.ReadAsStringAsync();
-            var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
-            return tx;
+            var vouts = await responseVouts.Content.ReadAsStringAsync();
+            var vins = await responseVins.Content.ReadAsStringAsync();
+
+            var tx = JsonConvert.DeserializeObject<OceanTransactionDetail>(data);
+            var voutsObj = JsonConvert.DeserializeObject<OceanVInDetail>(data);
+            var vinsObj = JsonConvert.DeserializeObject<OceanVOutDetail>(data);
+
+            return await ConvertOceanTranscationDetails(network, tx, voutsObj, vinsObj);
         }
 
-        private async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string network, string address)
+        private async Task<TransactionDetailModel> ConvertOceanTranscationDetails(string network, OceanTransactionDetail tx, OceanVInDetail vin, OceanVOutDetail vout)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs?limit=1000");
+            var token = await _tokenStore.GetToken(network, "DFI");
+            var ret = new TransactionDetailModel
+            {
+                Inputs = new List<TransactionModel>(),
+                Outputs = new List<TransactionModel>()
+            };
+
+            foreach (var vi in vin.Data)
+            {
+                ret.Inputs.Add(new TransactionModel
+                {
+                    Value = Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
+                    Script = vi.Script.Hex,
+                    SpentTxId = vi.Vout.Txid,
+                    MintTxId = vi.Txid
+                });
+            }
+
+            foreach (var vo in vout.Data)
+            {
+                ret.Outputs.Add(new TransactionModel
+                {
+                    Value = Convert.ToUInt64(Convert.ToDouble(vo.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
+                    Script = vo.Script.Hex,
+                    SpentTxId = vo.Vout.Txid,
+                    MintTxId = vo.Txid,
+                    Coinbase = vo.Script.Type == "nulldata"
+                });
+            }
+
+
+            return ret;
+        }
+
+        private async Task<List<TransactionModel>> GetTransactionsInternal(string network, string address)
+        {
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/transactions");
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
 
-            var retTxs = await CheckValidTransactions(txs, coin, network);
-            return retTxs;
+            return await ConvertOceanModel(txs, network, address);
 
+        }
+
+        private async Task<List<TransactionModel>> ConvertOceanModel(OceanTransactions oceanTransactions, string network, string address)
+        {
+            var ret = new List<TransactionModel>();
+
+            var token = await _tokenStore.GetToken(network, "DFI");
+
+            foreach (var tx in oceanTransactions.Data)
+            {
+                var valueProp = String.IsNullOrEmpty(tx.Value) ? tx.Vout.Value : tx.Value;
+                var txType = tx.Type;
+
+                ret.Add(new TransactionModel
+                {
+                    Address = address,
+                    Chain = "DFI",
+                    Id = tx.Id,
+                    MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
+                    MintIndex = String.IsNullOrEmpty(tx.Type) ? -1 : (tx.Type == "vout" ? tx.Vout.N : -1),
+                    MintTxId = String.IsNullOrEmpty(tx.Type) ? null : (tx.Type == "vout" ? tx.Vout.Txid : null),
+                    Network = network,
+                    Script = tx.Script.Hex,
+                    SpentTxId = String.IsNullOrEmpty(tx.Type) ? null : (tx.Type == "vin" ? tx.Vin.Txid : null),
+                    SpentHeight = tx.Type == "vin" ? tx.Block.Height : -1,
+                    Value = Convert.ToUInt64(Convert.ToDouble(valueProp, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
+                    Type = tx.Type
+                });
+
+            }
+
+            return ret;
         }
 
         private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}?unspent=true&limit=1000");
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/transactions/unspent");
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-            var retTxs = await CheckValidTransactions(txs, coin, network);
-            return retTxs;
+            var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
 
-
+            return await ConvertOceanModel(txs, network, address);
         }
-
-        private async Task<List<TransactionModel>> CheckValidTransactions(List<TransactionModel> txs, string coin,
-           string network)
-        {
-            var retTxs = new List<TransactionModel>();
-
-            foreach (var tx in txs)
-            {
-                if (!tx.Coinbase)
-                {
-
-                    var details = await GetTransactionDetails(coin, network, tx.MintTxId);
-
-                    if (details.Inputs == null || details.Inputs.Count == 0)
-                    {
-                        _logger.LogError($"Found invalid tx at height {tx.MintHeight}. TX inputs already spent, tx will never get confirmed. Ignore it here.... ({tx.MintTxId})");
-                        continue;
-                    }
-
-                    var useTx = true;
-                    foreach (var output in details.Outputs)
-                    {
-                        var script = output.Script.Substring(4, output.Script.Length - 4);
-
-                        var byteArray = script.ToByteArray();
-                        if (!DefiScriptParser.IsDeFiTransaction(byteArray))
-                        {
-                            continue;
-                        }
-                        var dfiScript = DefiScriptParser.Parse(byteArray);
-
-                        if (dfiScript is CreateMasterNode)
-                        {
-                            _logger.LogInformation(
-                                $"This transaction is a create masternode tx - we can't spent them, so discard them!");
-                            useTx = false;
-                            break;
-                        }
-                    }
-
-                    if (!useTx)
-                    {
-                        continue;
-                    }
-
-                }
-
-                var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{tx.MintTxId}");
-                response.EnsureSuccessStatusCode();
-
-                var data = await response.Content.ReadAsStringAsync();
-
-                var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
-
-
-                if (obj.BlockHeight > 0)
-                {
-                    tx.Confirmations = obj.Confirmations;
-
-                    tx.IsCustom = obj.IsCustom;
-                    tx.IsCustomTxApplied = obj.IsCustomTxApplied;
-                    tx.CustomData = obj.CustomData;
-                    tx.TxType = obj.TxType;
-
-                    retTxs.Add(tx);
-                }
-            }
-
-            return retTxs;
-        }
-
     }
 
 }

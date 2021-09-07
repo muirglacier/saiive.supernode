@@ -28,7 +28,7 @@ namespace Saiive.SuperNode.Controllers
         {
             var httpContent =
                 new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{ApiUrl}/api/{coin}/{network}/lp/testpoolswap", httpContent);
+            var response = await _client.PostAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/lp/testpoolswap", httpContent);
 
             var data = await response.Content.ReadAsStringAsync();
             try

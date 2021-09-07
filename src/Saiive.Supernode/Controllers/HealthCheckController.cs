@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class HealthCheckController : BaseLegacyController
+    public class HealthCheckController : BaseController
     {
         private readonly Dictionary<string, double> _blockchainTimeCheckMinuteInterval;
         private const double DefaultCheckMinuteInterval = 300;
 
-        public HealthCheckController(IConfiguration config, ILogger<HealthCheckController> logger) : base(logger, config)
+        public HealthCheckController(ILogger<HealthCheckController> logger, ChainProviderCollection chainProviderCollection) : base(logger, chainProviderCollection)
         {
             _blockchainTimeCheckMinuteInterval = new Dictionary<string, double>();
             _blockchainTimeCheckMinuteInterval.Add("BTC", DefaultCheckMinuteInterval);
@@ -37,20 +35,9 @@ namespace Saiive.SuperNode.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> HealthCheckNetwork(string network, string coin)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
-
-            var data = await response.Content.ReadAsStringAsync();
             try
             {
-                response.EnsureSuccessStatusCode();
-
-                if (response.StatusCode == HttpStatusCode.NoContent)
-                {
-                    throw new ArgumentException("Node is not synced or running...");
-                }
-
-
-                var obj = JsonConvert.DeserializeObject<BlockModel>(data);
+                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentHeight(network);
 
                 if (obj == null)
                 {
@@ -76,7 +63,7 @@ namespace Saiive.SuperNode.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError($"{data}\n{e}", e);
+                Logger.LogError($"{e}", e);
                 return BadRequest(new ErrorModel(e.Message));
             }
         }

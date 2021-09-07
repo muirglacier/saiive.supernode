@@ -8,13 +8,21 @@ namespace Saiive.SuperNode.DeFiChain
     {
         public string CoinType => "DFI";
 
-        public DeFiChainProvider(AccountHistoryProvider accountHistoryProvider, AddressProvider addressProvider, AddressTransactionDetailProvider addressTransactionDetailProvider, BlockProvider blockProvider, TransactionProvider transactionProvider)
+        public DeFiChainProvider(AccountHistoryProvider accountHistoryProvider, 
+            AddressProvider addressProvider, 
+            AddressTransactionDetailProvider addressTransactionDetailProvider, 
+            BlockProvider blockProvider, 
+            TransactionProvider transactionProvider, 
+            PoolPairProvider poolPairProvider,
+            TokenProvider tokenProvider)
         {
             AccountHistoryProvider = accountHistoryProvider;
             AddressProvider = addressProvider;
             AddressTransactionDetailProvider = addressTransactionDetailProvider;
             BlockProvider = blockProvider;
             TransactionProvider = transactionProvider;
+            PoolPairProvider = poolPairProvider;
+            TokenProvider = tokenProvider;
         }
 
         public IAccountHistoryProvider AccountHistoryProvider { get; }
@@ -26,5 +34,8 @@ namespace Saiive.SuperNode.DeFiChain
         public IBlockProvider BlockProvider { get; }
 
         public ITransactionProvider TransactionProvider { get; }
+
+        public IPoolPairProvider PoolPairProvider { get; }
+        public ITokenProvider TokenProvider { get; }
     }
 }
