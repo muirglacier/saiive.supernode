@@ -120,7 +120,6 @@ resource "azurerm_function_app" "functions" {
 
     site_config {
         always_on = true
-        dotnet_framework_version = "v3.1"
     }
 
     tags = {
