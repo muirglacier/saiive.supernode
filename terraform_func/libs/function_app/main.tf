@@ -105,7 +105,6 @@ resource "azurerm_function_app" "functions" {
         WEBSITE_LOAD_USER_PROFILE = 1
         WEBSITE_VNET_ROUTE_ALL = 1
 
-        OpenApi__HostNames = "${local.cname}.${var.dns_zone}/api"
         OpenApi__Title = "saiive.supernode"
         OpenApi__Description = "saiive.supernode API"
         OpenApi__TermsOfService = "https://static.saiive.live/tos.html"
