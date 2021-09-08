@@ -1,6 +1,4 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Hosting;
 using Saiive.SuperNode.Bitcoin;
 using Saiive.SuperNode.DeFiChain;
 using Saiive.SuperNode.Function;
@@ -17,12 +15,6 @@ namespace Saiive.SuperNode.Function
             builder.Services.AddBitcoin();
 
             builder.Services.AddChainProviderService();
-        }
-
-
-        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
-        {
-            base.ConfigureAppConfiguration(builder);
         }
     }
 
