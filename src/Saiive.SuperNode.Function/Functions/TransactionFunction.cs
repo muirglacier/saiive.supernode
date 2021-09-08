@@ -82,7 +82,7 @@ namespace Saiive.SuperNode.Function.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/height/{height}")] HttpRequest req,
             string coin, string network, int height)
         {
-            return GetTransactionsByBlockHeight(req, coin, network, height, true);
+            return GetTransactionsByBlockHeightDetails(req, coin, network, height, true);
         }
 
 
@@ -93,7 +93,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "address", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType:typeof(object), Example = typeof(List<BlockTransactionModel>))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
-        public async Task<IActionResult> GetTransactionsByBlockHeight(
+        public async Task<IActionResult> GetTransactionsByBlockHeightDetails(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/height/{height}/{includeDetails}")] HttpRequest req,
             string coin, string network, int height, bool includeDetails)
         {
