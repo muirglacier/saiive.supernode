@@ -7,23 +7,15 @@ terraform {
   required_version = ">= 0.13"
 }
 
-
 terraform {
   required_providers {
-    uptimerobot = {
-      source  = "louy/uptimerobot"
-      version = "0.5.1"
-    }
+    
 
     azurerm = {
       source = "hashicorp/azurerm"
     }
 
-    scaleway = {
-      source = "scaleway/scaleway"
-      version = "1.17.2"
-    }
-
+    
     local = {
       source = "hashicorp/local"
     }
@@ -41,15 +33,6 @@ terraform {
 provider "azurerm" {
   features {}
 }
-
-provider "scaleway" {
-  zone   = "nl-ams-1"
-  region = "nl-ams"
-}
-
-provider "uptimerobot" {
-}
-
 
 # define the deployment location (az account list-locations --output table)
 variable "location" {
