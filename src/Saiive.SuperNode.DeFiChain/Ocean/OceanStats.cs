@@ -21,7 +21,7 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
     public class OceanBurned
     {
         [JsonProperty("address")]
-        public int Address { get; set; }
+        public double Address { get; set; }
 
         [JsonProperty("emission")]
         public double Emission { get; set; }

@@ -29,10 +29,10 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "height", In = ParameterLocation.Path, Required = true, Type = typeof(int))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel), Description = "The OK response")]
         public async Task<IActionResult> GetCurrentBlock(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/{height}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/{height:int}")] HttpRequestMessage req,
             string network, string coin, int height,
             ILogger log)
-        {
+        {   
             try
             {
                 var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentBlock(network, height);
@@ -53,7 +53,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentHeight(
                [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/tip")] HttpRequest req,
-               string coin, string network)
+               string network, string coin)
         {
 
             try
