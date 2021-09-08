@@ -82,6 +82,9 @@ resource "azurerm_app_service_plan" "asp" {
         size = var.size
     }
 }
+locals {
+    cname = var.environment == "prod" ? var.dns_name :  "${var.environment}-${var.dns_name}"
+}
 
 resource "azurerm_function_app" "functions" {
     name = "${var.prefix}-${var.environment}-function"
@@ -101,7 +104,12 @@ resource "azurerm_function_app" "functions" {
         WEBSITE_LOAD_USER_PROFILE = 1
         WEBSITE_VNET_ROUTE_ALL = 1
 
-        APPINSIGHTS_INSTRUMENTATIONKEY = var.environment == "prod" ? azurerm_application_insights.application_insights[0].instrumentation_key : ""
+        OpenApi__HostNames = local.cname
+        OpenApi__Title = "saiive.supernode"
+        OpenApi__Description = "saiive.supernode API"
+        OpenApi__TermsOfService = "https://static.saiive.live/tos.html"
+
+       // APPINSIGHTS_INSTRUMENTATIONKEY = var.environment == "prod" ? azurerm_application_insights.application_insights[0].instrumentation_key : ""
 
         BITCORE_URL= var.bitcore_url
         OCEAN_URL=  var.ocean_url
@@ -117,4 +125,37 @@ resource "azurerm_function_app" "functions" {
     tags = {
         Environment = var.environment
     }
+}
+
+
+resource "azurerm_dns_cname_record" "function_domain_name" {
+  name                = local.cname
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  record              = azurerm_function_app.functions.default_hostname
+}
+
+resource "azurerm_dns_txt_record" "function_domain_name_txt" {
+  name                = "asuid.${local.cname}"
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+
+  record {
+    value = azurerm_function_app.functions.custom_domain_verification_id
+  }
+}
+
+
+resource "azurerm_app_service_custom_hostname_binding" "binding" {
+
+ depends_on = [
+     azurerm_dns_cname_record.function_domain_name,
+     azurerm_dns_txt_record.function_domain_name_txt
+ ]
+
+  hostname            = "${local.cname}.${var.dns_zone}"
+  app_service_name    = azurerm_function_app.functions.name
+  resource_group_name = var.resource_group
 }

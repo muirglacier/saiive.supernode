@@ -36,6 +36,15 @@ variable "size" {
 	default = "Y1"
 }
 
+variable "dns_name" {
+	default = "supernode"
+}
+variable "dns_zone" {
+  
+}
+variable "dns_zone_resource_group" {
+
+}
 variable "bitcore_url" {
 	
 }

@@ -75,3 +75,111 @@ stages:
           $(tag)
           alpha
           ${{ variables.addImageTags }}
+
+- stage: BuildAzureFunction
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '$(Parameters.RestoreBuildProjects)'
+        includeNuGetOrg: true
+
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        projects: '$(Parameters.RestoreBuildProjects)'
+        arguments: '--configuration $(BuildConfiguration)'
+
+
+- stage: PackAzureFunction
+  displayName: Pack and archive azure functions
+  dependsOn: BuildAzureFunction
+  condition: succeeded()
+
+  jobs:
+  - job: Publish
+    displayName: 00 Publish azure function
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '$(Parameters.RestoreBuildProjects)'
+        includeNuGetOrg: true
+        
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+          command: publish
+          projects: '$(Parameters.AzureFunctionAlert)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/function'
+          zipAfterPublish: true
+          modifyOutputPath: false
+          publishWebProjects: false
+        
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+          command: publish
+          projects: '$(Parameters.AzureFunctionMessenger)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/function-messenger'
+          zipAfterPublish: true
+          modifyOutputPath: false
+          publishWebProjects: false
+          
+    - task: Bash@3
+      displayName: Rename file
+      inputs:
+          targetType: 'inline'
+          workingDirectory: $(Build.ArtifactStagingDirectory)/function
+          script: 'mv function.zip $(Build.BuildNumber)-function.zip'
+    - task: Bash@3
+      displayName: Rename file
+      inputs:
+          targetType: 'inline'
+          workingDirectory: $(Build.ArtifactStagingDirectory)/function-messenger
+          script: 'mv function-messenger.zip $(Build.BuildNumber)-function-messenger.zip'
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'AzureFunctions'
+          publishLocation: 'Container'
+
+
+- stage: PackageTerraform
+  displayName: Pack terraform
+  dependsOn: BuildAzureFunction
+
+  jobs:
+  - job: Pack
+    displayName: Pack terraform
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    - task: CopyFiles@2
+      inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/terraform'
+          Contents: '**'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+          CleanTargetFolder: true
+          OverWrite: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'terraform'
+          publishLocation: 'Container'
