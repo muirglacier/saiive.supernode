@@ -23,7 +23,7 @@ namespace Saiive.SuperNode.Controllers
         [HttpPost("{network}/{coin}/accounthistory/{address}/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AccountHistory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetAccountHistory(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool? no_rewards)
+        public async Task<IActionResult> GetAccountHistory(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool no_rewards)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Saiive.SuperNode.Controllers
         [HttpPost("{network}/{coin}/history-all/{token}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AccountHistory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        public async Task<IActionResult> GetTotalBalance(string coin, string network, string token, string? limit, string? maxBlockHeight, bool? no_rewards, AddressesBodyRequest addresses)
+        public async Task<IActionResult> GetTotalBalance(string coin, string network, string token, string? limit, string? maxBlockHeight, bool no_rewards, AddressesBodyRequest addresses)
         {
             try
             {

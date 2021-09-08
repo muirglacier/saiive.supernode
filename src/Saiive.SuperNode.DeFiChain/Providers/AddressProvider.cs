@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Saiive.DeFiChain.Sharp.Parser;
-using Saiive.DeFiChain.Sharp.Parser.Txs;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.DeFiChain.Application;
 using Saiive.SuperNode.DeFiChain.Ocean;

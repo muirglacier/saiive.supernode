@@ -4,18 +4,18 @@ namespace Saiive.SuperNode.Abstaction
 {
     public interface IChainProvider
     {
-        public string CoinType { get; }
+        string CoinType { get; }
 
-        public IAccountHistoryProvider AccountHistoryProvider { get; }
-        public IAddressProvider AddressProvider { get; }
-        public IAddressTransactionDetailProvider AddressTransactionDetailProvider { get; }
-        public IBlockProvider BlockProvider { get; }
-        public ITransactionProvider TransactionProvider { get; }
+        IAccountHistoryProvider AccountHistoryProvider { get; }
+        IAddressProvider AddressProvider { get; }
+        IAddressTransactionDetailProvider AddressTransactionDetailProvider { get; }
+        IBlockProvider BlockProvider { get; }
+        ITransactionProvider TransactionProvider { get; }
 
-        public IPoolPairProvider PoolPairProvider { get; }
+        IPoolPairProvider PoolPairProvider { get; }
 
-        public ITokenProvider TokenProvider { get; }
+        ITokenProvider TokenProvider { get; }
 
-        public IMasterNodeProvider MasterNodeProivder { get; }
+        IMasterNodeProvider MasterNodeProivder { get; }
     }
 }

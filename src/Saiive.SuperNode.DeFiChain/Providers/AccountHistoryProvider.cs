@@ -18,7 +18,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         }
 
-        private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string? limit, string? maxBlockHeight, bool? noRewards)
+        private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string limit, string maxBlockHeight, bool noRewards)
         {
 
             throw new NotImplementedException();
@@ -50,13 +50,13 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             //return obj;
         }
 
-        public async Task<List<AccountHistory>> GetAccountHistory(string network, string address, string token, string limit, string maxBlockHeight, bool? no_rewards)
+        public async Task<List<AccountHistory>> GetAccountHistory(string network, string address, string token, string limit, string maxBlockHeight, bool no_rewards)
         {
             var history = await GetAccountHistoryInternal("DFI", network, address, token, limit, maxBlockHeight, no_rewards);
             return history;
         }
 
-        public async Task<List<AccountHistory>> GetTotalBalance(string network, string token, string limit, string maxBlockHeight, bool? no_rewards, AddressesBodyRequest addresses)
+        public async Task<List<AccountHistory>> GetTotalBalance(string network, string token, string limit, string maxBlockHeight, bool no_rewards, AddressesBodyRequest addresses)
         {
             var retHistory = new List<AccountHistory>();
 
