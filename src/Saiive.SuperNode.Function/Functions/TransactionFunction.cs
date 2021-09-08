@@ -28,7 +28,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "txId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(TransactionModel), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(TransactionModel), Description = "The OK response")]
         public async Task<IActionResult> GetTransactionById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/id/{txId}")] HttpRequestMessage req,
             string network, string coin, string txId,
@@ -52,7 +52,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "block", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<TransactionModel>))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(List<TransactionModel>))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
         public async Task<IActionResult> GetTransactionsByBlock(
                [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/block/{block}")] HttpRequest req,
@@ -76,7 +76,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "height", In = ParameterLocation.Path, Required = true, Type = typeof(int))]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<BlockTransactionModel>))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(List<BlockTransactionModel>))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
         public Task<IActionResult> GetTransactionsByBlockHeight(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/height/{height}")] HttpRequest req,
