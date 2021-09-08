@@ -8,7 +8,7 @@ scaleway_node_count=0
 scaleway_btc_node_count=0
 scaleway_server_type="DEV1-XL"
 
-azure_node_count=1
+azure_node_count=0
 
 
 dns_zone = "saiive.live"
