@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Saiive.SuperNode.Abstaction;
 using System;
@@ -36,9 +37,10 @@ namespace Saiive.SuperNode.Function.Functions
                     chainProviderCollection.Add(service.CoinType, service);
             }
 
+            var config = serviceProvider.GetService<IConfiguration>();
 
-            DefiChainApiUrl = Environment.GetEnvironmentVariable("DEFI_CHAIN_API_URL");
-            CoingeckoApiUrl = Environment.GetEnvironmentVariable("COINGECKO_API_URL");
+            DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
+            CoingeckoApiUrl = config["COINGECKO_API_URL"];
 
         }
 
