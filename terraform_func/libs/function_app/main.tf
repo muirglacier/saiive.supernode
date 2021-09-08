@@ -93,6 +93,7 @@ resource "azurerm_function_app" "functions" {
     app_service_plan_id = azurerm_app_service_plan.asp.id
     storage_connection_string = azurerm_storage_account.storage.primary_connection_string
     version = "~3"
+    https_only = true
 
     app_settings = {
         https_only = true
