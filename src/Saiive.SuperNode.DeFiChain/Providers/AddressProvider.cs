@@ -72,11 +72,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
             var balanceTokens = await GetAccountInternal(network, address);
 
-            foreach (var account in balanceTokens)
-            {
-                account.Address = null;
-                account.Raw = null;
-            }
+           
             return balanceTokens;
         }
 
@@ -92,8 +88,6 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
                 foreach (var account in accountModel)
                 {
-                    account.Address = null;
-                    account.Raw = null;
                     if (!retAccountList.ContainsKey(account.Token))
                     {
                         retAccountList.Add(account.Token, account);
@@ -309,8 +303,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Chain = "DFI",
                     Id = tx.Id,
                     MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
-                    MintIndex = String.IsNullOrEmpty(tx.Type) ? -1 : (tx.Type == "vout" ? tx.Vout.N : -1),
-                    MintTxId = String.IsNullOrEmpty(tx.Type) ? null : (tx.Type == "vout" ? tx.Vout.Txid : null),
+                    MintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1 ): (tx.Type == "vout" ? tx.Vout.N : -1),
+                    MintTxId = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.Txid ?? null) : (tx.Type == "vout" ? tx.Vout.Txid : null),
                     Network = network,
                     Script = tx.Script.Hex,
                     SpentTxId = String.IsNullOrEmpty(tx.Type) ? null : (tx.Type == "vin" ? tx.Vin.Txid : null),

@@ -5,13 +5,15 @@ VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode", "Saiive.Supernode\Saiive.SuperNode.csproj", "{EFCB6BE7-8245-47FD-AED3-D8E8663E999E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.Abstaction", "Saiive.SuperNode.Abstaction\Saiive.SuperNode.Abstaction.csproj", "{94353B79-CEF7-44B5-8E3C-A04F5F6E2CE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.Abstaction", "Saiive.SuperNode.Abstaction\Saiive.SuperNode.Abstaction.csproj", "{94353B79-CEF7-44B5-8E3C-A04F5F6E2CE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.Bitcoin", "Saiive.SuperNode.Bitcoin\Saiive.SuperNode.Bitcoin.csproj", "{4BBE5251-DCC9-4574-95FB-8A3E7DB4A708}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.Bitcoin", "Saiive.SuperNode.Bitcoin\Saiive.SuperNode.Bitcoin.csproj", "{4BBE5251-DCC9-4574-95FB-8A3E7DB4A708}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.DeFiChain", "Saiive.SuperNode.DeFiChain\Saiive.SuperNode.DeFiChain.csproj", "{A18695C4-E390-4865-95FB-D244E6E1A2C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.DeFiChain", "Saiive.SuperNode.DeFiChain\Saiive.SuperNode.DeFiChain.csproj", "{A18695C4-E390-4865-95FB-D244E6E1A2C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.Model", "Saiive.SuperNode.Model\Saiive.SuperNode.Model.csproj", "{E3B8E0E5-8297-42E5-A875-4A818A11D58F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.Model", "Saiive.SuperNode.Model\Saiive.SuperNode.Model.csproj", "{E3B8E0E5-8297-42E5-A875-4A818A11D58F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.Function", "Saiive.SuperNode.Function\Saiive.SuperNode.Function.csproj", "{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{E3B8E0E5-8297-42E5-A875-4A818A11D58F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3B8E0E5-8297-42E5-A875-4A818A11D58F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3B8E0E5-8297-42E5-A875-4A818A11D58F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

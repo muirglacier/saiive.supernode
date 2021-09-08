@@ -149,7 +149,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetBalance(network, request);
+                var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetTransactions(network, request);
                 return Ok(ret);
             }
             catch (Exception e)

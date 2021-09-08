@@ -26,7 +26,7 @@ namespace Saiive.SuperNode.DeFiChain
 
 
             services.AddSingleton<MasterNodeCacheStartupHandler>();
-            services.AddHostedService(a => a.GetRequiredService<MasterNodeCacheStartupHandler>());
+            //services.AddHostedService(a => a.GetRequiredService<MasterNodeCacheStartupHandler>());
 
             return services;
         }
