@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction;
-using Saiive.SuperNode.Cache;
 using Saiive.SuperNode.DeFiChain;
 using Saiive.SuperNode.Bitcoin;
+using Saiive.SuperNode.DeFiChain.Application;
 
 namespace Saiive.SuperNode
 {
@@ -43,9 +43,7 @@ namespace Saiive.SuperNode
                     .AllowAnyHeader();
             }));
 
-            services.AddSingleton<IMasterNodeCache, MasterNodeCache>();
-            services.AddSingleton<MasterNodeCacheStartupHandler>();
-            services.AddHostedService(a => a.GetRequiredService<MasterNodeCacheStartupHandler>());
+          
 
             services.AddApplicationInsightsTelemetry();
 

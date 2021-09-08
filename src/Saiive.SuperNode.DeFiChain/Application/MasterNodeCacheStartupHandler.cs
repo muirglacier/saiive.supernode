@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Saiive.SuperNode.Cache
+namespace Saiive.SuperNode.DeFiChain.Application
 {
-    public class MasterNodeCacheStartupHandler : IHostedService
+    internal class MasterNodeCacheStartupHandler : IHostedService
     {
         private readonly IMasterNodeCache _cache;
         private readonly ILogger<MasterNodeCacheStartupHandler> _logger;
@@ -25,17 +25,9 @@ namespace Saiive.SuperNode.Cache
         {
             try
             {
-                var defichainConfig = _config["DEFICHAIN"];
-                var defichainEnabled = Convert.ToBoolean(String.IsNullOrEmpty(defichainConfig) ? "true" : defichainConfig);
-                if (!defichainEnabled)
-                {
-                    _logger.LogInformation("DeFiChain not enabled on this node!...");
-                    return;
-                }
-
                 _logger.LogInformation("Update masternode cache...");
-                var mainnet = _cache.GetMasterNodes("mainnet", "DFI");
-                var testnet = _cache.GetMasterNodes("testnet", "DFI");
+                var mainnet = _cache.GetMasterNodes("mainnet");
+                var testnet = _cache.GetMasterNodes("testnet");
 
                 await Task.WhenAll(mainnet, testnet);
             }

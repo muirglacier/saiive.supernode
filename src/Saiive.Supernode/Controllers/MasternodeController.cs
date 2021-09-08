@@ -4,23 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.SuperNode.Cache;
+using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class MasternodeController : BaseLegacyController
+    public class MasternodeController : BaseController
     {
-        private readonly IMasterNodeCache _masterNodeCache;
-        private const string NULL_TX_ID = "0000000000000000000000000000000000000000000000000000000000000000";
 
-        public MasternodeController(ILogger<MasternodeController> logger, IConfiguration config, IMasterNodeCache masterNodeCache) : base(logger, config)
+        public MasternodeController(ILogger<MasternodeController> logger, ChainProviderCollection config) : base(logger, config)
         {
-            _masterNodeCache = masterNodeCache;
         }
 
         [HttpGet("{network}/{coin}/masternodes/list")]
@@ -31,9 +27,10 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                var mn = await _masterNodeCache.GetMasterNodes(network, coin);
 
-                return Ok(mn);
+                var obj = await ChainProviderCollection.GetInstance(coin).MasterNodeProivder.ListMasternodes(network);
+
+                return Ok(obj);
             }
             catch (Exception e)
             {
@@ -50,10 +47,9 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                var mn = await _masterNodeCache.GetMasterNodes(network, coin);
-                
-                var retList = mn.Where(a => a.ResignTx == NULL_TX_ID);
-                return Ok(retList);
+                var obj = await ChainProviderCollection.GetInstance(coin).MasterNodeProivder.ListActiveMasternodes(network);
+
+                return Ok(obj);
             }
             catch (Exception e)
             {

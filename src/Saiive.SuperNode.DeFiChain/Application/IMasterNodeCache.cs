@@ -1,0 +1,11 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Saiive.SuperNode.Model;
+
+namespace Saiive.SuperNode.DeFiChain.Application
+{
+    internal interface IMasterNodeCache
+    {
+        Task<List<Masternode>> GetMasterNodes(string network);
+    }
+}

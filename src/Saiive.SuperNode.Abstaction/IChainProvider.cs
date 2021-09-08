@@ -15,5 +15,7 @@ namespace Saiive.SuperNode.Abstaction
         public IPoolPairProvider PoolPairProvider { get; }
 
         public ITokenProvider TokenProvider { get; }
+
+        public IMasterNodeProvider MasterNodeProivder { get; }
     }
 }

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Cache\" />
     <Folder Include="Responses\" />
   </ItemGroup>
 

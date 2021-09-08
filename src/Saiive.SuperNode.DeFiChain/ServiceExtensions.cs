@@ -16,11 +16,17 @@ namespace Saiive.SuperNode.DeFiChain
             services.AddSingleton<TransactionProvider>();
             services.AddSingleton<PoolPairProvider>();
             services.AddSingleton<TokenProvider>();
+            services.AddSingleton<MasterNodeProvider>();
+            services.AddSingleton<MasterNodeHelper>();
 
             services.AddSingleton<IChainProvider, DeFiChainProvider>();
 
             services.AddSingleton<ITokenStore, TokenStore>();
+            services.AddSingleton<IMasterNodeCache, MasterNodeCache>();
 
+
+            services.AddSingleton<MasterNodeCacheStartupHandler>();
+            services.AddHostedService(a => a.GetRequiredService<MasterNodeCacheStartupHandler>());
 
             return services;
         }

@@ -91,7 +91,15 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         public async Task<IList<TokenModel>> GetAll(string network)
         {
-            await Task.CompletedTask;
+            if (_tokenStore.Count == 0)
+            {
+                await LoadAll(network);
+            }
+            if (!_tokenStore.ContainsKey(network))
+            {
+                await LoadAll(network);
+            }
+
             return _tokenStoreRaw[network];
         }
     }
