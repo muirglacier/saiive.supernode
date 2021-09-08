@@ -15,7 +15,6 @@
     <PackageReference Include="Saiive.DeFiChain.Sharp.Parser" Version="0.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
   
-    <PackageReference Include="Saiive.BlockCypher.Core" Version="0.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,11 +7,13 @@ namespace Saiive.SuperNode.Abstaction
 {
     public abstract class BaseProvider
     {
+        public ILogger Logger { get; }
         public IConfiguration Config { get; }
        
 
         protected BaseProvider(ILogger logger, IConfiguration config)
         {
+            Logger = logger;
             Config = config;
            
         }

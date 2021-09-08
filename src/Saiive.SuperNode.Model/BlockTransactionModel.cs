@@ -7,7 +7,7 @@ namespace Saiive.SuperNode.Model
     public class BlockTransactionModel
     {
         [JsonProperty("_id")] 
-        string Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("txid")] 
         public string Txid { get; set; }
