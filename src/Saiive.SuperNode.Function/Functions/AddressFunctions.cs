@@ -142,7 +142,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
 
-        [FunctionName("AccountMulti")]
+        [FunctionName("AccountsMulti")]
         [OpenApiOperation(operationId: "AccountMulti", tags: new[] { "Address" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -150,7 +150,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<Account>))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
         public async Task<IActionResult> GetAccounts(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/account")] AddressesBodyRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/accounts")] AddressesBodyRequest req,
             string coin, string network)
         {
             try
