@@ -17,6 +17,8 @@ namespace Saiive.SuperNode.Function
             builder.Services.AddBitcoin();
 
             builder.Services.AddChainProviderService();
+
+            builder.Services.AddLogging();
         }
     }
 
