@@ -7,6 +7,6 @@ namespace Saiive.SuperNode.Abstaction.Providers
     public interface ITokenProvider
     {
         Task<TokenModel> GetToken(string network, string tokenName);
-        Task<IList<TokenModel>> GetAll(string network);
+        Task<Dictionary<int, TokenModel>> GetAll(string network);
     }
 }

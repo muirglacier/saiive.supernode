@@ -27,7 +27,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiOperation(operationId: "ListTokens", tags: new[] { "Token" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<TokenModel>), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Dictionary<int, TokenModel>), Description = "The OK response")]
         public async Task<IActionResult> ListTokens(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tokens")] HttpRequestMessage req,
             string network, string coin,

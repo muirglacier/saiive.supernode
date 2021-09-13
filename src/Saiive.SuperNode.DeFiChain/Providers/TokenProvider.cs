@@ -17,9 +17,19 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             _store = store;
         }
 
-        public Task<IList<TokenModel>> GetAll(string network)
+        public async Task<Dictionary<int, TokenModel>> GetAll(string network)
         {
-            return _store.GetAll(network);
+            var ret = new Dictionary<int, TokenModel> ();
+
+            var tokens = await _store.GetAll(network);
+
+
+            foreach(var token in tokens)
+            {
+                ret.Add(token.Id, token);
+            }
+
+            return ret;
         }
 
         public Task<TokenModel> GetToken(string network, string tokenName)
