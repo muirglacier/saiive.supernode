@@ -322,9 +322,18 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
+            try
+            {
+                response.EnsureSuccessStatusCode();
 
-            return await ConvertOceanModel(txs, network, address);
+                var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
+
+                return await ConvertOceanModel(txs, network, address);
+            }
+            catch
+            {
+                throw new Exception(data);
+            }
         }
     }
 
