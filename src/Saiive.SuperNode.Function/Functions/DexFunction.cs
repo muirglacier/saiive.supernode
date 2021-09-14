@@ -19,7 +19,7 @@ namespace Saiive.SuperNode.Function.Functions
 {
     public class DexFunction : BaseFunction
     {
-        public DexFunction(ILogger<AddressFunctions> logger, ChainProviderCollection chainProviderCollection, IServiceProvider serviceProvider) : base(logger, chainProviderCollection, serviceProvider)
+        public DexFunction(ILogger<DexFunction> logger, ChainProviderCollection chainProviderCollection, IServiceProvider serviceProvider) : base(logger, chainProviderCollection, serviceProvider)
         {
         }
 
@@ -27,6 +27,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiOperation(operationId: "Testpoolswap", tags: new[] { "DEX" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(TestPoolSwapBodyRequest), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<YieldFramingModel>), Description = "The OK response")]
         public async Task<IActionResult> Testpoolswap(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/dex/testpoolswap")] TestPoolSwapBodyRequest req,
