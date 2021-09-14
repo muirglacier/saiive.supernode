@@ -230,8 +230,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var vins = await responseVins.Content.ReadAsStringAsync();
 
             var tx = JsonConvert.DeserializeObject<OceanTransactionDetail>(data);
-            var voutsObj = JsonConvert.DeserializeObject<OceanVInDetail>(data);
-            var vinsObj = JsonConvert.DeserializeObject<OceanVOutDetail>(data);
+            var voutsObj = JsonConvert.DeserializeObject<OceanVInDetail>(vouts);
+            var vinsObj = JsonConvert.DeserializeObject<OceanVOutDetail>(vins);
 
             return await ConvertOceanTranscationDetails(network, tx, voutsObj, vinsObj);
         }
@@ -302,10 +302,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Id = tx.Id,
                     MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
                     MintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1 ): (tx.Type == "vout" ? tx.Vout.N : -1),
-                    MintTxId = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.Txid ?? null) : (tx.Type == "vout" ? tx.Vout.Txid : null),
+                    MintTxId = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.Txid ?? "") : (tx.Type == "vout" ? tx.Vout.Txid : ""),
                     Network = network,
                     Script = tx.Script.Hex,
-                    SpentTxId = String.IsNullOrEmpty(tx.Type) ? null : (tx.Type == "vin" ? tx.Vin.Txid : null),
+                    SpentTxId = String.IsNullOrEmpty(tx.Type) ? "" : (tx.Type == "vin" ? tx.Vin.Txid : ""),
                     SpentHeight = tx.Type == "vin" ? tx.Block.Height : -1,
                     Value = Convert.ToUInt64(Convert.ToDouble(valueProp, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Type = tx.Type
