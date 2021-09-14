@@ -34,6 +34,9 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("totalLiquidity")]
         public double TotalLiquidity { get; set; }
+        
+        [JsonProperty("totalLiquidityUsd")]
+        public double TotalLiquidityUsd { get; set; }
 
         [JsonProperty("reserveADivReserveB")]
         public double ReserveADivReserveB { get; set; }

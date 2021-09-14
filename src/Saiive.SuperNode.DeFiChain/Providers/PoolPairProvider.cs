@@ -80,7 +80,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 RewardPct = Convert.ToDouble(pair.RewardPct, CultureInfo.InvariantCulture),
                 Status = pair.Status,
                 Symbol = pair.Symbol,
-                TotalLiquidity = Convert.ToDouble(pair.TotalLiquidity, CultureInfo.InvariantCulture),
+                TotalLiquidity = Convert.ToDouble(pair.TotalLiquidity.Token, CultureInfo.InvariantCulture),
+                TotalLiquidityUsd = Convert.ToDouble(pair.TotalLiquidity.Usd, CultureInfo.InvariantCulture),
                 TradeEnabled = pair.TradeEnabled
             };
         }
