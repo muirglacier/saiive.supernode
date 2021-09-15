@@ -62,8 +62,12 @@ namespace Saiive.SuperNode.DeFiChain.Application
                 }
 
                 var tokenModel = ConvertOceanModel(token);
-                _tokenStore[network].Add(token.SymbolKey, tokenModel);
-                _tokenStoreRaw[network].Add(tokenModel);
+
+                if (!_tokenStore.ContainsKey(token.SymbolKey))
+                {
+                    _tokenStore[network].Add(token.SymbolKey, tokenModel);
+                    _tokenStoreRaw[network].Add(tokenModel);
+                }
             }
         }
 
