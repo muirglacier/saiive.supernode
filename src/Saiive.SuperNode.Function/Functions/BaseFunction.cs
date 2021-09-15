@@ -41,6 +41,7 @@ namespace Saiive.SuperNode.Function.Functions
 
             DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
             CoingeckoApiUrl = config["COINGECKO_API_URL"];
+            ApiUrl = config["LEGACY_API_URL"];
 
         }
 

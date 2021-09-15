@@ -26,7 +26,7 @@ module "function_app" {
   dns_zone = var.dns_zone
   dns_zone_resource_group = var.dns_zone_resource_group
 
-  bitcore_url = "https://bitcore.az-prod-0.saiive.live"
+  bitcore_url = "https://bitcore.scw-prod-0.saiive.live"
   ocean_url = "https://ocean.defichain.com"
   defichain_api = "https://api.defichain.io"
   coingecko_url = "https://api.coingecko.com/api/v3"
