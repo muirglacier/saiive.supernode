@@ -32,10 +32,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         public async Task<TokenModel> GetToken(string network, string tokenName)
         {
-            if (_tokenStore.Count == 0)
-            {
-                await LoadAll(network);
-            }
+          
             if (!_tokenStore.ContainsKey(network))
             {
                 await LoadAll(network);
@@ -46,14 +43,8 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         private async Task LoadAll(string network)
         {
-            var response = await _client.GetAsync($"{_apiUrl}/v0/{network}/tokens");
-            var data = await response.Content.ReadAsStringAsync();
-            response.EnsureSuccessStatusCode();
-
-
-            var oceanData = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTokens>>>(data);
-
-            foreach (var token in oceanData.Data)
+            var oceanData = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{_apiUrl}/v0/{network}/tokens");
+            foreach (var token in oceanData)
             {
                 if (!_tokenStore.ContainsKey(network))
                 {
@@ -63,7 +54,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
                 var tokenModel = ConvertOceanModel(token);
 
-                if (!_tokenStore.ContainsKey(token.SymbolKey))
+                if (!_tokenStore[network].ContainsKey(token.SymbolKey))
                 {
                     _tokenStore[network].Add(token.SymbolKey, tokenModel);
                     _tokenStoreRaw[network].Add(tokenModel);
@@ -95,10 +86,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         public async Task<IList<TokenModel>> GetAll(string network)
         {
-            if (_tokenStore.Count == 0)
-            {
-                await LoadAll(network);
-            }
+            
             if (!_tokenStore.ContainsKey(network))
             {
                 await LoadAll(network);
