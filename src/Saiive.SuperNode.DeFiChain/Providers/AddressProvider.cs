@@ -207,15 +207,16 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
 
             var nativeBalance = await GetBalanceInternal(network, address);
-
-            ret.Add(new AccountModel
+            if (nativeBalance.Balance > 0)
             {
-                Address = address,
-                Balance = nativeBalance.Balance,
-                Raw = $"{nativeBalance.Balance}@DFI",
-                Token = $"$DFI"
-            });
-
+                ret.Add(new AccountModel
+                {
+                    Address = address,
+                    Balance = nativeBalance.Balance,
+                    Raw = $"{nativeBalance.Balance}@DFI",
+                    Token = $"$DFI"
+                });
+            }
 
 
             return ret;
