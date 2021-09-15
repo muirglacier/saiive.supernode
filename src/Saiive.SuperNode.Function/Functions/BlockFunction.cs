@@ -35,7 +35,7 @@ namespace Saiive.SuperNode.Function.Functions
         {   
             try
             {
-                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentBlock(network, height);
+                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetBlockByHeightOrHash(network, height.ToString());
                 return new OkObjectResult(obj);
             }
             catch (Exception e)

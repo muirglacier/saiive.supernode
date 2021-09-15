@@ -34,7 +34,9 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("totalLiquidity")]
         public double TotalLiquidity { get; set; }
-        
+        [JsonProperty("totalLiquidityRaw")]
+        public double TotalLiquidityRaw { get; set; }
+
         [JsonProperty("totalLiquidityUsd")]
         public double TotalLiquidityUsd { get; set; }
 

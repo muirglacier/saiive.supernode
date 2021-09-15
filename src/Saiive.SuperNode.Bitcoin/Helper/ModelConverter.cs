@@ -51,7 +51,7 @@ namespace Saiive.SuperNode.Bitcoin.Helper
               OutputCount = tx.Outputs.Count,
               Size = tx.VinSz + tx.VoutSz,
               Fee = tx.Fees.ValueLong,
-              Value = tx.Total.ValueLong,
+              Value = (ulong)tx.Total.ValueLong,
               Confirmations = tx.Confirmations
             };
         }

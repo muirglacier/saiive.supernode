@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -107,6 +108,68 @@ namespace Saiive.SuperNode.Function.Functions
             }
         }
 
-    }
+        [FunctionName("ListMinePoolShares")]
+        [OpenApiOperation(operationId: "ListMinePoolShares", tags: new[] { "DEX" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(AddressesBodyRequest), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<PoolShareModel>), Description = "The OK response")]
+        public async Task<IActionResult> ListMinePoolShares(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/listminepoolshares")] AddressesBodyRequest req,
+            string network, string coin,
+            ILogger log)
+        {
+
+            try
+            {
+                var obj = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAccount(network, req);
+                var poolPairs = await ChainProviderCollection.GetInstance(coin).PoolPairProvider.GetPoolPairsBySymbolKey(network);
+                var ret = new List<PoolShareModel>();
+
+                foreach(var p in obj)
+                {
+                    foreach(var addr in p.Accounts.Where(a => a.IsLPS))
+                    {
+                        var poolPair = poolPairs[addr.SymbolKey];
+
+                        var poolShare = new PoolShareModel
+                        {
+                            Amount = addr.Balance,
+                            Owner = addr.Address,
+                            PoolID = poolPair.ID,
+                            TotalLiquidity = poolPair.TotalLiquidity,
+                            Percent = (addr.Balance* 100) / poolPair.TotalLiquidityRaw
+                        };
+
+                        ret.Add(poolShare);
+                    }
+                }
+
+                return new OkObjectResult(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
+
+
+        [FunctionName("ListPoolShares")]
+        [OpenApiOperation(operationId: "ListPoolShares", tags: new[] { "DEX" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(AddressesBodyRequest), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<PoolShareModel>), Description = "The OK response")]
+        public async Task<IActionResult> ListPoolShares(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/listpoolshares")] AddressesBodyRequest req,
+            string network, string coin,
+            ILogger log)
+        {
+            await Task.CompletedTask;
+            return new OkObjectResult(new List<PoolShareModel>());
+        }
+
+        }
 }
 

@@ -70,5 +70,7 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("type")]
         public string Type { get; set; }
+
+        
     }
 }

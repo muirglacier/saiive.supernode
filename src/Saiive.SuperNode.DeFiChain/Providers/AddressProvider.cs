@@ -223,7 +223,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         }
 
-        internal async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
+     
+        internal async Task<TransactionDetailModel> GetTransactionDetails(string network, string txId)
         {
             var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
             var responseVouts = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}/vouts");
@@ -277,43 +278,52 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
 
         private async Task<List<TransactionModel>> GetTransactionsInternal(string network, string address)
-        {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/transactions");
+        { var url = $"{OceanUrl}/v0/{network}/address/{address}/transactions";
 
-            var data = await response.Content.ReadAsStringAsync();
+            var getAllTxs = await Helper.LoadAllFromPagedRequest<OceanTransactionData>(url);
 
-            var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
 
-            return await ConvertOceanModel(txs, network, address);
+            return await ConvertOceanModel(getAllTxs, network, address);
 
         }
 
-        private async Task<List<TransactionModel>> ConvertOceanModel(OceanTransactions oceanTransactions, string network, string address)
+        internal async Task<TransactionModel> ConvertOceanModel(OceanTransactionData tx, string network, string address)
+        {
+            var token = await _tokenStore.GetToken(network, "DFI");
+        
+            var valueProp = String.IsNullOrEmpty(tx.Value) ? tx.Vout.Value : tx.Value;
+            var txType = tx.Type;
+
+            return new TransactionModel
+            {
+                Address = address,
+                Chain = "DFI",
+                Id = tx.Id,
+                MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
+                MintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1) : (tx.Type == "vout" ? tx.Vout.N : -1),
+                MintTxId = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.Txid ?? "") : (tx.Type == "vout" ? tx.Vout.Txid : ""),
+                Network = network,
+                Script = tx.Script.Hex,
+                SpentTxId = String.IsNullOrEmpty(tx.Type) ? "" : (tx.Type == "vin" ? tx.Vin.Txid : ""),
+                SpentHeight = tx.Type == "vin" ? tx.Block.Height : -1,
+                Value = Convert.ToUInt64(Convert.ToDouble(valueProp, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
+                Type = tx.Type
+            };
+
+        }
+
+        internal async Task<List<TransactionModel>> ConvertOceanModel(List<OceanTransactionData> oceanTransactions, string network, string address)
         {
             var ret = new List<TransactionModel>();
 
             var token = await _tokenStore.GetToken(network, "DFI");
 
-            foreach (var tx in oceanTransactions.Data)
+            foreach (var tx in oceanTransactions)
             {
                 var valueProp = String.IsNullOrEmpty(tx.Value) ? tx.Vout.Value : tx.Value;
                 var txType = tx.Type;
 
-                ret.Add(new TransactionModel
-                {
-                    Address = address,
-                    Chain = "DFI",
-                    Id = tx.Id,
-                    MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
-                    MintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1 ): (tx.Type == "vout" ? tx.Vout.N : -1),
-                    MintTxId = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.Txid ?? "") : (tx.Type == "vout" ? tx.Vout.Txid : ""),
-                    Network = network,
-                    Script = tx.Script.Hex,
-                    SpentTxId = String.IsNullOrEmpty(tx.Type) ? "" : (tx.Type == "vin" ? tx.Vin.Txid : ""),
-                    SpentHeight = tx.Type == "vin" ? tx.Block.Height : -1,
-                    Value = Convert.ToUInt64(Convert.ToDouble(valueProp, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
-                    Type = tx.Type
-                });
+                ret.Add(await ConvertOceanModel(tx, network, address));
 
             }
 
@@ -332,7 +342,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
                 var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
 
-                return await ConvertOceanModel(txs, network, address);
+                return await ConvertOceanModel(txs.Data, network, address);
             }
             catch
             {

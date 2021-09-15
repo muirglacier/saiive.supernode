@@ -49,7 +49,7 @@ namespace Saiive.SuperNode.Model
         public long Fee { get; set; }
 
         [JsonProperty("value")]
-        public long Value { get; set; }
+        public ulong Value { get; set; }
 
         [JsonProperty("isCustom")]
         public bool IsCustom { get; set; }

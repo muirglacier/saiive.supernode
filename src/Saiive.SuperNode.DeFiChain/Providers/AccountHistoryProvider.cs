@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
@@ -13,9 +11,11 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 {
     internal class AccountHistoryProvider : BaseDeFiChainProvider, IAccountHistoryProvider
     {
-        public AccountHistoryProvider(ILogger<AccountHistoryProvider> logger, IConfiguration config) : base(logger, config)
-        {
+        private readonly AddressProvider _addressProvider;
 
+        public AccountHistoryProvider(ILogger<AccountHistoryProvider> logger, IConfiguration config, AddressProvider addressProvider) : base(logger, config)
+        {
+            _addressProvider = addressProvider;
         }
 
         private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string limit, string maxBlockHeight, bool noRewards)

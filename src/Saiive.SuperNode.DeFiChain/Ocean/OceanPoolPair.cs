@@ -111,5 +111,8 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
     {
         [JsonProperty("data")]
         public T Data { get; set; }
+
+        [JsonProperty("page")]
+        public OceanPage Page { get; set; }
     }
 }

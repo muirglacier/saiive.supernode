@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction.Providers;
-using Saiive.SuperNode.DeFiChain.Application;
+using Saiive.SuperNode.DeFiChain.Ocean;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
 using System;
@@ -14,15 +14,17 @@ namespace Saiive.SuperNode.DeFiChain.Providers
     internal class AddressTransactionDetailProvider : BaseDeFiChainProvider, IAddressTransactionDetailProvider
     {
         private readonly ILogger _logger;
+        private readonly AddressProvider _addressProvider;
 
-        public AddressTransactionDetailProvider(ILogger<AddressTransactionDetailProvider> logger, IConfiguration config) : base(logger, config)
+        public AddressTransactionDetailProvider(ILogger<AddressTransactionDetailProvider> logger, IConfiguration config, AddressProvider addressProvider) : base(logger, config)
         {
             _logger = logger;
+            _addressProvider = addressProvider;
         }
 
         public async Task<List<BlockTransactionModel>> GetTransactions(string network, string address)
         {
-            return await GetTransactionsInternal("DFI", network, address);
+            return await GetTransactionsInternal(network, address);
         }
 
         public async Task<List<BlockTransactionModel>> GetTransactions(string network, AddressesBodyRequest addresses)
@@ -31,55 +33,40 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var address in addresses.Addresses)
             {
-                ret.AddRange(await GetTransactionsInternal("DFI", network, address));
+                ret.AddRange(await GetTransactionsInternal(network, address));
             }
             return ret;
         }
 
-        private async Task<List<BlockTransactionModel>> GetTransactionsInternal(string coin, string network, string address)
+        private async Task<List<BlockTransactionModel>> GetTransactionsInternal(string network, string address)
         {
-            throw new NotImplementedException();
-            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/address/{address}/txs?limit=1000");
+            var txs =  await _addressProvider.GetTransactions(network, address);
 
-            //var data = await response.Content.ReadAsStringAsync();
-
-            //var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-            //var ret = new List<BlockTransactionModel>();
-
-            //foreach (var tx in txs)
-            //{
-            //    try
-            //    {
-            //        var vin = await GetBlockTransaction(coin, network, tx.MintTxId);
-            //        ret.Add(vin);
-
-            //        if (tx.SpentHeight > 0)
-            //        {
-            //            var vout = await GetBlockTransaction(coin, network, tx.SpentTxId);
-            //            ret.Add(vout);
-            //        }
+            var ret = new List<BlockTransactionModel>();
 
 
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        _logger.LogError(e, "error occurred");
-            //    }
-            //}
+            foreach(var tx in txs)
+            {
+                ret.Add(new BlockTransactionModel
+                {
+                    Details = tx.Details,
+                    Value = tx.Value
+                });
+            }
 
-            //return ret;
+            return ret;
 
         }
-        private async Task<BlockTransactionModel> GetBlockTransaction(string coin, string network, string txId)
+     
+        internal async Task<BlockTransactionModel> GetBlockTransaction(string network, string txId)
         {
-            throw new NotImplementedException();
-            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/tx/{txId}");
-            //response.EnsureSuccessStatusCode();
+            var txDetail = await _addressProvider.GetTransactionDetails(network, txId);
 
-            //var data = await response.Content.ReadAsStringAsync();
 
-            //var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
-            //return obj;
+            return new BlockTransactionModel
+            {
+                Details = txDetail
+            };
         }
 
     }

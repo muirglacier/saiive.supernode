@@ -5,6 +5,7 @@ using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.DeFiChain.Ocean;
 using Saiive.SuperNode.Model;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.DeFiChain.Providers
@@ -15,9 +16,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
         }
 
-        public async Task<BlockModel> GetCurrentBlock(string network, int height)
+        public async Task<BlockModel> GetBlockByHeightOrHash(string network, string hash)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks/{height}");
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks/{hash}");
 
             response.EnsureSuccessStatusCode();
 
@@ -26,6 +27,37 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
             return ConvertOceanModel(obj);
 
+        }
+
+
+        public async Task<List<TransactionModel>> GetTransactionForBlock(string network, string hash)
+        {
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks/{hash}/transactions");
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTransactionDetailData>>>(data);
+            return ConvertOceanModel(obj);
+
+        }
+
+        private List<TransactionModel> ConvertOceanModel(OceanDataEntity<List<OceanTransactionDetailData>> data)
+        {
+            var res = new List<TransactionModel>();
+
+            foreach(var d in data.Data)
+            {
+                var tx = new TransactionModel
+                {
+                    Id = d.Id
+                };
+                res.Add(tx);
+            }
+            
+
+            return res;
         }
 
         private BlockModel ConvertOceanModel(OceanBlock oceanBlock)
@@ -56,7 +88,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
 
-            return await GetCurrentBlock(network, statsObj.Data.Count.Blocks);
+            return await GetBlockByHeightOrHash(network, statsObj.Data.Count.Blocks.ToString());
 
         }
     }

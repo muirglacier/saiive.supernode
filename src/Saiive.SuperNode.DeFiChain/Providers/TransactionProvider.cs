@@ -14,68 +14,49 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 {
     internal class TransactionProvider : BaseDeFiChainProvider, ITransactionProvider
     {
-        public TransactionProvider(ILogger<TransactionProvider> logger, IConfiguration config, AddressProvider addressProvider) : base(logger, config)
+        private readonly AddressProvider _addressProvider;
+        private readonly BlockProvider _blockProvider;
+        private readonly AddressTransactionDetailProvider _txProvider;
+
+        public TransactionProvider(ILogger<TransactionProvider> logger, IConfiguration config, AddressProvider addressProvider, BlockProvider blockProvider, AddressTransactionDetailProvider txDetailProvider) : base(logger, config)
         {
-            AddressProvider = addressProvider;
+            _addressProvider = addressProvider;
+            _blockProvider = blockProvider;
+            _txProvider = txDetailProvider;
         }
 
-        public AddressProvider AddressProvider { get; }
 
         public async Task<TransactionModel> GetTransactionById(string network, string txId)
         {
-
             throw new NotImplementedException();
-            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/DFI/{network}/tx/{txId}");
-
-            
-            //    response.EnsureSuccessStatusCode();
-
-            //    var data = await response.Content.ReadAsStringAsync();
-
-            //    var obj = JsonConvert.DeserializeObject<TransactionModel>(data);
-            //    obj.Details = await GetTransactionDetails("DFI", network, txId);
-            //return obj;
-            
+            //var tx = await _addressProvider.GetTransactionByTxId(network, txId);
+            //return tx;
         }
 
         public async Task<IList<TransactionModel>> GetTransactionsByBlock(string network, string block)
         {
 
-            throw new NotImplementedException();
-            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/DFI/{network}/tx?blockHash={block}");
+            var txs = await _blockProvider.GetTransactionForBlock(network, block);
 
 
-            //response.EnsureSuccessStatusCode();
-
-            //var data = await response.Content.ReadAsStringAsync();
-
-            //var obj = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
-            //return obj;
-
+            return txs;
         }
 
         public async Task<IList<BlockTransactionModel>> GetTransactionsByBlockHeight(string network, int height, bool includeDetails)
         {
-            throw new NotImplementedException();
-            //var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/DFI/{network}/tx?blockHeight={height}");
+            var blockInstance = await _blockProvider.GetBlockByHeightOrHash(network, height.ToString());
 
-           
-            //    var data = await response.Content.ReadAsStringAsync();
+            var txs = await _blockProvider.GetTransactionForBlock(network, blockInstance.Hash);
 
-            //    response.EnsureSuccessStatusCode();
+            var ret = new List<BlockTransactionModel>();
 
+            foreach(var tx in txs)
+            {
+                ret.Add(await _txProvider.GetBlockTransaction(network, tx.Id));
+            }
 
-            //    var obj = JsonConvert.DeserializeObject<List<BlockTransactionModel>>(data);
-            //    if (obj != null && includeDetails)
-            //    {
-            //        foreach (var tx in obj)
-            //        {
-            //            tx.Details = await GetTransactionDetails("DFI", network, tx.Txid);
-            //        }
-            //    }
+            return ret;
 
-            //    return obj;
-            
         }
 
         public async Task<string> SendRawTransaction(string network, TransactionRequest request)
@@ -108,7 +89,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
         {
-                return await AddressProvider.GetTransactionDetails(coin, network, txId);
+                return await _addressProvider.GetTransactionDetails(network, txId);
         }
     }
 }

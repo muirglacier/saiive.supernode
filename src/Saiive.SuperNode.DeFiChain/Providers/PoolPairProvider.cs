@@ -18,7 +18,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPair(string network, string poolId)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/testnet/poolpairs/{poolId}");
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/poolpairs/{poolId}");
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadAsStringAsync();
@@ -36,7 +36,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPairs(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/testnet/poolpairs");
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/poolpairs");
 
 
             response.EnsureSuccessStatusCode();
@@ -56,6 +56,28 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             return ret;
 
 
+        }
+
+        public async Task<Dictionary<string, PoolPairModel>> GetPoolPairsBySymbolKey(string network)
+        {
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/poolpairs");
+
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<Ocean.OceanPoolPair>(data);
+
+
+            var ret = new Dictionary<string, PoolPairModel>();
+
+            foreach (var pair in obj.Data)
+            {
+                ret.Add(pair.Symbol, ConvertFromOceanModel(pair));
+            }
+
+            return ret;
         }
 
         private PoolPairModel ConvertFromOceanModel(Ocean.OceanPoolPairData pair)
@@ -81,6 +103,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 Status = pair.Status,
                 Symbol = pair.Symbol,
                 TotalLiquidity = Convert.ToDouble(pair.TotalLiquidity.Token, CultureInfo.InvariantCulture),
+                TotalLiquidityRaw = Convert.ToDouble(pair.TotalLiquidity.Token, CultureInfo.InvariantCulture) * 100000000,
                 TotalLiquidityUsd = Convert.ToDouble(pair.TotalLiquidity.Usd, CultureInfo.InvariantCulture),
                 TradeEnabled = pair.TradeEnabled
             };

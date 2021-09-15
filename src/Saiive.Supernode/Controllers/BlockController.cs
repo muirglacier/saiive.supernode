@@ -32,7 +32,7 @@ namespace Saiive.SuperNode.Controllers
             try
             {
            
-                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentBlock(network, height);
+                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetBlockByHeightOrHash(network, height.ToString());
                 return Ok(obj);
             }
             catch (Exception e)

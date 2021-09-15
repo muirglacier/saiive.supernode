@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.Bitcoin.Helper;
 using Saiive.SuperNode.Model;
+using System;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.Bitcoin.Providers
@@ -13,11 +14,11 @@ namespace Saiive.SuperNode.Bitcoin.Providers
         {
         }
 
-        public async Task<BlockModel> GetCurrentBlock(string network, int height)
+        public async Task<BlockModel> GetBlockByHeightOrHash(string network, string hash)
         {
             var instance = GetInstance(network);
-
-            var block = await instance.GetBlockByHeight(height);
+            
+            var block = await instance.GetBlockByHeight(Convert.ToInt32(hash));
             return block.ToBlockModel(network);
         }
 
@@ -26,7 +27,7 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             var instance = GetInstance(network);
 
             var stats = await instance.GetStats();
-            var block = await GetCurrentBlock(network, stats.Height);
+            var block = await GetBlockByHeightOrHash(network, stats.Height.ToString());
 
             return block;
         }
