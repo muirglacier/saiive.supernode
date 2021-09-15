@@ -15,5 +15,14 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("raw")]
         public string Raw { get; set; }
+
+        [JsonProperty("isDAT")]
+        public bool IsDAT { get; set; }
+        
+        [JsonProperty("isLPS")]
+        public bool IsLPS { get; set; }
+
+        [JsonProperty("symbolKey")]
+        public string SymbolKey { get; set; }
     }
 }
