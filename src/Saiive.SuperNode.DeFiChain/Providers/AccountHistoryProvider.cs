@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
@@ -20,34 +22,31 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<AccountHistory>> GetAccountHistoryInternal(string coin, string network, string address, string token, string limit, string maxBlockHeight, bool noRewards)
         {
+            string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{System.Web.HttpUtility.UrlEncode(token)}";
 
-            throw new NotImplementedException();
+            var dict = new Dictionary<string, string>();
 
-            //string query = $"{ApiUrl}/api/{coin}/{network}/lp/listaccounthistory/{address}/{System.Web.HttpUtility.UrlEncode(token)}";
+            if (!String.IsNullOrEmpty(maxBlockHeight))
+            {
+                dict.Add("maxBlockHeight", maxBlockHeight);
+            }
 
-            //var dict = new Dictionary<string, string>();
+            if (!String.IsNullOrEmpty(limit))
+            {
+                dict.Add("limit", limit);
+            }
 
-            //if (!String.IsNullOrEmpty(maxBlockHeight))
-            //{
-            //    dict.Add("maxBlockHeight", maxBlockHeight);
-            //}
+            dict.Add("no_rewards", noRewards.ToString());
 
-            //if (!String.IsNullOrEmpty(limit))
-            //{
-            //    dict.Add("limit", limit);
-            //}
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(query, dict));
 
-            //dict.Add("no_rewards", noRewards.ToString());
+            response.EnsureSuccessStatusCode();
 
-            //var response = await _client.GetAsync(QueryHelpers.AddQueryString(query, dict));
+            var data = await response.Content.ReadAsStringAsync();
 
-            //response.EnsureSuccessStatusCode();
+            var obj = JsonConvert.DeserializeObject<List<AccountHistory>>(data);
 
-            //var data = await response.Content.ReadAsStringAsync();
-
-            //var obj = JsonConvert.DeserializeObject<List<AccountHistory>>(data);
-
-            //return obj;
+            return obj;
         }
 
         public async Task<List<AccountHistory>> GetAccountHistory(string network, string address, string token, string limit, string maxBlockHeight, bool no_rewards)

@@ -11,6 +11,7 @@ namespace Saiive.SuperNode.DeFiChain
         protected readonly string OceanUrl;
         protected readonly string DefiChainApiUrl;
         protected readonly string CoingeckoApiUrl;
+        protected readonly string ApiUrl;
 
         protected readonly HttpClient _client;
 
@@ -22,10 +23,12 @@ namespace Saiive.SuperNode.DeFiChain
             OceanUrl = config["OCEAN_URL"];
             DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
             CoingeckoApiUrl = config["COINGECKO_API_URL"];
+            ApiUrl = config["LEGACY_API_URL"];
 
             Logger.LogTrace($"Using ocean {OceanUrl}");
             Logger.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
             Logger.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
+            Logger.LogTrace($"Using LEGACY_API_URL {ApiUrl}");
         }
     }
 }
