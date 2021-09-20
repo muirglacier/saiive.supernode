@@ -189,7 +189,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             foreach (var acc in obj.Data)
             {
 
-                var token = await _tokenStore.GetToken(network, acc.Symbol);
+                var token = await _tokenStore.GetToken(network, acc.SymbolKey);
 
                 var account = new AccountModel
                 {

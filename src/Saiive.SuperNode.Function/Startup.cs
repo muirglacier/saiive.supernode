@@ -18,7 +18,6 @@ namespace Saiive.SuperNode.Function
 
             builder.Services.AddChainProviderService();
 
-            builder.Services.AddLogging();
         }
     }
 
