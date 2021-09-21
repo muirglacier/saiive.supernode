@@ -196,7 +196,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Address = address,
                     Raw = acc.Amount,
                     Balance = Convert.ToDouble(acc.Amount, CultureInfo.InvariantCulture) * token.Multiplier,
-                    Token = acc.DisplaySymbol,
+                    Token = acc.SymbolKey,
                     IsDAT = acc.IsDat,
                     IsLPS = acc.IsLps,
                     SymbolKey = acc.SymbolKey
