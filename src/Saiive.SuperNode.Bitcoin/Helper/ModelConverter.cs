@@ -7,6 +7,34 @@ namespace Saiive.SuperNode.Bitcoin.Helper
     {
         public static TransactionModel ToTransactionModel(this Transaction transaction, string network, string address)
         {
+            var details = new TransactionDetailModel();
+
+            foreach (var inp in transaction.Inputs)
+            {
+                details.Inputs.Add(new TransactionModel
+                {
+                    Address = inp.Addresses[0],
+                    Chain = "BTC",
+                    MintTxId = transaction.Hash,
+                    MintHeight = (int)transaction.BlockHeight,
+                    MintIndex = (int)inp.OutputIndex,
+                    Value = (ulong)inp.OutputValue.ValueLong
+
+                });
+            }
+            foreach (var outs in transaction.Outputs)
+            {
+                details.Outputs.Add(new TransactionModel
+                {
+                    Address = outs.Addresses[0],
+                    Chain = "BTC",
+                    MintTxId = transaction.Hash,
+                    SpentTxId = outs.SpentBy,
+                    Value = (ulong)outs.Value.ValueLong
+
+                });
+            }
+
             return new TransactionModel
             {
                 Address = address,
@@ -16,8 +44,42 @@ namespace Saiive.SuperNode.Bitcoin.Helper
                 IsCustomTxApplied = true,
                 MintHeight = (int)transaction.BlockHeight,
                 Network = network,
-                Value = (ulong)transaction.Total.ValueLong
+                Value = (ulong)transaction.Total.ValueLong,
+                Details = details
             };
+        }
+        public static TransactionDetailModel ToTransactionDetailModel(this Transaction transaction, string network, string address)
+        {
+            var ret = new TransactionDetailModel();
+
+            foreach (var inp in transaction.Inputs)
+            {
+                ret.Inputs.Add(new TransactionModel
+                {
+                    Address = inp.Addresses[0],
+                    Chain = "BTC",
+                    MintTxId = transaction.Hash,
+                    MintHeight = (int)transaction.BlockHeight,
+                    MintIndex = (int)inp.OutputIndex,
+                    Value = (ulong)inp.OutputValue.ValueLong
+
+                });
+            }
+            foreach (var outs in transaction.Outputs)
+            {
+                ret.Outputs.Add(new TransactionModel
+                {
+                    Address = outs.Addresses[0],
+                    Chain = "BTC",
+                    MintTxId = transaction.Hash,
+                    SpentTxId = outs.SpentBy,
+                    Value = (ulong)outs.Value.ValueLong
+
+                });
+            }
+
+
+            return ret;
         }
 
         public static TransactionModel ToTransactionModel(this TxReference tx, string network, string address)

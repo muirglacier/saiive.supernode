@@ -254,9 +254,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             {
                 ret.Inputs.Add(new TransactionModel
                 {
-                    Value = Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
+                    Id = vi.Id,
+                    Value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vi.Script.Hex,
-                    SpentTxId = vi.Vout.Txid,
+                    SpentTxId = vi.Vout == null ? null : vi.Vout.Txid,
                     MintTxId = vi.Txid
                 });
             }
@@ -265,6 +266,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             {
                 ret.Outputs.Add(new TransactionModel
                 {
+                    Id = vo.Id,
                     Value = Convert.ToUInt64(Convert.ToDouble(vo.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vo.Script.Hex,
                     SpentTxId = vo.Vout.Txid,

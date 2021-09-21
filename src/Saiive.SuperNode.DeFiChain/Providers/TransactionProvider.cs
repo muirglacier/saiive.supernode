@@ -26,20 +26,38 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             _txProvider = txDetailProvider;
         }
 
+        private TransactionModel ConvertOceanModel(OceanDataEntity<OceanTransactionDetailData> data)
+        {
+
+
+            var tx = new TransactionModel
+            {
+                Id = data.Data.Id
+            };
+            return tx;
+
+
+        }
+
+
 
         public async Task<TransactionModel> GetTransactionById(string network, string txId)
         {
+            var detailModel = await _addressProvider.GetTransactionDetails(network, txId);
+
+
             var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
+
+            response.EnsureSuccessStatusCode();
+
             var data = await response.Content.ReadAsStringAsync();
 
-            var tx = JsonConvert.DeserializeObject < OceanDataEntity<OceanTransactionData>>(data);
+            var obj = JsonConvert.DeserializeObject<OceanDataEntity<OceanTransactionDetailData>>(data);
+            var ret = ConvertOceanModel(obj);
+            ret.Details = detailModel;
 
-            return new TransactionModel
-            {
-                Id = tx.Data.Id,
-                Network = network,
-                Chain = "DFI"
-            };
+
+            return ret;
         }
 
         public async Task<IList<TransactionModel>> GetTransactionsByBlock(string network, string block)
