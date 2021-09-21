@@ -113,7 +113,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(AddressesBodyRequest), Required = true)]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<PoolShareModel>), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Dictionary<string, PoolShareModel>), Description = "The OK response")]
         public async Task<IActionResult> ListMinePoolShares(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/listminepoolshares")] AddressesBodyRequest req,
             string network, string coin,
@@ -124,7 +124,7 @@ namespace Saiive.SuperNode.Function.Functions
             {
                 var obj = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAccount(network, req);
                 var poolPairs = await ChainProviderCollection.GetInstance(coin).PoolPairProvider.GetPoolPairsBySymbolKey(network);
-                var ret = new List<PoolShareModel>();
+                var ret = new Dictionary<string, PoolShareModel>();
 
                 foreach(var p in obj)
                 {
@@ -134,6 +134,7 @@ namespace Saiive.SuperNode.Function.Functions
 
                         var poolShare = new PoolShareModel
                         {
+                            Key = $"{poolPair.ID}@{addr.Address}",
                             Amount = addr.Balance,
                             Owner = addr.Address,
                             PoolID = poolPair.ID,
@@ -141,7 +142,7 @@ namespace Saiive.SuperNode.Function.Functions
                             Percent = (addr.Balance* 100) / poolPair.TotalLiquidityRaw
                         };
 
-                        ret.Add(poolShare);
+                        ret.Add(poolShare.Key, poolShare);
                     }
                 }
 

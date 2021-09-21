@@ -25,10 +25,10 @@ namespace Saiive.SuperNode.DeFiChain
             CoingeckoApiUrl = config["COINGECKO_API_URL"];
             ApiUrl = config["LEGACY_API_URL"];
 
-            Logger.LogTrace($"Using ocean {OceanUrl}");
-            Logger.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
-            Logger.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
-            Logger.LogTrace($"Using LEGACY_API_URL {ApiUrl}");
+            Logger?.LogTrace($"Using ocean {OceanUrl}");
+            Logger?.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
+            Logger?.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
+            Logger?.LogTrace($"Using LEGACY_API_URL {ApiUrl}");
         }
     }
 }
