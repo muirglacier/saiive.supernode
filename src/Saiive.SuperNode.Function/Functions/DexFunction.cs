@@ -135,14 +135,17 @@ namespace Saiive.SuperNode.Function.Functions
                         var poolShare = new PoolShareModel
                         {
                             Key = $"{poolPair.ID}@{addr.Address}",
-                            Amount = addr.Balance,
+                            Amount = addr.Balance / 100000000,
                             Owner = addr.Address,
                             PoolID = poolPair.ID,
                             TotalLiquidity = poolPair.TotalLiquidity,
                             Percent = (addr.Balance* 100) / poolPair.TotalLiquidityRaw
                         };
 
-                        ret.Add(poolShare.Key, poolShare);
+                        if (!ret.ContainsKey(poolShare.Key))
+                        {
+                            ret.Add(poolShare.Key, poolShare);
+                        }
                     }
                 }
 
