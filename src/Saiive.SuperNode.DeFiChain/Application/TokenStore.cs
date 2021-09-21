@@ -18,6 +18,8 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         private readonly Dictionary<string, Dictionary<string, TokenModel>> _tokenStore =
             new Dictionary<string, Dictionary<string, TokenModel>>();
+        private readonly Dictionary<string, Dictionary<string, TokenModel>> _tokenStoreId =
+            new Dictionary<string, Dictionary<string, TokenModel>>();
 
         private readonly Dictionary<string, List<TokenModel>> _tokenStoreRaw =
                     new Dictionary<string, List<TokenModel>>();
@@ -38,6 +40,10 @@ namespace Saiive.SuperNode.DeFiChain.Application
                 await LoadAll(network);
             }
 
+            if (!_tokenStore[network].ContainsKey(tokenName))
+            {
+                return _tokenStoreId[network][tokenName];
+            }
             return _tokenStore[network][tokenName];
         }
 
@@ -49,6 +55,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
                 if (!_tokenStore.ContainsKey(network))
                 {
                     _tokenStore.Add(network, new Dictionary<string, TokenModel>());
+                    _tokenStoreId.Add(network, new Dictionary<string, TokenModel>());
                     _tokenStoreRaw.Add(network, new List<TokenModel>());
                 }
 
@@ -57,6 +64,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
                 if (!_tokenStore[network].ContainsKey(token.SymbolKey))
                 {
                     _tokenStore[network].Add(token.SymbolKey, tokenModel);
+                    _tokenStoreId[network].Add(token.Id, tokenModel);
                     _tokenStoreRaw[network].Add(tokenModel);
                 }
             }
