@@ -235,10 +235,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var vins = await responseVins.Content.ReadAsStringAsync();
 
             var tx = JsonConvert.DeserializeObject<OceanTransactionDetail>(data);
-            var voutsObj = JsonConvert.DeserializeObject<OceanVInDetail>(vouts);
-            var vinsObj = JsonConvert.DeserializeObject<OceanVOutDetail>(vins);
+            var vinsObj = JsonConvert.DeserializeObject<OceanVInDetail>(vins);
+            var voutsObj = JsonConvert.DeserializeObject<OceanVOutDetail>(vouts);
 
-            return await ConvertOceanTranscationDetails(network, tx, voutsObj, vinsObj);
+            return await ConvertOceanTranscationDetails(network, tx, vinsObj, voutsObj);
         }
 
         private async Task<TransactionDetailModel> ConvertOceanTranscationDetails(string network, OceanTransactionDetail tx, OceanVInDetail vin, OceanVOutDetail vout)
@@ -251,15 +251,17 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             };
 
             foreach (var vi in vin.Data)
-            {
+            { 
                 ret.Inputs.Add(new TransactionModel
                 {
                     Id = vi.Id,
+                    MintIndex = vi.Vout == null ? -1 :vi.Vout.N,
                     Value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vi.Script.Hex,
-                    SpentTxId = vi.Vout == null ? null : vi.Vout.Txid,
-                    MintTxId = vi.Txid
+                    MintTxId = vi.Vout == null ? null : vi.Vout.Txid,
+                    SpentTxId = vi.Txid
                 });
+               ; 
             }
 
             foreach (var vo in vout.Data)
@@ -267,11 +269,11 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 ret.Outputs.Add(new TransactionModel
                 {
                     Id = vo.Id,
-                    Value = Convert.ToUInt64(Convert.ToDouble(vo.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
+                    Value = Convert.ToUInt64(Convert.ToDouble(vo.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vo.Script.Hex,
-                    SpentTxId = vo.Vout.Txid,
                     MintTxId = vo.Txid,
-                    Coinbase = vo.Script.Type == "nulldata"
+                    Coinbase = vo.Script.Type == "nulldata",
+                    MintIndex = vo.N
                 });
             }
 

@@ -12,7 +12,7 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
     {
 
     }
-    public class OceanVInDetail : OceanDataEntity<IList<OceanVOutData>>
+    public class OceanVInDetail : OceanDataEntity<IList<OceanVin>>
     {
 
     }
@@ -38,6 +38,8 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
 
         [JsonProperty("script")]
         public Script Script { get; set; }
+        [JsonProperty("vout")]
+        public Vout Vout { get; set; }
     }
 
     public class OceanVout
@@ -66,9 +68,6 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
         [JsonProperty("txid")]
         public string Txid { get; set; }
 
-        [JsonProperty("vout")]
-        public Vout Vout { get; set; }
-
         [JsonProperty("script")]
         public Script Script { get; set; }
 
@@ -77,6 +76,11 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
 
         [JsonProperty("sequence")]
         public long Sequence { get; set; }
+
+        [JsonProperty("n")]
+        public int N { get; set; }
+        [JsonProperty("value")]
+        public string Value { get; set; }
     }
 
 
