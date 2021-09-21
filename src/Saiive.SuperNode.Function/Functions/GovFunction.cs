@@ -30,7 +30,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiOperation(operationId: "Gov", tags: new[] { "Gov" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Dictionary<string, object>), Description = "The OK response")]
         public async Task<IActionResult> GetGov(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/gov")] HttpRequestMessage req,
             string network, string coin,
@@ -38,7 +38,9 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
-                return new OkObjectResult("");
+                var dic = new Dictionary<string, object>();
+                dic.Add("LP_DAILY_DFI_REWARD", 255405.071232);
+                return new OkObjectResult(dic);
             }
             catch (Exception e)
             {
