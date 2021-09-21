@@ -6,6 +6,7 @@ using Saiive.SuperNode.DeFiChain.Ocean;
 using Saiive.SuperNode.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,9 +29,17 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<TransactionModel> GetTransactionById(string network, string txId)
         {
-            throw new NotImplementedException();
-            //var tx = await _addressProvider.GetTransactionByTxId(network, txId);
-            //return tx;
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
+            var data = await response.Content.ReadAsStringAsync();
+
+            var tx = JsonConvert.DeserializeObject < OceanDataEntity<OceanTransactionData>>(data);
+
+            return new TransactionModel
+            {
+                Id = tx.Data.Id,
+                Network = network,
+                Chain = "DFI"
+            };
         }
 
         public async Task<IList<TransactionModel>> GetTransactionsByBlock(string network, string block)
