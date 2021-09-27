@@ -259,8 +259,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vi.Script.Hex,
                     MintTxId = vi.Vout == null ? null : vi.Vout.Txid,
-                    SpentTxId = vi.Txid
-                });
+                    SpentTxId = vi.Txid,
+                    Address = NBitcoin.Script.FromHex(vi.Script.Hex).GetDestinationAddress(Helper.GetNBitcoinNetwork(network)).ToString()
+            });
                ; 
             }
 
@@ -273,7 +274,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Script = vo.Script.Hex,
                     MintTxId = vo.Txid,
                     Coinbase = vo.Script.Type == "nulldata",
-                    MintIndex = vo.N
+                    MintIndex = vo.N,
+                    Address = NBitcoin.Script.FromHex(vo.Script.Hex).GetDestinationAddress(Helper.GetNBitcoinNetwork(network)).ToString()
                 });
             }
 

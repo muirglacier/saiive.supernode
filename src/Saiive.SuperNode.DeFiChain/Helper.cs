@@ -18,6 +18,19 @@ namespace Saiive.SuperNode.DeFiChain
             _client.Timeout = TimeSpan.FromMinutes(5);
         }
 
+        public static NBitcoin.Network GetNBitcoinNetwork(string network)
+        {
+            if(network.ToLower() == "mainnet")
+            {
+                return Saiive.DeFiChain.Sharp.Parser.NBitcoin.DeFiChain.Instance.Mainnet;
+            }
+            else if(network.ToLower() == "testnet")
+            {
+                return Saiive.DeFiChain.Sharp.Parser.NBitcoin.DeFiChain.Instance.Testnet;
+            }
+            throw new ArgumentException($"{network} is invalid!");
+        }
+
         public static async Task<List<T>> LoadAllFromPagedRequest<T>(string url)
         {
             var q = new Queue<string>();
