@@ -278,7 +278,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     MintIndex = vo.N
                 };
 
-                if(vo.Script.Hex.StartsWith("6a2a44665478"))
+                if(vo.Script.Hex.Contains("44665478"))
                 {
                     voutTx.IsCustom = true;
                     voutTx.Address = "false";
