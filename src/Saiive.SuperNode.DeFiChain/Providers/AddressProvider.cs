@@ -283,7 +283,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     voutTx.IsCustom = true;
                     voutTx.Address = "false";
 
-                    var parsedTx = DefiScriptParser.Parse(vo.Script.Hex.Substring(4).ToByteArray());
+                    var startIndexOfDfTx = vo.Script.Hex.IndexOf("44665478");
+
+                    var parsedTx = DefiScriptParser.Parse(vo.Script.Hex.Substring(startIndexOfDfTx).ToByteArray());
 
                     voutTx.TxType = Convert.ToChar(parsedTx.TxType).ToString();
                 }
