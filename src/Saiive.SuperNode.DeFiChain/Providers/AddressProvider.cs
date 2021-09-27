@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Saiive.DeFiChain.Sharp.Parser;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.DeFiChain.Application;
 using Saiive.SuperNode.DeFiChain.Ocean;
@@ -259,24 +260,40 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vi.Script.Hex,
                     MintTxId = vi.Vout == null ? null : vi.Vout.Txid,
-                    SpentTxId = vi.Txid,
-                    Address = NBitcoin.Script.FromHex(vi.Script.Hex).GetDestinationAddress(Helper.GetNBitcoinNetwork(network)).ToString()
+                    SpentTxId = vi.Txid
             });
                ; 
             }
 
             foreach (var vo in vout.Data)
             {
-                ret.Outputs.Add(new TransactionModel
+                //
+                var voutTx = new TransactionModel
                 {
                     Id = vo.Id,
                     Value = Convert.ToUInt64(Convert.ToDouble(vo.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vo.Script.Hex,
                     MintTxId = vo.Txid,
                     Coinbase = vo.Script.Type == "nulldata",
-                    MintIndex = vo.N,
-                    Address = NBitcoin.Script.FromHex(vo.Script.Hex).GetDestinationAddress(Helper.GetNBitcoinNetwork(network)).ToString()
-                });
+                    MintIndex = vo.N
+                };
+
+                if(vo.Script.Hex.StartsWith("6a2a44665478"))
+                {
+                    voutTx.IsCustom = true;
+                    voutTx.Address = "false";
+
+                    var parsedTx = DefiScriptParser.Parse(vo.Script.Hex.Substring(4).ToByteArray());
+
+                    voutTx.TxType = Convert.ToChar(parsedTx.TxType).ToString();
+                }
+                else
+                {
+                    voutTx.Address = NBitcoin.Script.FromHex(vo.Script.Hex)?.GetDestinationAddress(Helper.GetNBitcoinNetwork(network)).ToString();
+                }
+
+
+                ret.Outputs.Add(voutTx);
             }
 
 

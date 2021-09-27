@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.18" />
-	<PackageReference Include="Saiive.DeFiChain.Sharp.Parser" Version="0.1.0" />
+    <PackageReference Include="Saiive.DeFiChain.Sharp.Parser" Version="0.2.1" />
   </ItemGroup>
 
   <ItemGroup>

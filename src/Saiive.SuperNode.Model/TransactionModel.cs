@@ -60,7 +60,7 @@ namespace Saiive.SuperNode.Model
         public bool IsCustomTxApplied { get; set; }
 
         [JsonProperty("txType")]
-        public object TxType { get; set; }
+        public string TxType { get; set; }
 
         [JsonProperty("customData")]
         public JObject CustomData { get; set; }
