@@ -85,7 +85,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var data = await responseLegacy.Content.ReadAsStringAsync();
 
                 var obj = JsonConvert.DeserializeObject<TransactionModel>(data);
-                obj.Details = await GetTransactionDetails("DFI", network, txId);
+                obj.Details = await GetLegacyTransactionDetails("DFI", network, txId);
 
                 return obj;
             }
