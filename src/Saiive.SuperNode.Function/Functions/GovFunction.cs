@@ -36,6 +36,7 @@ namespace Saiive.SuperNode.Function.Functions
             string network, string coin,
             ILogger log)
         {
+            await Task.CompletedTask;
             try
             {
                 var dic = new Dictionary<string, object>();
