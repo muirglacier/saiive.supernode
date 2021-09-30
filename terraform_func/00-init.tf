@@ -69,28 +69,6 @@ variable "key_vault_id" {
   default = "/subscriptions/551ab192-148c-445b-ae4f-0d0107e6f5de/resourceGroups/defi-wallet-common/providers/Microsoft.KeyVault/vaults/defichain-wallet"
 }
 
-variable "scaleway_node_count" {
-  default = 2
-  type = number
-}
-variable "scaleway_btc_node_count" {
-  default = 0
-  type = number
-}
-variable "azure_node_count" {
-  default = 2
-  type = number
-}
-variable "scaleway_server_type" {
-  default = "DEV1-S"
-}
-
-variable "analytics_key" {
-  
-}
-variable "analytics_id" {
-  
-}
 
 variable "app_version" {
   default = "20200722.2"

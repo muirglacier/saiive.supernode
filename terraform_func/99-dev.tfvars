@@ -4,6 +4,7 @@ environment_tag = "Development"
 prefix = "saiive-light"
 
 
+
 dns_zone = "saiive.live"
 dns_zone_resource_group = "saiive-dns"
 
