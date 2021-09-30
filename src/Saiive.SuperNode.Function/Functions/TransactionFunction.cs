@@ -129,7 +129,7 @@ namespace Saiive.SuperNode.Function.Functions
                 };
                 return new OkObjectResult(ret);
             }
-            catch (ArgumentException e)
+            catch (Exception e)
             {
                 var currentBlock = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentHeight(network);
 
