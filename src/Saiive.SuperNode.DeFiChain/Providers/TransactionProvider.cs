@@ -46,6 +46,14 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
                 var data = await response.Content.ReadAsStringAsync();
                 var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+
+                foreach(var o in tx.Outputs)
+                {
+                    if(!o.Script.Contains("44665478"))
+                    {
+                        o.Address = NBitcoin.Script.FromHex(o.Script)?.GetDestinationAddress(Helper.GetNBitcoinNetwork(network))?.ToString();
+                    }
+                }
                 return tx;
             }
             catch
