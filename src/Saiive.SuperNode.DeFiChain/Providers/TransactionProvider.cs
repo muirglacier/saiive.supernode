@@ -38,7 +38,21 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
 
         }
+        private async Task<TransactionDetailModel> GetLegacyTransactionDetails(string coin, string network, string txId)
+        {
+            try
+            {
+                var response = await _client.GetAsync($"{String.Format(LegacyBitcoreUrl, network)}/api/{coin}/{network}/tx/{txId}/coins");
 
+                var data = await response.Content.ReadAsStringAsync();
+                var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+                return tx;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
 
         public async Task<TransactionModel> GetTransactionById(string network, string txId)
@@ -48,16 +62,33 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
 
-            response.EnsureSuccessStatusCode();
+            try
+            {
 
-            var data = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
 
-            var obj = JsonConvert.DeserializeObject<OceanDataEntity<OceanTransactionDetailData>>(data);
-            var ret = ConvertOceanModel(obj);
-            ret.Details = detailModel;
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<OceanDataEntity<OceanTransactionDetailData>>(data);
+                var ret = ConvertOceanModel(obj);
+                ret.Details = detailModel;
 
 
-            return ret;
+                return ret;
+            }
+            catch(Exception)
+            {
+                var responseLegacy = await _client.GetAsync($"{String.Format(LegacyBitcoreUrl, network)}/api/DFI/{network}/tx/{txId}");
+
+                responseLegacy.EnsureSuccessStatusCode();
+
+                var data = await responseLegacy.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<TransactionModel>(data);
+                obj.Details = await GetTransactionDetails("DFI", network, txId);
+
+                return obj;
+            }
         }
 
         public async Task<IList<TransactionModel>> GetTransactionsByBlock(string network, string block)

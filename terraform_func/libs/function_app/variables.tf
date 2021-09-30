@@ -61,3 +61,7 @@ variable "coingecko_url" {
 variable "blockcypher_api" {
 	
 }
+
+variable "legacy_bitcoin_url" {
+	
+}

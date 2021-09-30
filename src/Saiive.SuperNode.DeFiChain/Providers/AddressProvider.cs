@@ -252,14 +252,32 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             };
 
             foreach (var vi in vin.Data)
-            { 
+            {
+                ulong value = 0;
+                var mintTxId = "";
+                int mintIndex = 0;
+                var script = "";
+                if (String.IsNullOrEmpty(vi.Coinbase))
+                {
+                    value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture);
+                    mintTxId = vi.Vout == null ? null : vi.Vout.Txid;
+                    mintIndex = vi.Vout == null ? -1 : vi.Vout.N;
+                    script = vi.Script.Hex;
+                }
+                else
+                {
+                    value = 100;
+                    mintTxId = vi.Txid;
+                    script = null;
+                }
+
                 ret.Inputs.Add(new TransactionModel
                 {
                     Id = vi.Id,
-                    MintIndex = vi.Vout == null ? -1 :vi.Vout.N,
-                    Value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
-                    Script = vi.Script.Hex,
-                    MintTxId = vi.Vout == null ? null : vi.Vout.Txid,
+                    MintIndex = mintIndex,
+                    Value = value,
+                    Script = script,
+                    MintTxId = mintTxId,
                     SpentTxId = vi.Txid
             });
                ; 
@@ -291,7 +309,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 }
                 else
                 {
-                    voutTx.Address = NBitcoin.Script.FromHex(vo.Script.Hex)?.GetDestinationAddress(Helper.GetNBitcoinNetwork(network)).ToString();
+                    voutTx.Address = NBitcoin.Script.FromHex(vo.Script.Hex)?.GetDestinationAddress(Helper.GetNBitcoinNetwork(network))?.ToString();
                 }
 
 

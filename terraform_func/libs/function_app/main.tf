@@ -116,6 +116,7 @@ resource "azurerm_function_app" "functions" {
         DEFI_CHAIN_API_URL=  var.defichain_api
         COINGECKO_API_URL=  var.coingecko_url
         BLOCKCYHPER_API_KEY=  var.blockcypher_api
+        LEGACY_BITCORE_URL = var.legacy_bitcoin_url
     }
 
     site_config {

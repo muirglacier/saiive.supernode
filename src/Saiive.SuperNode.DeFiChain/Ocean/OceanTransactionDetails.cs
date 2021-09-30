@@ -40,6 +40,9 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
         public Script Script { get; set; }
         [JsonProperty("vout")]
         public Vout Vout { get; set; }
+
+        [JsonProperty("coinbase")]
+        public string Coinbase { get; set; }
     }
 
     public class OceanVout

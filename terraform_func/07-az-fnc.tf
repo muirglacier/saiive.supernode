@@ -30,5 +30,7 @@ module "function_app" {
   ocean_url = "https://ocean.defichain.com"
   defichain_api = "https://api.defichain.io"
   coingecko_url = "https://api.coingecko.com/api/v3"
+
+  legacy_bitcoin_url = "https://{0}-api.defichain.com"
   blockcypher_api = data.azurerm_key_vault_secret.blockcypherapikey.value
 }
