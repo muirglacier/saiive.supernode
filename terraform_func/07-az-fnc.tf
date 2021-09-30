@@ -11,8 +11,6 @@ data "azurerm_key_vault_secret" "blockcypherapikey" {
 module "function_app" {
   source = "./libs/function_app"
 
-  tier = "Standard"
-  size = "S1"
 
   prefix = var.prefix
   location = var.location

@@ -73,3 +73,11 @@ variable "key_vault_id" {
 variable "app_version" {
   default = "20200722.2"
 }
+
+variable "tier" {
+	default = "dynamic"
+}
+
+variable "size" {
+	default = "Y1"
+}
