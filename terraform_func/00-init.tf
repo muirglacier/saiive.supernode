@@ -81,3 +81,7 @@ variable "tier" {
 variable "size" {
 	default = "Y1"
 }
+
+variable "always_on" {
+  default = true
+}

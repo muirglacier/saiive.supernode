@@ -120,7 +120,7 @@ resource "azurerm_function_app" "functions" {
     }
 
     site_config {
-        always_on = true
+        always_on = var.always_on
     }
 
     tags = {
