@@ -17,5 +17,7 @@ namespace Saiive.SuperNode.Abstaction
         ITokenProvider TokenProvider { get; }
 
         IMasterNodeProvider MasterNodeProivder { get; }
+
+        IStatsProvider StatsProvider { get; }
     }
 }

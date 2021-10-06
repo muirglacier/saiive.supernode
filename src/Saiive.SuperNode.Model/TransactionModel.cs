@@ -10,6 +10,8 @@ namespace Saiive.SuperNode.Model
         public string Id { get; set; }
 
         [JsonProperty("id")] public string IdV1 => Id;
+        [JsonProperty("txId")] public string TxId => Id;
+        [JsonProperty("txid")] public string TxId2 => Id;
 
         [JsonProperty("chain")]
         public string Chain { get; set; }
@@ -71,6 +73,16 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("type")]
         public string Type { get; set; }
 
+
+        [JsonProperty("blockTime")]
+        public string BlockTime { get; set; }
+
+        [JsonProperty("blockHeight")]
+        public long BlockHeight { get; set; }
         
+        [JsonProperty("blockHash")]
+        public string BlockHash { get; set; }
+
+
     }
 }

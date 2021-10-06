@@ -15,7 +15,8 @@ namespace Saiive.SuperNode.DeFiChain
             TransactionProvider transactionProvider, 
             PoolPairProvider poolPairProvider,
             TokenProvider tokenProvider,
-            MasterNodeProvider masterNodeProvider)
+            MasterNodeProvider masterNodeProvider,
+            StatsProvider statsProvider)
         {
             AccountHistoryProvider = accountHistoryProvider;
             AddressProvider = addressProvider;
@@ -25,6 +26,7 @@ namespace Saiive.SuperNode.DeFiChain
             PoolPairProvider = poolPairProvider;
             TokenProvider = tokenProvider;
             MasterNodeProvider = masterNodeProvider;
+            StatsProvider = statsProvider;
         }
 
         public IAccountHistoryProvider AccountHistoryProvider { get; }
@@ -41,5 +43,7 @@ namespace Saiive.SuperNode.DeFiChain
         public ITokenProvider TokenProvider { get; }
         public MasterNodeProvider MasterNodeProvider { get; }
         public IMasterNodeProvider MasterNodeProivder { get; }
+
+        public IStatsProvider StatsProvider { get; }
     }
 }

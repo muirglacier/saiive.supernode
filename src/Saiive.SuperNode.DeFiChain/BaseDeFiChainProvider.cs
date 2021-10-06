@@ -34,5 +34,12 @@ namespace Saiive.SuperNode.DeFiChain
             Logger?.LogTrace($"Using LEGACY_API_URL {ApiUrl}");
             Logger?.LogTrace($"Using LEGACY_BITCORE_URL {LegacyBitcoreUrl}");
         }
+
+        public DateTime UnixTimeToDateTime(long unixtime)
+        {
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixtime).ToLocalTime();
+            return dtDateTime;
+        }
     }
 }

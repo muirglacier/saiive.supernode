@@ -12,7 +12,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 {
     internal class BlockProvider : BaseDeFiChainProvider, IBlockProvider
     {
-        public BlockProvider(ILogger<BlockProvider> logger, IConfiguration config) : base(logger, config)
+
+        public BlockProvider(ILogger<BlockProvider> logger, IConfiguration config ) : base(logger, config)
         {
         }
 
@@ -25,7 +26,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var data = await response.Content.ReadAsStringAsync();
 
             var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
-            return ConvertOceanModel(obj);
+            return ConvertOceanModel(obj.Data);
 
         }
 
@@ -38,12 +39,14 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             var data = await response.Content.ReadAsStringAsync();
 
+            var tip = await GetCurrentHeight(network);
+
             var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTransactionDetailData>>>(data);
-            return ConvertOceanModel(obj);
+            return ConvertOceanModel(obj, tip);
 
         }
 
-        private List<TransactionModel> ConvertOceanModel(OceanDataEntity<List<OceanTransactionDetailData>> data)
+        private List<TransactionModel> ConvertOceanModel(OceanDataEntity<List<OceanTransactionDetailData>> data, BlockModel tip)
         {
             var res = new List<TransactionModel>();
 
@@ -51,7 +54,11 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             {
                 var tx = new TransactionModel
                 {
-                    Id = d.Id
+                    Id = d.Id,
+                    BlockTime = UnixTimeToDateTime(d.Block.Time).ToString("o"),
+                    Confirmations = tip.Height - d.Block.Height,
+                    BlockHeight = d.Block.Height
+
                 };
                 res.Add(tx);
             }
@@ -60,26 +67,21 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             return res;
         }
 
-        private BlockModel ConvertOceanModel(OceanBlock oceanBlock)
+        private BlockModel ConvertOceanModel(OceanBlockData oceanBlock)
         {
             return new BlockModel
             {
-                Hash = oceanBlock.Data.Hash,
-                Height = oceanBlock.Data.Height,
-                MerkleRoot = oceanBlock.Data.Merkleroot,
-                PreviousBlockHash = oceanBlock.Data.PreviousHash,
-                Size = oceanBlock.Data.Size,
-                TransactionCount = oceanBlock.Data.TransactionCount,
-                Time = UnixTimeToDateTime(oceanBlock.Data.Time).ToString(),
-                Id = oceanBlock.Data.Id
+                Hash = oceanBlock.Hash,
+                Height = oceanBlock.Height,
+                MerkleRoot = oceanBlock.Merkleroot,
+                PreviousBlockHash = oceanBlock.PreviousHash,
+                Size = oceanBlock.Size,
+                TransactionCount = oceanBlock.TransactionCount,
+                Time = UnixTimeToDateTime(oceanBlock.Time).ToString("o"),
+                Id = oceanBlock.Id
             };
         }
-        public DateTime UnixTimeToDateTime(long unixtime)
-        {
-            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds(unixtime).ToLocalTime();
-            return dtDateTime;
-        }
+     
 
         public async Task<BlockModel> GetCurrentHeight(string network)
         {
@@ -90,6 +92,25 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             return await GetBlockByHeightOrHash(network, statsObj.Data.Count.Blocks.ToString());
 
+        }
+
+        public async Task<List<BlockModel>> GetLatestBlocks(string network)
+        {
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks");
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<OceanBlockList>(data);
+            var ret = new List<BlockModel>();
+
+            foreach(var o in obj.Data)
+            {
+                ret.Add(ConvertOceanModel(o));
+            }
+
+            return ret;
         }
     }
 }

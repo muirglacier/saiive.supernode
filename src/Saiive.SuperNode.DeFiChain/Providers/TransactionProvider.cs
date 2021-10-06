@@ -32,7 +32,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             var tx = new TransactionModel
             {
-                Id = data.Data.Id
+                Id = data.Data.Id,
+                BlockHeight = data.Data.Block.Height,
+                BlockHash = data.Data.Block.Hash,
+                BlockTime = UnixTimeToDateTime(data.Data.Block.Time).ToString("o")
             };
             return tx;
 

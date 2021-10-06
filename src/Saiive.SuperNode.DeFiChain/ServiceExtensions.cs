@@ -18,6 +18,7 @@ namespace Saiive.SuperNode.DeFiChain
             services.AddSingleton<TokenProvider>();
             services.AddSingleton<MasterNodeProvider>();
             services.AddSingleton<MasterNodeHelper>();
+            services.AddSingleton<StatsProvider>();
 
             services.AddSingleton<IChainProvider, DeFiChainProvider>();
 

@@ -24,41 +24,6 @@ namespace Saiive.SuperNode.Function.Functions
         {
         }
 
-        [FunctionName("Testpoolswap")]
-        [OpenApiOperation(operationId: "Testpoolswap", tags: new[] { "DEX" })]
-        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(TestPoolSwapBodyRequest), Required = true)]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<YieldFramingModel>), Description = "The OK response")]
-        public async Task<IActionResult> Testpoolswap(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/dex/testpoolswap")] TestPoolSwapBodyRequest req,
-            string network, string coin,
-            ILogger log)
-        {
-
-            //TODO CHANGE URGENT!
-            var httpContent =
-                new StringContent(JsonConvert.SerializeObject(req), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/lp/testpoolswap", httpContent);
-
-            var data = await response.Content.ReadAsStringAsync();
-            try
-            {
-                response.EnsureSuccessStatusCode();
-
-                var result = new TestPoolSwapModel();
-                result.Result = data;
-
-                return new OkObjectResult(result);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"{e} ({data})");
-                return new BadRequestObjectResult(new ErrorModel($"{e.Message} ({data})"));
-            }
-        }
-
-
         [FunctionName("ListPoolPairs")]
         [OpenApiOperation(operationId: "ListPoolPairs", tags: new[] { "DEX" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]

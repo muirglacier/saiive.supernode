@@ -1,4 +1,5 @@
 ﻿using Saiive.SuperNode.Model;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.Abstaction.Providers
@@ -7,5 +8,7 @@ namespace Saiive.SuperNode.Abstaction.Providers
     {
         Task<BlockModel> GetBlockByHeightOrHash(string network, string hash);
         Task<BlockModel> GetCurrentHeight(string network);
+
+        Task<List<BlockModel>> GetLatestBlocks(string network);
     }
 }

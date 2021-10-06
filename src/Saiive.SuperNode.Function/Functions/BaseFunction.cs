@@ -25,23 +25,26 @@ namespace Saiive.SuperNode.Function.Functions
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromMinutes(5);
 
-            Logger = logger;
-            ChainProviderCollection = chainProviderCollection;
-            this.serviceProvider = serviceProvider;
-
-            var services = serviceProvider.GetServices<IChainProvider>();
-
-            foreach (var service in services)
+            lock (chainProviderCollection)
             {
-                if(!chainProviderCollection.ContainsKey(service.CoinType))
-                    chainProviderCollection.Add(service.CoinType, service);
+                Logger = logger;
+                ChainProviderCollection = chainProviderCollection;
+                this.serviceProvider = serviceProvider;
+
+                var services = serviceProvider.GetServices<IChainProvider>();
+
+                foreach (var service in services)
+                {
+                    if (!chainProviderCollection.ContainsKey(service.CoinType))
+                        chainProviderCollection.Add(service.CoinType, service);
+                }
+
+                var config = serviceProvider.GetService<IConfiguration>();
+
+                DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
+                CoingeckoApiUrl = config["COINGECKO_API_URL"];
+                ApiUrl = config["LEGACY_API_URL"];
             }
-
-            var config = serviceProvider.GetService<IConfiguration>();
-
-            DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
-            CoingeckoApiUrl = config["COINGECKO_API_URL"];
-            ApiUrl = config["LEGACY_API_URL"];
 
         }
 

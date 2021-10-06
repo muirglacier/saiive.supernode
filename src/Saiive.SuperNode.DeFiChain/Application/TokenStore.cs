@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -24,6 +25,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
         private readonly Dictionary<string, List<TokenModel>> _tokenStoreRaw =
                     new Dictionary<string, List<TokenModel>>();
 
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
 
         public TokenStore(IConfiguration config)
@@ -34,17 +36,24 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         public async Task<TokenModel> GetToken(string network, string tokenName)
         {
-          
-            if (!_tokenStore.ContainsKey(network))
+            await _semaphoreSlim.WaitAsync();
+            try
             {
-                await LoadAll(network);
-            }
+                if (!_tokenStore.ContainsKey(network))
+                {
+                    await LoadAll(network);
+                }
 
-            if (!_tokenStore[network].ContainsKey(tokenName))
-            {
-                return _tokenStoreId[network][tokenName];
+                if (!_tokenStore[network].ContainsKey(tokenName))
+                {
+                    return _tokenStoreId[network][tokenName];
+                }
+                return _tokenStore[network][tokenName];
             }
-            return _tokenStore[network][tokenName];
+            finally
+            {
+                _semaphoreSlim.Release(1);
+            }
         }
 
         private async Task LoadAll(string network)
@@ -94,13 +103,20 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         public async Task<IList<TokenModel>> GetAll(string network)
         {
-            
-            if (!_tokenStore.ContainsKey(network))
+            await _semaphoreSlim.WaitAsync();
+            try
             {
-                await LoadAll(network);
-            }
+                if (!_tokenStore.ContainsKey(network))
+                {
+                    await LoadAll(network);
+                }
 
-            return _tokenStoreRaw[network];
+                return _tokenStoreRaw[network];
+            }
+            finally
+            {
+                _semaphoreSlim.Release(1);
+            }
         }
     }
 }

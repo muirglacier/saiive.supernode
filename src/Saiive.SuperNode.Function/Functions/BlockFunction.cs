@@ -22,20 +22,25 @@ namespace Saiive.SuperNode.Function.Functions
         {
         }
 
-        [FunctionName("GetCurrentBlock")]
-        [OpenApiOperation(operationId: "GetCurrentBlock", tags: new[] { "Block" })]
+
+        [FunctionName("GetBlockByHash")]
+        [OpenApiOperation(operationId: "GetBlockByHash", tags: new[] { "Block" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiParameter(name: "height", In = ParameterLocation.Path, Required = true, Type = typeof(int))]
+        [OpenApiParameter(name: "height", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel), Description = "The OK response")]
-        public async Task<IActionResult> GetCurrentBlock(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/{height:int}")] HttpRequestMessage req,
-            string network, string coin, int height,
-            ILogger log)
-        {   
+        public async Task<IActionResult> GetBlockByHash(
+           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/{hashOrHeight}")] HttpRequestMessage req,
+           string network, string coin, string hashOrHeight,
+           ILogger log)
+        {
             try
             {
-                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetBlockByHeightOrHash(network, height.ToString());
+                if(hashOrHeight == "tip")
+                {
+                    return await GetCurrentHeight(req, network, coin);
+                }
+                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetBlockByHeightOrHash(network, hashOrHeight);
                 return new OkObjectResult(obj);
             }
             catch (Exception e)
@@ -52,13 +57,36 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentHeight(
-               [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/tip")] HttpRequest req,
+               [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/tip")] HttpRequestMessage req,
                string network, string coin)
         {
 
             try
             {
                 var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentHeight(network);
+                return new OkObjectResult(obj);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
+
+        [FunctionName("GetLatestBlocks")]
+        [OpenApiOperation(operationId: "GetLatestBlocks", tags: new[] { "Block" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> GetLatestBlocks(
+             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block")] HttpRequest req,
+             string network, string coin)
+        {
+
+            try
+            {
+                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetLatestBlocks(network);
                 return new OkObjectResult(obj);
             }
             catch (Exception e)

@@ -31,5 +31,7 @@ namespace Saiive.SuperNode.Bitcoin
         public ITokenProvider TokenProvider => throw new NotImplementedException();
 
         public IMasterNodeProvider MasterNodeProivder => throw new NotImplementedException();
+
+        public IStatsProvider StatsProvider => throw new NotImplementedException();
     }
 }
