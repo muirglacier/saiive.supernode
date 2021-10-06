@@ -65,6 +65,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             return new BlockTransactionModel
             {
+                Txid = txId,
                 Details = txDetail
             };
         }

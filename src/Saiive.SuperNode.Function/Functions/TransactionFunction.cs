@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
-using Saiive.SuperNode.Model.Requests;
 
 namespace Saiive.SuperNode.Function.Functions
 {
@@ -135,6 +133,33 @@ namespace Saiive.SuperNode.Function.Functions
 
                 Logger.LogError("{coin}+{network}: Error commiting tx to blockchain ({response} for {txHex}) @ {blockHeight} block", coin, network, e.Message, req.RawTx, currentBlock.Height);
                 return new BadRequestObjectResult(new ErrorModel($"{e.Message}"));
+            }
+        }
+
+
+
+        [FunctionName("GetLatestTransactions")]
+        [OpenApiOperation(operationId: "GetLatestTransactions", tags: new[] { "Transaction" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(List<BlockTransactionModel>), Description = "The OK response")]
+        public async Task<IActionResult> GetLatestTransactions(
+           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/latest")] HttpRequestMessage req,
+           string network, string coin, 
+           ILogger log)
+        {
+            try
+            {
+                var lastBlock = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentHeight(network);
+
+                var txs = await ChainProviderCollection.GetInstance(coin).TransactionProvider.GetTransactionsByBlockHeight(network, lastBlock.Height, true);
+
+                return new OkObjectResult(txs);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
             }
         }
     }
