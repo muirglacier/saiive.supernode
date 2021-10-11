@@ -9,7 +9,7 @@ namespace Saiive.SuperNode.Bitcoin
     internal class BaseBitcoinProvider : BaseProvider
     {
 
-        protected const string ApiUrl = "https://api.bitcore.io/"; 
+        protected const string ApiUrl = "https://api.bitcore.io"; 
 
         protected readonly HttpClient _client;
         public BaseBitcoinProvider(ILogger logger, IConfiguration config) : base(logger, config)
