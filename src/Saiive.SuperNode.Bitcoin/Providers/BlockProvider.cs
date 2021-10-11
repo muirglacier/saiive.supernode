@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction.Providers;
-using Saiive.SuperNode.Bitcoin.Helper;
 using Saiive.SuperNode.Model;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,28 +16,38 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<BlockModel> GetBlockByHeightOrHash(string network, string hash)
         {
-            var instance = GetInstance(network);
-            
-            var block = await instance.GetBlockByHeight(Convert.ToInt32(hash));
-            return block.ToBlockModel(network);
+            var response = await _client.GetAsync($"{ApiUrl}/api/BTC/{network}/block/{hash}");
+
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<BlockModel>(data);
+
+            return obj;
         }
 
         public async Task<BlockModel> GetCurrentHeight(string network)
         {
-            var instance = GetInstance(network);
+            var response = await _client.GetAsync($"{ApiUrl}/api/BTC/{network}/block/tip");
+            response.EnsureSuccessStatusCode();
 
-            var stats = await instance.GetStats();
-            var block = await GetBlockByHeightOrHash(network, stats.Height.ToString());
+            var data = await response.Content.ReadAsStringAsync();
 
-            return block;
+            var obj = JsonConvert.DeserializeObject<BlockModel>(data);
+            return obj;
         }
 
-        public async  Task<List<BlockModel>> GetLatestBlocks(string network)
+            public async  Task<List<BlockModel>> GetLatestBlocks(string network)
         {
-            var instance = GetInstance(network);
+            var response = await _client.GetAsync($"{ApiUrl}/api/BTC/{network}/block/latest?limit=5");
+            response.EnsureSuccessStatusCode();
 
-            await Task.CompletedTask;
-            return new List<BlockModel>();
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<List<BlockModel>>(data);
+            return obj;
         }
     }
 }

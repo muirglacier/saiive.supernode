@@ -1,14 +1,13 @@
 ﻿
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction.Providers;
-using Saiive.SuperNode.Bitcoin.Helper;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.Bitcoin.Providers
@@ -19,21 +18,74 @@ namespace Saiive.SuperNode.Bitcoin.Providers
         {
         }
 
+        private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}/coins");
+
+            var data = await response.Content.ReadAsStringAsync();
+            var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
+            return tx;
+        }
+
+        private async Task<List<TransactionModel>> GetTransactionsInternal(string coin, string network, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs?limit=1000");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+
+            return txs;
+
+        }
+
+        private async Task<BalanceModel> GetBalanceInternal(string coin, string network, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/balance");
+
+            var data = await response.Content.ReadAsStringAsync();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                throw new ArgumentException(data);
+            }
+
+
+            var obj = JsonConvert.DeserializeObject<BalanceModel>(data);
+            obj.Address = address;
+
+            return obj;
+
+        }
+
+        private async Task<List<AccountModel>> GetAccountInternal(string coin, string network, string address)
+        {
+            var ret = new List<AccountModel>();
+
+            var nativeBalance = await GetBalanceInternal(coin, network, address);
+            if (nativeBalance.Confirmed > 0)
+            {
+                ret.Add(new AccountModel
+                {
+                    Address = address,
+                    Balance = nativeBalance.Confirmed,
+                    Raw = $"{nativeBalance.Confirmed}@{coin}",
+                    Token = $"${coin}"
+                });
+            }
+
+
+            return ret;
+
+        }
+
+
         public async Task<IList<AccountModel>> GetAccount(string network, string address)
         {
-            var instance = GetInstance(network);
-            var balance = await instance.GetBalanceForAddress(address);
-
-            var accountModel = new AccountModel
-            {
-                Address = address,
-                Balance = balance.Balance.ValueLong,
-                Raw = $"{balance.Balance.ValueLong}@BTC",
-                Token = "BTC"
-            };
-
-
-            return new List<AccountModel> { accountModel };
+            return await GetAccountInternal("BTC", network, address);
         }
 
         public async Task<IList<Account>> GetAccount(string network, AddressesBodyRequest addresses)
@@ -56,16 +108,7 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<BalanceModel> GetBalance(string network, string address)
         {
-            var instance = GetInstance(network);
-            var balance = await instance.GetBalanceForAddress(address);
-
-            return new BalanceModel
-            {
-                Address = address,
-                Balance = (ulong)balance.Balance.ValueLong,
-                Confirmed = (ulong)balance.Balance.ValueLong,
-                Unconfirmed = 0
-            };
+            return await GetBalanceInternal("BTC", network, address);
         }
 
         public async Task<IList<BalanceModel>> GetBalance(string network, AddressesBodyRequest addresses)
@@ -102,48 +145,34 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<IList<TransactionModel>> GetTransactions(string network, string address)
         {
-            var instance = GetInstance(network);
-
-            var transactions = await instance.GetTransactions(address);
-            var ret = new List<TransactionModel>();
-
-            foreach(var tx in transactions)
-            {
-                ret.Add(tx.ToTransactionModel(network, address));
-            }
-
-            return ret;
+            return await GetTransactionsInternal("BTC", network, address);
         }
 
         public async Task<IList<TransactionModel>> GetTransactions(string network, AddressesBodyRequest addresses)
         {
-            var instance = GetInstance(network);
             var ret = new List<TransactionModel>();
 
             foreach (var address in addresses.Addresses)
             {
-                var transactions = await instance.GetTransactions(address);
-                foreach (var tx in transactions)
-                {
-                    ret.Add(tx.ToTransactionModel(network, address));
-                }
+                ret.AddRange(await GetTransactionsInternal("BTC", network, address));
             }
             return ret;
+        }
+        private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}?unspent=true&limit=1000");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            return txs;
+
+
         }
 
         public async Task<IList<TransactionModel>> GetUnspentTransactionOutput(string network, string address)
         {
-            var ret = new List<TransactionModel>();
-            var instance = GetInstance(network);
-
-            var unspent = await instance.GetUnspentTransactionReference(address);
-
-            foreach (var tx in unspent)
-            {
-                ret.Add(tx.ToTransactionModel(network, address));
-            }
-
-            return ret;
+            return await GetUnspentTransactionOutputsInternal("BTC", network, address);
 
         }
 
@@ -153,8 +182,7 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
             foreach (var address in addresses.Addresses)
             {
-                var transactions = await GetUnspentTransactionOutput(network, address);
-                ret.AddRange(transactions);
+                ret.AddRange(await GetUnspentTransactionOutputsInternal("BTC", network, address));
             }
             return ret;
         }

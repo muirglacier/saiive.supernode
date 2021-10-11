@@ -1,29 +1,21 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.BlockCypher.Core;
 using Saiive.SuperNode.Abstaction;
+using System;
+using System.Net.Http;
 
 namespace Saiive.SuperNode.Bitcoin
 {
     internal class BaseBitcoinProvider : BaseProvider
     {
-        
 
-        public BaseBitcoinProvider(ILogger logger, IConfiguration config) : base(logger, config) 
+        protected const string ApiUrl = "https://api.bitcore.io/"; 
+
+        protected readonly HttpClient _client;
+        public BaseBitcoinProvider(ILogger logger, IConfiguration config) : base(logger, config)
         {
-        }
-
-        public Blockcypher GetInstance(string network)
-        {
-            var endpoint = Endpoint.BtcMain;
-
-            if(network.ToLower() == "testnet")
-            {
-                endpoint = Endpoint.BtcTest3;
-            }
-            var b = new Blockcypher(Config["BLOCKCYHPER_API_KEY"], endpoint);
-            b.EnsureSuccessStatusCode = true;
-            return b;
+            _client = new HttpClient();
+            _client.Timeout = TimeSpan.FromMinutes(5);
         }
     }
 }
