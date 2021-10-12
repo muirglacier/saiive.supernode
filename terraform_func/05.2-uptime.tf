@@ -28,7 +28,7 @@ data "uptimerobot_alert_contact" "default_alert_contact" {
 
 
 resource "uptimerobot_monitor" "dfi_mainnet" {
-  friendly_name = "DFI"
+  friendly_name = "DFI Mainnet"
   type          = "http"
   url           = "https://${local.env_name}/api/v1/mainnet/DFI/health"
   
@@ -54,7 +54,7 @@ resource "uptimerobot_monitor" "dfi_testnet" {
 
 
 resource "uptimerobot_monitor" "btc_mainnet" {
-  friendly_name = "BTC"
+  friendly_name = "BTC Mainnet"
   type          = "http"
   url           = "https://${local.env_name}/api/v1/mainnet/BTC/health"
   
@@ -94,11 +94,12 @@ resource "uptimerobot_monitor" "supernode" {
 resource "uptimerobot_status_page" "defichain_status_page" {
   friendly_name  = local.env_name
   custom_domain  = "${local.uptime_cname_prefix}status.saiive.live"
-  monitors       = [  uptimerobot_monitor.dfi_mainnet.id,
-                      uptimerobot_monitor.dfi_testnet.id,
+  monitors       = [  
+                      uptimerobot_monitor.supernode.id,
+                      uptimerobot_monitor.dfi_mainnet.id,
                       uptimerobot_monitor.btc_mainnet.id,
-                      uptimerobot_monitor.btc_testnet.id,
-                      uptimerobot_monitor.supernode.id
+                      uptimerobot_monitor.dfi_testnet.id,
+                      uptimerobot_monitor.btc_testnet.id
                    ]
 }
 
