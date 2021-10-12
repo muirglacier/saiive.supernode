@@ -78,7 +78,7 @@ resource "uptimerobot_monitor" "btc_testnet" {
 }
 
 resource "uptimerobot_monitor" "supernode" {
-  friendly_name = "Supernode"
+  friendly_name = "saiive.live.supernode"
   type          = "http"
   url           = "https://${local.env_name}/api/v1/health"
   
