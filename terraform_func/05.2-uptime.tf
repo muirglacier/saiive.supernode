@@ -92,7 +92,7 @@ resource "uptimerobot_monitor" "supernode" {
 
 
 resource "uptimerobot_status_page" "defichain_status_page" {
-  friendly_name  = local.env_name
+  friendly_name  = local.uptime_robot_name
   custom_domain  = "${local.uptime_cname_prefix}status.saiive.live"
   monitors       = [  
                       uptimerobot_monitor.supernode.id,
