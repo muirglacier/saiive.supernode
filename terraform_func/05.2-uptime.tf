@@ -6,7 +6,7 @@ locals {
 }
 
 locals {
-  uptime_robot_name = "saiive.live"
+  uptime_robot_name = "supernode.saiive.live"
 }
 locals {
   
