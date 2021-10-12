@@ -32,7 +32,7 @@ resource "uptimerobot_monitor" "dfi_mainnet" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/mainnet/DFI/health"
   
-  interval      = 60
+  interval      = 3600
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
@@ -44,7 +44,7 @@ resource "uptimerobot_monitor" "dfi_testnet" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/testnet/DFI/health"
   
-  interval      = 60
+  interval      = 3600
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
@@ -58,7 +58,7 @@ resource "uptimerobot_monitor" "btc_mainnet" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/mainnet/BTC/health"
   
-  interval      = 60
+  interval      = 3600
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
@@ -70,7 +70,7 @@ resource "uptimerobot_monitor" "btc_testnet" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/testnet/BTC/health"
   
-  interval      = 60
+  interval      = 3600
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
@@ -82,7 +82,7 @@ resource "uptimerobot_monitor" "supernode" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/health"
   
-  interval      = 60
+  interval      = 3600
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
