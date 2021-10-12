@@ -26,12 +26,22 @@ namespace Saiive.SuperNode.Function.Functions
             _blockchainTimeCheckMinuteInterval.Add("DFI", TimeSpan.FromMinutes(60).TotalMinutes);
         }
 
+        [FunctionName("Health")]
+        [OpenApiOperation(operationId: "Health", tags: new[] { "Health" })]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel), Description = "The OK response")]
+        public async Task<IActionResult> Health(
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/health")] HttpRequestMessage req,
+          ILogger log)
+        {
+            return new NoContentResult();
+        }
+
         [FunctionName("HealthCheckNetwork")]
         [OpenApiOperation(operationId: "HealthCheckNetwork", tags: new[] { "Health" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel), Description = "The OK response")]
-        public async Task<IActionResult> GetCurrentBlock(
+        public async Task<IActionResult> HealthCheckNetwork(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/health")] HttpRequestMessage req,
             string network, string coin,
             ILogger log)

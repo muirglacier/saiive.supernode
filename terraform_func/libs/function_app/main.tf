@@ -124,7 +124,7 @@ resource "azurerm_function_app" "functions" {
         always_on = var.always_on
         
         cors {
-            allowed_origins = "*"
+            allowed_origins = ["*"]
         }
     }
 
