@@ -119,8 +119,13 @@ resource "azurerm_function_app" "functions" {
         LEGACY_BITCORE_URL = var.legacy_bitcoin_url
     }
 
+
     site_config {
         always_on = var.always_on
+        
+        cors {
+            allowed_origins = "*"
+        }
     }
 
     tags = {
