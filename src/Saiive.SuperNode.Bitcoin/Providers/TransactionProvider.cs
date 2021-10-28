@@ -60,7 +60,7 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<IList<BlockTransactionModel>> GetTransactionsByBlockHeight(string network, int height, bool includeDetails)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}");
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx?blockHeight={height}&limit=20");
 
             var data = await response.Content.ReadAsStringAsync();
 
