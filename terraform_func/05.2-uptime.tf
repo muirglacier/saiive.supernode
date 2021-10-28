@@ -58,7 +58,7 @@ resource "uptimerobot_monitor" "btc_mainnet" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/mainnet/BTC/health"
   
-  interval      = 3600
+  interval      = 86400
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
@@ -70,7 +70,7 @@ resource "uptimerobot_monitor" "btc_testnet" {
   type          = "http"
   url           = "https://${local.env_name}/api/v1/testnet/BTC/health"
   
-  interval      = 3600
+  interval      = 86400
 
   alert_contact {
     id = data.uptimerobot_alert_contact.default_alert_contact.id
