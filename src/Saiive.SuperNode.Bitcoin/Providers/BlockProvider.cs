@@ -41,7 +41,7 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
             public async  Task<List<BlockModel>> GetLatestBlocks(string network)
         {
-            var response = await _client.GetAsync($"{ApiUrl}/api/BTC/{network}/block/latest?limit=5");
+            var response = await _client.GetAsync($"{ApiUrl}/api/BTC/{network}/block?limit=5");
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadAsStringAsync();
