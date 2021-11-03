@@ -118,8 +118,8 @@ resource "azurerm_function_app" "functions" {
         BLOCKCYHPER_API_KEY=  var.blockcypher_api
         LEGACY_BITCORE_URL = var.legacy_bitcoin_url
 
-
         EXPORT_QUEUE = var.export_q
+        SENDGRID_API_KEY = var.sendgrid_api_key
     }
 
     connection_string {

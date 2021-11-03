@@ -350,7 +350,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 SpentTxId = String.IsNullOrEmpty(tx.Type) ? "" : (tx.Type == "vin" ? tx.Vin.Txid : ""),
                 SpentHeight = tx.Type == "vin" ? tx.Block.Height : -1,
                 Value = Convert.ToUInt64(Convert.ToDouble(valueProp, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
-                Type = tx.Type
+                Type = tx.Type,
+                BlockTime = UnixTimeToDateTime(tx.Block.Time)
             };
 
         }
@@ -391,6 +392,40 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             {
                 throw new Exception(data);
             }
+        }
+
+        public async Task<AggregatedAddress> GetAggregatedAddress(string network, string address)
+        {
+            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/aggregation");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+
+                var agg = JsonConvert.DeserializeObject<OceanAggregatedAddress>(data);
+
+                return agg.Data;
+            }
+            catch
+            {
+                throw new Exception(data);
+            }
+        }
+
+        public async Task<IList<AggregatedAddress>> GetAggregatedAddresses(string network, AddressesBodyRequest addresses)
+        {
+            var ret = new List<AggregatedAddress>();
+
+            foreach(var address in addresses.Addresses)
+            {
+                ret.Add(await GetAggregatedAddress(network, address));
+            }
+
+            return ret;
+            
+            
         }
     }
 

@@ -35,7 +35,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 Id = data.Data.Id,
                 BlockHeight = data.Data.Block.Height,
                 BlockHash = data.Data.Block.Hash,
-                BlockTime = UnixTimeToDateTime(data.Data.Block.Time).ToString("o")
+                BlockTime = UnixTimeToDateTime(data.Data.Block.Time)
             };
             return tx;
 

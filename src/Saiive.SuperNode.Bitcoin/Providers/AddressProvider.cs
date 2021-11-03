@@ -186,5 +186,17 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             }
             return ret;
         }
+
+        public async Task<AggregatedAddress> GetAggregatedAddress(string network, string address)
+        {
+            await Task.CompletedTask;
+            return new AggregatedAddress();
+        }
+
+        public async Task<IList<AggregatedAddress>> GetAggregatedAddresses(string network, AddressesBodyRequest addresses)
+        {
+            await Task.CompletedTask;
+            return new List<AggregatedAddress>();
+        }
     }
 }

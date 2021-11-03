@@ -32,28 +32,24 @@ namespace Saiive.SuperNode.Function.Functions
             _exportQueue = config["EXPORT_QUEUE"];
         }
 
-        public async Task SendExportRequestToQ(ExportDto export, int timeout)
+        public async Task SendExportRequestToQ(ExportDto export)
         {
-            var topicClient = new TopicClient(_serviceBusConnection, _exportQueue, RetryPolicy.Default);
+            var topicClient = new QueueClient(_serviceBusConnection, _exportQueue);
             await topicClient.SendAsync(new Message
             {
                 Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(export)),
-                CorrelationId = export.PaymentTxId,
-                ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddSeconds(timeout)
+                CorrelationId = export.PaymentTxId
             });
         }
 
         [FunctionName("ExportHandler")]
         public async Task ExportHandler(
             [ServiceBusTrigger("%EXPORT_QUEUE%", Connection = "ServiceBusConnection")]
-            Message queueMessage,
+            ExportDto dto,
            ILogger log)
         {
             try
             {
-                var content = Encoding.UTF8.GetString(queueMessage.Body);
-                var dto = JsonConvert.DeserializeObject<ExportDto>(content);
-
                 await _exportHandler.Export(dto.Chain, dto.Network, dto.Addresses, dto.From, dto.To, dto.PaymentTxId, dto.Mail, dto.ExportType);
             }
             catch(Exception ex)
@@ -65,17 +61,17 @@ namespace Saiive.SuperNode.Function.Functions
 
         [FunctionName("EnqueueExport")]
         [OpenApiOperation(operationId: "EnqueueExport", tags: new[] { "Export" })]
-        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(ExportDto), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.NoContent, contentType: "application/json", bodyType: typeof(void), Description = "The OK response")]
         public async Task<IActionResult> GetTotalBalance(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/export/enqueu")] ExportDto req,
-           string coin, string network)
+             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/export/enqueue")] ExportDto req)
         {
             try
             {
-                await SendExportRequestToQ(req, 5000);
+                if (await _exportHandler.ExportAllowed(req.Chain, req.Network, req.PaymentTxId))
+                {
+                    await SendExportRequestToQ(req);
+                }
 
                 return new NoContentResult();
             }

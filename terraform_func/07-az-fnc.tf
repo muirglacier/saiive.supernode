@@ -4,6 +4,10 @@ data "azurerm_key_vault_secret" "blockcypherapikey" {
   name         = "blockcypherapikey"
   key_vault_id = var.key_vault_id
 }
+data "azurerm_key_vault_secret" "send_grid_key" {
+  name         = "SendGridApiKey"
+  key_vault_id = var.key_vault_id
+}
 
 
 
@@ -49,4 +53,6 @@ module "function_app" {
 
   servicebus_connection = module.service_bus.connection
   export_q = module.service_bus.export_q
+
+  sendgrid_api_key = data.azurerm_key_vault_secret.send_grid_key.value
 }

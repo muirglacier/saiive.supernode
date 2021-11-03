@@ -77,3 +77,7 @@ variable "servicebus_connection" {
 variable "export_q" {
 
 }
+
+variable "sendgrid_api_key" {
+	
+}

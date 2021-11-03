@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Saiive.SuperNode.Abstaction;
+using SendGrid.Extensions.DependencyInjection;
+using System;
 
 namespace Saiive.SuperNode.Export
 {
@@ -9,8 +11,12 @@ namespace Saiive.SuperNode.Export
         {
 
             services.AddSingleton<IExportHandler, ExportHandler>();
-
-          
+            services.AddSingleton<MailHandler>();
+           
+            services.AddSendGrid(options =>
+            {
+                options.ApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            });
             return services;
         }
     }

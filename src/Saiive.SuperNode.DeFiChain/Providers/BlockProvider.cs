@@ -55,7 +55,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var tx = new TransactionModel
                 {
                     Id = d.Id,
-                    BlockTime = UnixTimeToDateTime(d.Block.Time).ToString("o"),
+                    BlockTime = UnixTimeToDateTime(d.Block.Time),
                     Confirmations = tip.Height - d.Block.Height,
                     BlockHeight = d.Block.Height
 

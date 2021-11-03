@@ -75,7 +75,7 @@ namespace Saiive.SuperNode.Model
 
 
         [JsonProperty("blockTime")]
-        public string BlockTime { get; set; }
+        public DateTime BlockTime { get; set; }
 
         [JsonProperty("blockHeight")]
         public long BlockHeight { get; set; }
@@ -84,5 +84,8 @@ namespace Saiive.SuperNode.Model
         public string BlockHash { get; set; }
 
 
+
+        [JsonIgnore]
+        public object ParesedTransactionType { get; set; }
     }
 }

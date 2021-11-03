@@ -10,6 +10,9 @@ namespace Saiive.SuperNode.Abstaction.Providers
         Task<IList<AccountModel>> GetTotalBalance(string network, string address);
         Task<IDictionary<string, AccountModel>> GetTotalBalance(string network, AddressesBodyRequest addresses);
 
+        Task<AggregatedAddress> GetAggregatedAddress(string network, string address);
+        Task<IList<AggregatedAddress>> GetAggregatedAddresses(string network, AddressesBodyRequest addresses);
+
 
         Task<BalanceModel> GetBalance(string network, string address);
         Task<IList<BalanceModel>> GetBalance(string network, AddressesBodyRequest addresses);
