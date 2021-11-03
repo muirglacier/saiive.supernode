@@ -69,3 +69,11 @@ variable "legacy_bitcoin_url" {
 variable "always_on" {
 	default = true
 }
+
+variable "servicebus_connection" {
+	
+}
+
+variable "export_q" {
+
+}

@@ -117,6 +117,15 @@ resource "azurerm_function_app" "functions" {
         COINGECKO_API_URL=  var.coingecko_url
         BLOCKCYHPER_API_KEY=  var.blockcypher_api
         LEGACY_BITCORE_URL = var.legacy_bitcoin_url
+
+
+        EXPORT_QUEUE = var.export_q
+    }
+
+    connection_string {
+        name = "ServiceBusConnection" 
+        type = "Custom"
+        value = var.servicebus_connection
     }
 
 

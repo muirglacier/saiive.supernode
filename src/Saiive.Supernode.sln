@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.DeFiChain"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.Model", "Saiive.SuperNode.Model\Saiive.SuperNode.Model.csproj", "{E3B8E0E5-8297-42E5-A875-4A818A11D58F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.Function", "Saiive.SuperNode.Function\Saiive.SuperNode.Function.csproj", "{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Saiive.SuperNode.Function", "Saiive.SuperNode.Function\Saiive.SuperNode.Function.csproj", "{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saiive.SuperNode.Export", "Saiive.SuperNode.Export\Saiive.SuperNode.Export.csproj", "{E285BA68-34CB-4D07-A167-7143049B9186}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49C72EFE-84D6-4ED6-8220-E2B8AD01FE7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E285BA68-34CB-4D07-A167-7143049B9186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E285BA68-34CB-4D07-A167-7143049B9186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E285BA68-34CB-4D07-A167-7143049B9186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E285BA68-34CB-4D07-A167-7143049B9186}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

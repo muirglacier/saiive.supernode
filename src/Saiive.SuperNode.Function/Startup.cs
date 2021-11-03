@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Saiive.SuperNode.Bitcoin;
 using Saiive.SuperNode.DeFiChain;
+using Saiive.SuperNode.Export;
 using Saiive.SuperNode.Function;
 
 [assembly: FunctionsStartup(typeof(Startup))]
@@ -17,6 +18,7 @@ namespace Saiive.SuperNode.Function
             builder.Services.AddBitcoin();
 
             builder.Services.AddChainProviderService();
+            builder.Services.AddExportHandler();
 
         }
     }

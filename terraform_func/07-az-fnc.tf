@@ -7,6 +7,18 @@ data "azurerm_key_vault_secret" "blockcypherapikey" {
 
 
 
+module "service_bus" {
+  source = "./libs/servicebus"
+
+  prefix = var.prefix
+  location = var.location
+  environment = var.environment
+  resource_group = azurerm_resource_group.rg.name
+
+  environment_tag = var.environment
+}
+
+
 
 module "function_app" {
   source = "./libs/function_app"
@@ -34,4 +46,7 @@ module "function_app" {
 
   legacy_bitcoin_url = "https://{0}-api.defichain.com"
   blockcypher_api = data.azurerm_key_vault_secret.blockcypherapikey.value
+
+  servicebus_connection = module.service_bus.connection
+  export_q = module.service_bus.export_q
 }
