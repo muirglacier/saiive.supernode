@@ -98,6 +98,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var obj = JsonConvert.DeserializeObject<TransactionModel>(data);
                 obj.Details = await GetLegacyTransactionDetails("DFI", network, txId);
 
+                obj.Id = obj.TxId;
+
                 return obj;
             }
         }
