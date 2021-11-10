@@ -49,10 +49,10 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
     public class Apr
     {
         [JsonProperty("reward")]
-        public double Reward { get; set; }
+        public double? Reward { get; set; }
 
         [JsonProperty("total")]
-        public double Total { get; set; }
+        public double? Total { get; set; }
     }
 
     public class OceanPoolPairData
