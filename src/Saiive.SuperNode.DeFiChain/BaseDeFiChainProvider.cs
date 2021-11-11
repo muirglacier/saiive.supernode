@@ -13,6 +13,7 @@ namespace Saiive.SuperNode.DeFiChain
         protected readonly string CoingeckoApiUrl;
         protected readonly string ApiUrl;
         protected readonly string LegacyBitcoreUrl;
+        internal const string ApiVersion = "v0";
 
         protected readonly HttpClient _client;
 

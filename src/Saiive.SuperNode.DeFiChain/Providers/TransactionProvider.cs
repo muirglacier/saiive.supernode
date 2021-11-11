@@ -71,7 +71,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var detailModel = await _addressProvider.GetTransactionDetails(network, txId);
 
 
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/transactions/{txId}");
 
             try
             {
@@ -138,7 +138,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             };
             var httpContent =
                  new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{OceanUrl}/v0/{network}/rawtx/send", httpContent);
+            var response = await _client.PostAsync($"{OceanUrl}/{ApiVersion}/{network}/rawtx/send", httpContent);
 
             var data = await response.Content.ReadAsStringAsync();
 

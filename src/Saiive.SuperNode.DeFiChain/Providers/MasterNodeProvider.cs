@@ -56,7 +56,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<OceanMasterNode> LoadMasterNode(string network, string nextPage)
         {
-            var url = $"{OceanUrl}/v0/{network}/masternodes";
+            var url = $"{OceanUrl}/{ApiVersion}/{network}/masternodes";
             if (!String.IsNullOrEmpty(nextPage))
             {
                 url += $"?next={nextPage}";

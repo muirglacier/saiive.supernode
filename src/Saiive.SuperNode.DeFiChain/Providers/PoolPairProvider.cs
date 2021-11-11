@@ -18,7 +18,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPair(string network, string poolId)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/poolpairs/{poolId}");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs/{poolId}");
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadAsStringAsync();
@@ -36,7 +36,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPairs(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/poolpairs");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
 
 
             response.EnsureSuccessStatusCode();
@@ -60,7 +60,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPairsBySymbolKey(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/poolpairs");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
 
 
             response.EnsureSuccessStatusCode();

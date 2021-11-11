@@ -58,7 +58,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         private async Task LoadAll(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{_apiUrl}/v0/{network}/tokens");
+            var oceanData = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{_apiUrl}/{BaseDeFiChainProvider.ApiVersion}/{network}/tokens");
             foreach (var token in oceanData)
             {
                 if (!_tokenStore.ContainsKey(network))

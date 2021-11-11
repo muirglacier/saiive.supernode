@@ -19,7 +19,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BlockModel> GetBlockByHeightOrHash(string network, string hash)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks/{hash}");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}");
 
             response.EnsureSuccessStatusCode();
 
@@ -33,7 +33,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<List<TransactionModel>> GetTransactionForBlock(string network, string hash)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks/{hash}/transactions");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}/transactions");
 
             response.EnsureSuccessStatusCode();
 
@@ -85,7 +85,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BlockModel> GetCurrentHeight(string network)
         {
-            var stats = await _client.GetAsync($"{OceanUrl}/v0/{network}/stats");
+            var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
             var statsData = await stats.Content.ReadAsStringAsync();
 
             var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
@@ -96,7 +96,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<List<BlockModel>> GetLatestBlocks(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/blocks");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks");
 
             response.EnsureSuccessStatusCode();
 

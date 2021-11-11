@@ -33,6 +33,7 @@ namespace Saiive.SuperNode.Function.Functions
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/health")] HttpRequestMessage req,
           ILogger log)
         {
+            await Task.CompletedTask;
             return new NoContentResult();
         }
 

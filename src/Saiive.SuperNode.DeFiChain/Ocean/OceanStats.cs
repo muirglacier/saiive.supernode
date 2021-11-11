@@ -27,7 +27,7 @@ namespace Saiive.SuperNode.DeFiChain.Ocean
         public double Emission { get; set; }
 
         [JsonProperty("fee")]
-        public int Fee { get; set; }
+        public double Fee { get; set; }
 
         [JsonProperty("total")]
         public double Total { get; set; }

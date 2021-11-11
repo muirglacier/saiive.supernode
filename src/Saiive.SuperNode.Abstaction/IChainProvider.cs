@@ -19,5 +19,7 @@ namespace Saiive.SuperNode.Abstaction
         IMasterNodeProvider MasterNodeProivder { get; }
 
         IStatsProvider StatsProvider { get; }
+
+        IPriceProvider PriceProvider {  get; }
     }
 }

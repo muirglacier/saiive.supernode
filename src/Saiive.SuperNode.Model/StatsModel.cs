@@ -15,7 +15,7 @@ namespace Saiive.SuperNode.Model
         public List<string> Tokens { get; set; }
 
         [JsonProperty("feeburn")]
-        public int Feeburn { get; set; }
+        public double Feeburn { get; set; }
 
         [JsonProperty("emissionburn")]
         public string Emissionburn { get; set; }

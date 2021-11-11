@@ -22,7 +22,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<StatsModel> GetStats(string network)
         {
-            var stats = await _client.GetAsync($"{OceanUrl}/v0/{network}/stats");
+            var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
             var statsData = await stats.Content.ReadAsStringAsync();
 
             var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);

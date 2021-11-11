@@ -21,10 +21,10 @@ namespace Saiive.SuperNode.Export
         public DateTime Date { get; set; }
         public long BlockHeight { get; set; }
 
-        public string OperationType { get; set; }
+        public string? OperationType { get; set; }
         public ulong Amount { get; set; }
 
-        public string TransactionId { get; set; }
+        public string? TransactionId { get; set; }
     }
 
     public class ExportHandler : IExportHandler

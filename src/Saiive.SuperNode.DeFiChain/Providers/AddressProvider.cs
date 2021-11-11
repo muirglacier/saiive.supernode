@@ -137,7 +137,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<BalanceModel> GetBalanceInternal(string network, string address)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/balance");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/balance");
 
             var data = await response.Content.ReadAsStringAsync();
             try
@@ -171,7 +171,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
             var ret = new List<AccountModel>();
 
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/tokens");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/tokens");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -227,9 +227,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
      
         internal async Task<TransactionDetailModel> GetTransactionDetails(string network, string txId)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}");
-            var responseVouts = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}/vouts");
-            var responseVins = await _client.GetAsync($"{OceanUrl}/v0/{network}/transactions/{txId}/vins");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/transactions/{txId}");
+            var responseVouts = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/transactions/{txId}/vouts");
+            var responseVins = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/transactions/{txId}/vins");
 
             var data = await response.Content.ReadAsStringAsync();
             var vouts = await responseVouts.Content.ReadAsStringAsync();
@@ -321,7 +321,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
 
         private async Task<List<TransactionModel>> GetTransactionsInternal(string network, string address)
-        { var url = $"{OceanUrl}/v0/{network}/address/{address}/transactions";
+        { var url = $"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions";
 
             var getAllTxs = await Helper.LoadAllFromPagedRequest<OceanTransactionData>(url);
 
@@ -376,7 +376,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/transactions/unspent");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions/unspent");
 
             var data = await response.Content.ReadAsStringAsync();
 
@@ -396,7 +396,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<AggregatedAddress> GetAggregatedAddress(string network, string address)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/v0/{network}/address/{address}/aggregation");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/aggregation");
 
             var data = await response.Content.ReadAsStringAsync();
 
