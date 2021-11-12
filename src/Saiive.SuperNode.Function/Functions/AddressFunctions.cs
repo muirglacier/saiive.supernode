@@ -258,6 +258,54 @@ namespace Saiive.SuperNode.Function.Functions
                 return new BadRequestObjectResult(new ErrorModel(e.Message));
             }
         }
+
+
+        [FunctionName("LoanVaultsForAddress")]
+        [OpenApiOperation(operationId: "LoanVaultsForAddress", tags: new[] { "Address" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "address", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanVault>))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> LoanVaultsForAddress(
+               [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/address/loans/vaults/{address}")] HttpRequestMessage req,
+               string coin, string network, string address)
+        {
+
+            try
+            {
+                return new OkObjectResult(await ChainProviderCollection.GetInstance(coin).AddressProvider.GetLoanVaultsForAddress(network, address));
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
+
+        [FunctionName("LoanVaultsForAddresses")]
+        [OpenApiOperation(operationId: "LoanVaultsForAddresses", tags: new[] { "Address" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(AddressesBodyRequest), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanVault>))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> LoanVaultsForAddresses(
+              [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/address/loans/vaults")] AddressesBodyRequest req,
+              string coin, string network)
+        {
+            try
+            {
+                var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetLoanVaultsForAddresses(network, req.Addresses);
+
+                return new OkObjectResult(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
     }
 }
 

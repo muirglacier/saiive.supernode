@@ -4,9 +4,7 @@ using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.DeFiChain.Ocean;
 using Saiive.SuperNode.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.DeFiChain.Providers
@@ -71,5 +69,24 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var oceanData = await Helper.LoadAllFromPagedRequest<LoanToken>($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens");
             return oceanData;
         }
+
+        public async Task<LoanVault> GetLoanVault(string network, string id)
+        {
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanVault>>(data);
+            return json.Data;
+        }
+
+        public async Task<IList<LoanVault>> GetLoanVaults(string network)
+        {
+            var oceanData = await Helper.LoadAllFromPagedRequest<LoanVault>($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults");
+            return oceanData;
+        }
+
     }
 }

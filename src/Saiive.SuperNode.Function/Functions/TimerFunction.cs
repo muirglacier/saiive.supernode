@@ -21,10 +21,15 @@ namespace Saiive.SuperNode.Function.Functions
         public async Task Run([TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo myTimer, ILogger log)
         {
             var jobs = _serviceProvider.GetServices<IPeriodicJob>();
-            foreach (var job in jobs)
+
+            var tasks = new List<Task>();
+
+            foreach(var job in jobs)
             {
-                await job.Run();
+                tasks.Add(job.Run());
             }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

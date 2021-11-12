@@ -30,6 +30,10 @@ namespace Saiive.SuperNode.DeFiChain
 
             services.AddSingleton<IPeriodicJob, MasterNodeCacheStartupHandler>();
 
+            services.AddSingleton<ILoanVaultAddressProvider, LoanVaultAddressProvider>();
+            services.AddSingleton<LoanVaultCache>();
+            services.AddSingleton<IPeriodicJob>(a => a.GetService<LoanVaultCache>());
+
             return services;
         }
     }

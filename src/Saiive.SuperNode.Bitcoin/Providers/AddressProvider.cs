@@ -198,5 +198,15 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             await Task.CompletedTask;
             return new List<AggregatedAddress>();
         }
+
+        public Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<LoanVault>> GetLoanVaultsForAddresses(string network, IList<string> addresses)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

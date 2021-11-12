@@ -15,5 +15,11 @@ namespace Saiive.SuperNode.Abstaction.Providers
 
         Task<IList<LoanToken>> GetLoanTokens(string network);
         Task<LoanToken> GetLoanToken(string network, string id);
+
+        Task<IList<LoanVault>> GetLoanVaults(string network);
+        Task<LoanVault> GetLoanVault(string network, string id);
+
+
+
     }
 }

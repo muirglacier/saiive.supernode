@@ -25,5 +25,8 @@ namespace Saiive.SuperNode.Abstaction.Providers
 
         Task<IList<TransactionModel>> GetUnspentTransactionOutput(string network, string address);
         Task<IList<TransactionModel>> GetUnspentTransactionOutput(string network, AddressesBodyRequest addresses);
+
+        Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address);
+        Task<IList<LoanVault>> GetLoanVaultsForAddresses(string network, IList<string> addresses);
     }
 }

@@ -122,4 +122,64 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("fixedIntervalPriceId")]
         public string FixedIntervalPriceId { get; set; }
     }
+
+    public class LoanVaultAmount
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("amount")]
+        public string Amount { get; set; }
+
+        [JsonProperty("symbol")]
+        public string Symbol { get; set; }
+
+        [JsonProperty("symbolKey")]
+        public string SymbolKey { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("displaySymbol")]
+        public string DisplaySymbol { get; set; }
+    }
+
+    public class LoanVault
+    {
+        [JsonProperty("vaultId")]
+        public string VaultId { get; set; }
+
+        [JsonProperty("loanScheme")]
+        public LoanScheme LoanScheme { get; set; }
+
+        [JsonProperty("ownerAddress")]
+        public string OwnerAddress { get; set; }
+
+        [JsonProperty("state")]
+        public string State { get; set; }
+
+        [JsonProperty("informativeRatio")]
+        public string InformativeRatio { get; set; }
+
+        [JsonProperty("collateralRatio")]
+        public string CollateralRatio { get; set; }
+
+        [JsonProperty("collateralValue")]
+        public string CollateralValue { get; set; }
+
+        [JsonProperty("loanValue")]
+        public string LoanValue { get; set; }
+
+        [JsonProperty("interestValue")]
+        public string InterestValue { get; set; }
+
+        [JsonProperty("collateralAmounts")]
+        public List<LoanVaultAmount> CollateralAmounts { get; set; }
+
+        [JsonProperty("loanAmounts")]
+        public List<LoanVaultAmount> LoanAmounts { get; set; }
+
+        [JsonProperty("interestAmounts")]
+        public List<LoanVaultAmount> InterestAmounts { get; set; }
+    }
 }
