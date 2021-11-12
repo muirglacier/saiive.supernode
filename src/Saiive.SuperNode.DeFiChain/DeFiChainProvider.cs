@@ -45,8 +45,7 @@ namespace Saiive.SuperNode.DeFiChain
 
         public IPoolPairProvider PoolPairProvider { get; }
         public ITokenProvider TokenProvider { get; }
-        public MasterNodeProvider MasterNodeProvider { get; }
-        public IMasterNodeProvider MasterNodeProivder { get; }
+        public IMasterNodeProvider MasterNodeProvider { get; }
 
         public IStatsProvider StatsProvider { get; }
 

@@ -28,7 +28,7 @@ namespace Saiive.SuperNode.Controllers
             try
             {
 
-                var obj = await ChainProviderCollection.GetInstance(coin).MasterNodeProivder.ListMasternodes(network);
+                var obj = await ChainProviderCollection.GetInstance(coin).MasterNodeProvider.ListMasternodes(network);
 
                 return Ok(obj);
             }
@@ -47,7 +47,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                var obj = await ChainProviderCollection.GetInstance(coin).MasterNodeProivder.ListActiveMasternodes(network);
+                var obj = await ChainProviderCollection.GetInstance(coin).MasterNodeProvider.ListActiveMasternodes(network);
 
                 return Ok(obj);
             }
