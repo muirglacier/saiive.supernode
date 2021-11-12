@@ -19,14 +19,12 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         private readonly ILogger<AddressProvider> _logger;
         private readonly ITokenStore _tokenStore;
         private readonly IMasterNodeCache _masterNodeCache;
-        private readonly ILoanVaultAddressProvider _loanVaultAddressProvider;
 
-        public AddressProvider(ILogger<AddressProvider> logger, IConfiguration config, ITokenStore tokenStore, IMasterNodeCache masterNodeCache, ILoanVaultAddressProvider loanVaultAddressProvider) : base(logger, config)
+        public AddressProvider(ILogger<AddressProvider> logger, IConfiguration config, ITokenStore tokenStore, IMasterNodeCache masterNodeCache) : base(logger, config)
         {
             _logger = logger;
             _tokenStore = tokenStore;
             _masterNodeCache = masterNodeCache;
-            _loanVaultAddressProvider = loanVaultAddressProvider;
         }
 
         public async Task<IList<AccountModel>> GetAccount(string network, string address)
