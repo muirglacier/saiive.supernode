@@ -20,6 +20,8 @@ namespace Saiive.SuperNode.Abstaction
 
         IStatsProvider StatsProvider { get; }
 
-        IPriceProvider PriceProvider {  get; }
+        IPriceProvider PriceProvider { get; }
+
+        ILoanProvider LoanProvider { get; }
     }
 }
