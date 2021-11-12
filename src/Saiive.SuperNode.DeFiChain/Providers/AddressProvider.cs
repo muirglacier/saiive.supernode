@@ -467,14 +467,35 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
 
 
-        public Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address)
+        public async Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address)
         {
-            return _loanVaultAddressProvider.GetLoanVaultsForAddress(network, address);
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/vaults");
+
+            var data = await response.Content.ReadAsStringAsync();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                throw new ArgumentException(data);
+            }
+
+
+            var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<LoanVault>>>(data);
+            return obj.Data;
         }
 
-        public Task<IList<LoanVault>> GetLoanVaultsForAddresses(string network, IList<string> addresses)
+        public async Task<IList<LoanVault>> GetLoanVaultsForAddresses(string network, IList<string> addresses)
         {
-            return _loanVaultAddressProvider.GetLoanVaultsForAddresses(network, addresses);
+           var ret = new List<LoanVault>();
+
+            foreach(var address in addresses)
+            {
+                ret.AddRange(await GetLoanVaultsForAddress(network, address));  
+            }
+
+            return ret;
         }
     }
 

@@ -43,7 +43,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
                 foreach (var address in addresses)
                 {
-                    if (_loanVaultCache.ContainsKey(network) && _loanVaultCache[address].ContainsKey(address))
+                    if (_loanVaultCache.ContainsKey(network) && _loanVaultCache[network].ContainsKey(address))
                     {
                         ret.AddRange(_loanVaultCache[network][address]);
                     }
