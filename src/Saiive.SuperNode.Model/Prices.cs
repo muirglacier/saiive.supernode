@@ -64,6 +64,60 @@ namespace Saiive.SuperNode.Model
         public string Sort { get; set; }
     }
 
+    public class PriceFeedInfo
+    {
+        [JsonProperty("block")]
+        public Block Block { get; set; }
+
+        [JsonProperty("aggregated")]
+        public Aggregated Aggregated { get; set; }
+
+        [JsonProperty("currency")]
+        public string Currency { get; set; }
+
+        [JsonProperty("token")]
+        public string Token { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("sort")]
+        public string Sort { get; set; }
+    }
+
+    public class OracleInfo
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("oracleId")]
+        public string OracleId { get; set; }
+
+        [JsonProperty("token")]
+        public string Token { get; set; }
+
+        [JsonProperty("currency")]
+        public string Currency { get; set; }
+
+        [JsonProperty("weightage")]
+        public int Weightage { get; set; }
+
+        [JsonProperty("block")]
+        public Block Block { get; set; }
+
+        [JsonProperty("feed")]
+        public PriceFeed Feed { get; set; }
+    }
+
+
+
+
     public class StockPrice
     {
         [JsonProperty("id")]

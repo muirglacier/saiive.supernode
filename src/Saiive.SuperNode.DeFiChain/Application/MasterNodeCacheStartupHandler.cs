@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Saiive.SuperNode.Abstaction;
 
 namespace Saiive.SuperNode.DeFiChain.Application
 {
-    internal class MasterNodeCacheStartupHandler : IHostedService
+    internal class MasterNodeCacheStartupHandler : IPeriodicJob
     {
         private readonly IMasterNodeCache _cache;
         private readonly ILogger<MasterNodeCacheStartupHandler> _logger;
         private readonly IConfiguration _config;
-        private Timer _timer;
 
         public MasterNodeCacheStartupHandler(IMasterNodeCache cache, ILogger<MasterNodeCacheStartupHandler> logger, IConfiguration config)
         {
@@ -39,20 +37,9 @@ namespace Saiive.SuperNode.DeFiChain.Application
             _logger.LogInformation("Update masternode cache...done");
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public async Task Run()
         {
-            await Task.CompletedTask;
-            _timer = new Timer(async state =>
-            {
-                await UpdateCache();
-            }, null, TimeSpan.FromSeconds(1), TimeSpan.FromHours(1));
-
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _timer.Dispose();
-            return Task.CompletedTask;
+            await UpdateCache();
         }
     }
 }

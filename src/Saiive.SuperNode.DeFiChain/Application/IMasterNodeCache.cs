@@ -7,5 +7,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
     internal interface IMasterNodeCache
     {
         Task<List<Masternode>> GetMasterNodes(string network);
+
+        Task<bool> IsMasternodeStillAlive(string network, string ownerAddress, string txId);
     }
 }

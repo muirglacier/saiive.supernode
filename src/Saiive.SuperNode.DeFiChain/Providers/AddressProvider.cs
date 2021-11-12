@@ -18,11 +18,13 @@ namespace Saiive.SuperNode.DeFiChain.Providers
     {
         private readonly ILogger<AddressProvider> _logger;
         private readonly ITokenStore _tokenStore;
+        private readonly IMasterNodeCache _masterNodeCache;
 
-        public AddressProvider(ILogger<AddressProvider> logger, IConfiguration config, ITokenStore tokenStore) : base(logger, config)
+        public AddressProvider(ILogger<AddressProvider> logger, IConfiguration config, ITokenStore tokenStore, IMasterNodeCache masterNodeCache) : base(logger, config)
         {
             _logger = logger;
             _tokenStore = tokenStore;
+            _masterNodeCache = masterNodeCache;
         }
 
         public async Task<IList<AccountModel>> GetAccount(string network, string address)
@@ -385,8 +387,42 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 response.EnsureSuccessStatusCode();
 
                 var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
+                var useTxs = new List<OceanTransactionData>();
 
-                return await ConvertOceanModel(txs.Data, network, address);
+                foreach (var tx in txs.Data)
+                {
+                    var useTx = true;
+                    if (Convert.ToDouble(tx.Vout.Value, CultureInfo.InvariantCulture) == 20000.0)
+                    {
+                        var txDetails = await GetTransactionDetails(network, tx.Vout.Txid);
+                        foreach (var outp in txDetails.Outputs)
+                        {
+                            if (!String.IsNullOrEmpty(outp.Script) && outp.Script[0..2] == "6a")
+                            {
+                                var script = outp.Script.ToByteArray()[2..];
+                                if (DefiScriptParser.IsDeFiTransaction(script))
+                                {
+                                    var defiTx = DefiScriptParser.Parse(script);
+
+                                    if (defiTx.TxType == DefiTransactions.CustomTxType.CreateMasternode)
+                                    {
+                                        if(await _masterNodeCache.IsMasternodeStillAlive(network, address, tx.Vout.Txid))
+                                        {
+                                            useTx = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (useTx)
+                    {
+                        useTxs.Add(tx);
+                    }
+                }
+
+                return await ConvertOceanModel(useTxs, network, address);
             }
             catch
             {
