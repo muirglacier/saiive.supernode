@@ -255,10 +255,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var vi in vin.Data)
             {
-                ulong value = 0;
-                var mintTxId = "";
                 int mintIndex = 0;
-                var script = "";
+                string mintTxId;
+                ulong value;
+                string script;
                 if (String.IsNullOrEmpty(vi.Coinbase))
                 {
                     value = vi.Vout == null ? 0 : Convert.ToUInt64(Convert.ToDouble(vi.Vout.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture);
@@ -275,7 +275,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
                 ret.Inputs.Add(new TransactionModel
                 {
-                    Id = vi.Id,
+                    Id = vi.Txid,
                     MintIndex = mintIndex,
                     Value = value,
                     Script = script,
@@ -287,7 +287,6 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             foreach (var vo in vout.Data)
             {
-                //
                 var voutTx = new TransactionModel
                 {
                     Id = vo.Txid,
