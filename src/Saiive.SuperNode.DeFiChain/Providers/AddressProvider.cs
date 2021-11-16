@@ -290,7 +290,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 //
                 var voutTx = new TransactionModel
                 {
-                    Id = vo.N,
+                    Id = vo.Txid,
                     Value = Convert.ToUInt64(Convert.ToDouble(vo.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vo.Script.Hex,
                     MintTxId = vo.Txid,
