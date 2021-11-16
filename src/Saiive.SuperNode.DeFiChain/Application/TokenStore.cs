@@ -43,11 +43,16 @@ namespace Saiive.SuperNode.DeFiChain.Application
                 {
                     await LoadAll(network);
                 }
+                if (!_tokenStore[network].ContainsKey(tokenName))
+                {
+                    await LoadAll(network);
+                }
 
                 if (!_tokenStore[network].ContainsKey(tokenName))
                 {
                     return _tokenStoreId[network][tokenName];
                 }
+
                 return _tokenStore[network][tokenName];
             }
             finally
