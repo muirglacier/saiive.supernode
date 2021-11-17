@@ -21,6 +21,54 @@ namespace Saiive.SuperNode.Model
         public string InterestRate { get; set; }
     }
 
+    public class Active
+    {
+        [JsonProperty("amount")]
+        public string Amount { get; set; }
+
+        [JsonProperty("weightage")]
+        public int Weightage { get; set; }
+
+        [JsonProperty("oracles")]
+        public Oracles Oracles { get; set; }
+    }
+
+    public class Next
+    {
+        [JsonProperty("amount")]
+        public string Amount { get; set; }
+
+        [JsonProperty("weightage")]
+        public int Weightage { get; set; }
+
+        [JsonProperty("oracles")]
+        public Oracles Oracles { get; set; }
+    }
+
+    public class ActivePrice
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("isLive")]
+        public bool IsLive { get; set; }
+
+        [JsonProperty("block")]
+        public Block Block { get; set; }
+
+        [JsonProperty("active")]
+        public Active Active { get; set; }
+
+        [JsonProperty("next")]
+        public Next Next { get; set; }
+
+        [JsonProperty("sort")]
+        public string Sort { get; set; }
+    }
+
     public class Creation
     {
         [JsonProperty("tx")]
@@ -142,6 +190,10 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("displaySymbol")]
         public string DisplaySymbol { get; set; }
+
+
+        [JsonProperty("activePrice")]
+        public ActivePrice ActivePrice { get; set; }
     }
 
     public class LoanVault
