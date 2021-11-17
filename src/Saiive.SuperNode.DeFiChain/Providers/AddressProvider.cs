@@ -280,7 +280,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Value = value,
                     Script = script,
                     MintTxId = mintTxId,
-                    SpentTxId = vi.Txid
+                    SpentTxId = vi.Txid,
+                    Coinbase = !String.IsNullOrEmpty(vi.Coinbase)
             });
                ; 
             }

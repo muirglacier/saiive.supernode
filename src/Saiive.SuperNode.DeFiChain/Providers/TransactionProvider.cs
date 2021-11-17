@@ -7,6 +7,7 @@ using Saiive.SuperNode.Model;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,7 +84,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var obj = JsonConvert.DeserializeObject<OceanDataEntity<OceanTransactionDetailData>>(data);
                 var ret = ConvertOceanModel(obj);
                 ret.Details = detailModel;
-
+                ret.Coinbase = detailModel.Inputs.Any(a => a.Coinbase);
 
                 return ret;
             }
