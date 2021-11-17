@@ -280,7 +280,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Value = value,
                     Script = script,
                     MintTxId = mintTxId,
-                    SpentTxId = vi.Txid
+                    SpentTxId = vi.Txid,
+                    Coinbase = mintIndex == 0
             });
                ; 
             }
@@ -293,8 +294,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     Value = Convert.ToUInt64(Convert.ToDouble(vo.Value, CultureInfo.InvariantCulture) * token.Multiplier, CultureInfo.InvariantCulture),
                     Script = vo.Script.Hex,
                     MintTxId = vo.Txid,
-                    Coinbase = vo.Script.Type == "nulldata",
-                    MintIndex = vo.N
+                    Coinbase = vo.N  == 0,
+                    MintIndex = vo.N,
                 };
 
                 if(vo.Script.Hex.Contains("44665478"))
