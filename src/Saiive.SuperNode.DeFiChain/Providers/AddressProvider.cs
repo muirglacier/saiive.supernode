@@ -339,13 +339,16 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var valueProp = String.IsNullOrEmpty(tx.Value) ? tx.Vout.Value : tx.Value;
             var txType = tx.Type;
 
+            var mintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1) : (tx.Type == "vout" ? tx.Vout.N : -1);
+
             return new TransactionModel
             {
                 Address = address,
                 Chain = "DFI",
+                Coinbase = mintIndex == 0,
                 Id = tx.Id,
                 MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
-                MintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1) : (tx.Type == "vout" ? tx.Vout.N : -1),
+                MintIndex = mintIndex,
                 MintTxId = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.Txid ?? "") : (tx.Type == "vout" ? tx.Vout.Txid : ""),
                 Network = network,
                 Script = tx.Script.Hex,
