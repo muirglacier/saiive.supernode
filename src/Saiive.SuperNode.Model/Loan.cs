@@ -154,6 +154,9 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("activateAfterBlock")]
         public int ActivateAfterBlock { get; set; }
+
+        [JsonProperty("activePrice")]
+        public ActivePrice ActivePrice { get; set; }
     }
 
     public class LoanToken
