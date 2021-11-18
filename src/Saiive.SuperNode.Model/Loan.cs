@@ -169,6 +169,9 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("fixedIntervalPriceId")]
         public string FixedIntervalPriceId { get; set; }
+
+        [JsonProperty("activePrice")]
+        public ActivePrice ActivePrice { get; set; }
     }
 
     public class LoanVaultAmount
