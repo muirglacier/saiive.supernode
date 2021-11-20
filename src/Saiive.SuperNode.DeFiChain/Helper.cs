@@ -31,7 +31,7 @@ namespace Saiive.SuperNode.DeFiChain
             throw new ArgumentException($"{network} is invalid!");
         }
 
-        public static async Task<List<T>> LoadAllFromPagedRequest<T>(string url)
+        public static async Task<List<T>> LoadAllFromPagedRequest<T>(string url, int maxItems = -1)
         {
             var q = new Queue<string>();
             q.Enqueue(null);
@@ -44,6 +44,11 @@ namespace Saiive.SuperNode.DeFiChain
                 var data = await LoadPage<T>(url, q2);
 
                 ret.AddRange(data.Data);
+
+                if(maxItems > 0 && ret.Count > maxItems)
+                {
+                    return ret;
+                }
 
                 if (data.Page != null && !String.IsNullOrEmpty(data.Page.Next))
                 {

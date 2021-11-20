@@ -18,7 +18,8 @@ namespace Saiive.SuperNode.DeFiChain
             MasterNodeProvider masterNodeProvider,
             StatsProvider statsProvider,
             PriceProvider priceProvider,
-            LoanProvider loanProvider)
+            LoanProvider loanProvider,
+            OracleProvider oracleProvider)
         {
             AccountHistoryProvider = accountHistoryProvider;
             AddressProvider = addressProvider;
@@ -31,6 +32,7 @@ namespace Saiive.SuperNode.DeFiChain
             StatsProvider = statsProvider;
             PriceProvider = priceProvider;
             LoanProvider = loanProvider;
+            OracleProvider = oracleProvider;
         }
 
         public IAccountHistoryProvider AccountHistoryProvider { get; }
@@ -52,5 +54,7 @@ namespace Saiive.SuperNode.DeFiChain
         public IPriceProvider PriceProvider { get; }
 
         public ILoanProvider LoanProvider { get; }
+
+        public IOracleProvider OracleProvider { get; }
     }
 }

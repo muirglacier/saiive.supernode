@@ -23,5 +23,7 @@ namespace Saiive.SuperNode.Abstaction
         IPriceProvider PriceProvider { get; }
 
         ILoanProvider LoanProvider { get; }
+
+        IOracleProvider OracleProvider { get; }
     }
 }

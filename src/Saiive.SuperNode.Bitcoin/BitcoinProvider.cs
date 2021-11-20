@@ -37,5 +37,7 @@ namespace Saiive.SuperNode.Bitcoin
         public IPriceProvider PriceProvider => throw new NotImplementedException();
 
         public ILoanProvider LoanProvider => throw new NotImplementedException();
+
+        public IOracleProvider OracleProvider => throw new NotImplementedException();
     }
 }

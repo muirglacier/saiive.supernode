@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Saiive.SuperNode.Model
@@ -17,17 +14,47 @@ namespace Saiive.SuperNode.Model
         public string Currency { get; set; }
     }
 
+    public class OraclePriceFeedData
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("sort")]
+        public string Sort { get; set; }
+
+        [JsonProperty("amount")]
+        public string Amount { get; set; }
+
+        [JsonProperty("currency")]
+        public string Currency { get; set; }
+
+        [JsonProperty("block")]
+        public Block Block { get; set; }
+
+        [JsonProperty("oracleId")]
+        public string OracleId { get; set; }
+
+        [JsonProperty("time")]
+        public int Time { get; set; }
+
+        [JsonProperty("token")]
+        public string Token { get; set; }
+
+        [JsonProperty("txid")]
+        public string Txid { get; set; }
+    }
+
 
     public class OracleData
     {
         [JsonProperty("weightage")]
         public int Weightage { get; set; }
 
-        [JsonProperty("oracleid")]
+        [JsonProperty("id")]
         public string Oracleid { get; set; }
-
-        [JsonProperty("address")]
-        public string Address { get; set; }
 
         [JsonProperty("priceFeeds")]
         public List<PriceFeed> PriceFeeds { get; set; }
