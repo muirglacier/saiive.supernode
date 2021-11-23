@@ -10,6 +10,7 @@ using Saiive.SuperNode.Model.Requests;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.DeFiChain.Providers
@@ -345,9 +346,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             if (txType == "vout")
             {
                 var txComplete = await GetTransactionDetails(network, tx.Vout.Txid);
-                if(txComplete.Inputs == null || txComplete.Inputs.Count == 0)
+                if(txComplete.Inputs == null || txComplete.Inputs.Count > 0)
                 {
-                    isCoinbase = true;
+                    isCoinbase = txComplete.Inputs.First().Coinbase;
                 }
             }
 
