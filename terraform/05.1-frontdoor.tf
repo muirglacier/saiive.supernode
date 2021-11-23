@@ -1,24 +1,24 @@
 
-module "frontdoor" {
-  depends_on = [
-    local.nodes
-  ]
+# module "frontdoor" {
+#   depends_on = [
+#     local.nodes
+#   ]
   
-  source = "./libs/frontdoor"
+#   source = "./libs/frontdoor"
 
-  name = "supernode"
-  prefix = var.prefix
-  environment = var.environment
-  resource_group = azurerm_resource_group.rg.name
-  location = var.location
+#   name = "supernode"
+#   prefix = var.prefix
+#   environment = var.environment
+#   resource_group = azurerm_resource_group.rg.name
+#   location = var.location
 
-  dns_zone = var.dns_zone
-  dns_zone_resource_group = var.dns_zone_resource_group
+#   dns_zone = var.dns_zone
+#   dns_zone_resource_group = var.dns_zone_resource_group
 
-  nodes = local.nodes
-  bitcoin_nodes = local.bitcoin_nodes
-  dfi_nodes = local.dfi_nodes
-}
+#   nodes = local.nodes
+#   bitcoin_nodes = local.bitcoin_nodes
+#   dfi_nodes = local.dfi_nodes
+# }
 
 
 # resource "azurerm_monitor_diagnostic_setting" "frontdoor_log_storage" {

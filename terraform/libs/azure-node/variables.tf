@@ -43,7 +43,7 @@ variable "server_version" {
 }
 
 variable "server_type" {
-  default = "Standard_B2ms"
+  default = "Standard_B2s"
 }
 variable "disk_size" {
   default = 200

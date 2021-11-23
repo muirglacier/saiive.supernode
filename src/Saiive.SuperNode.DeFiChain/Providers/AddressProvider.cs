@@ -341,11 +341,21 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             var mintIndex = String.IsNullOrEmpty(tx.Type) ? (tx.Vout?.N ?? -1) : (tx.Type == "vout" ? tx.Vout.N : -1);
 
+            bool isCoinbase = false;
+            if (txType == "vout")
+            {
+                var txComplete = await GetTransactionDetails(network, tx.Vout.Txid);
+                if(txComplete.Inputs == null || txComplete.Inputs.Count == 0)
+                {
+                    isCoinbase = true;
+                }
+            }
+
             return new TransactionModel
             {
                 Address = address,
                 Chain = "DFI",
-                Coinbase = mintIndex == 0,
+                Coinbase = isCoinbase,
                 Id = tx.Id,
                 MintHeight = (tx.Type == "vout" ? tx.Block.Height : -1),
                 MintIndex = mintIndex,
