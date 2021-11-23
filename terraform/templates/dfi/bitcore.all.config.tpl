@@ -13,16 +13,13 @@
           "chainSource": "p2p",
           "trustedPeers": [
             {
-              "host": "defichain_mainnet",
+              "host": "seed.defichain.io",
+              "port": 8555
+            },{
+              "host": "seed.mydeficha.in",
               "port": 8555
             }
-          ],
-          "rpc": {
-            "host": "defichain_mainnet",
-            "port": 8554,
-            "username": "${wallet_user}",
-            "password": "${wallet_password}"
-          }
+          ]
         },
         "testnet": {
           "chainSource": "p2p",
@@ -30,14 +27,11 @@
             {
               "host": "defichain_testnet",
               "port": 18555
+            },{
+              "host": "testnet-seed.defichain.io",
+              "port": 18555
             }
-          ],
-          "rpc": {
-            "host": "defichain_testnet",
-            "port": 18554,
-            "username": "${wallet_user}",
-            "password": "${wallet_password}"
-          }
+          ]
         }
       }
     }
