@@ -46,7 +46,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
             try
             {
-                var response = await _client.GetAsync($"{LegacyBitcoreUrl}/api/{coin}/{network}/tx/{txId}/coins");
+                var response = await _client.GetAsync($"{LegacyBitcoreUrl}api/{coin}/{network}/tx/{txId}/coins");
 
                 var data = await response.Content.ReadAsStringAsync();
                 var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
