@@ -88,5 +88,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             return oceanData;
         }
 
+        public async Task<IList<LoanAuction>> GetAuctions(string network)
+        {
+            var oceanData = await Helper.LoadAllFromPagedRequest<LoanAuction>($"{OceanUrl}/{ApiVersion}/{network}/loans/auctions");
+            return oceanData;
+        }
     }
 }

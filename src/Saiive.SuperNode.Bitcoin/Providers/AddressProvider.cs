@@ -33,6 +33,11 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
             var data = await response.Content.ReadAsStringAsync();
 
+            if(data == "Rate Limited")
+            {
+                return new List<TransactionModel>();
+            }
+
             var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
 
             return txs;

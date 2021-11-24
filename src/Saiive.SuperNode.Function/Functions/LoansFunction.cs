@@ -22,7 +22,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("GetLoanSchemes")]
-        [OpenApiOperation(operationId: "Schemes", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanSchemes", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanScheme>), Description = "The OK response")]
@@ -47,7 +47,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("GetLoanCollaterals")]
-        [OpenApiOperation(operationId: "Schemes", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanCollaterals", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanScheme>), Description = "The OK response")]
@@ -72,7 +72,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("GetLoanTokens")]
-        [OpenApiOperation(operationId: "Schemes", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanTokens", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanScheme>), Description = "The OK response")]
@@ -97,7 +97,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("GetLoanVaults")]
-        [OpenApiOperation(operationId: "Vaults", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanVaults", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanVault>), Description = "The OK response")]
@@ -124,7 +124,7 @@ namespace Saiive.SuperNode.Function.Functions
 
 
         [FunctionName("GetLoanScheme")]
-        [OpenApiOperation(operationId: "Schemes", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanScheme", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -150,7 +150,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("GetLoanCollateral")]
-        [OpenApiOperation(operationId: "Schemes", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanCollateral", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -176,7 +176,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("GetLoanToken")]
-        [OpenApiOperation(operationId: "Schemes", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanToken", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -203,7 +203,7 @@ namespace Saiive.SuperNode.Function.Functions
 
 
         [FunctionName("GetLoanVault")]
-        [OpenApiOperation(operationId: "Vault", tags: new[] { "Loans" })]
+        [OpenApiOperation(operationId: "GetLoanVault", tags: new[] { "Loans" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "id", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -228,6 +228,30 @@ namespace Saiive.SuperNode.Function.Functions
             }
         }
 
+        [FunctionName("GetLoanAuctions")]
+        [OpenApiOperation(operationId: "GetLoanAuctions", tags: new[] { "Loans" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(IList<LoanAuction>), Description = "The OK response")]
+        public async Task<IActionResult> GetLoanAuctions(
+         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/loans/auctions")] HttpRequestMessage req,
+         string network, string coin,
+         ILogger log)
+        {
+
+            try
+            {
+
+                var obj = await ChainProviderCollection.GetInstance(coin).LoanProvider.GetAuctions(network);
+
+                return new OkObjectResult(obj);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
 
     }
 }

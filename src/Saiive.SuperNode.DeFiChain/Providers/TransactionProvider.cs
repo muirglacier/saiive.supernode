@@ -90,7 +90,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             }
             catch(Exception)
             {
-                var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}/api/DFI/{network}/tx/{txId}");
+                var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}api/DFI/{network}/tx/{txId}");
 
                 responseLegacy.EnsureSuccessStatusCode();
 

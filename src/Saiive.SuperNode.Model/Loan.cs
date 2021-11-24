@@ -202,6 +202,30 @@ namespace Saiive.SuperNode.Model
         public ActivePrice ActivePrice { get; set; }
     }
 
+    public class LoanAuctionCollateral
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("amount")]
+        public string Amount { get; set; }
+
+        [JsonProperty("symbol")]
+        public string Symbol { get; set; }
+
+        [JsonProperty("symbolKey")]
+        public string SymbolKey { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("displaySymbol")]
+        public string DisplaySymbol { get; set; }
+
+        [JsonProperty("activePrice")]
+        public ActivePrice ActivePrice { get; set; }
+    }
+
     public class LoanVault
     {
         [JsonProperty("vaultId")]
@@ -239,5 +263,44 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("interestAmounts")]
         public List<LoanVaultAmount> InterestAmounts { get; set; }
+    }
+
+    public class Batch
+    {
+        [JsonProperty("index")]
+        public int Index { get; set; }
+
+        [JsonProperty("collaterals")]
+        public List<LoanAuctionCollateral> Collaterals { get; set; }
+
+        [JsonProperty("loan")]
+        public Loan Loan { get; set; }
+    }
+
+    public class LoanAuction
+    {
+        [JsonProperty("vaultId")]
+        public string VaultId { get; set; }
+
+        [JsonProperty("loanScheme")]
+        public LoanScheme LoanScheme { get; set; }
+
+        [JsonProperty("ownerAddress")]
+        public string OwnerAddress { get; set; }
+
+        [JsonProperty("state")]
+        public string State { get; set; }
+
+        [JsonProperty("batchCount")]
+        public int BatchCount { get; set; }
+
+        [JsonProperty("liquidationHeight")]
+        public int LiquidationHeight { get; set; }
+
+        [JsonProperty("liquidationPenalty")]
+        public int LiquidationPenalty { get; set; }
+
+        [JsonProperty("batches")]
+        public List<Batch> Batches { get; set; }
     }
 }
