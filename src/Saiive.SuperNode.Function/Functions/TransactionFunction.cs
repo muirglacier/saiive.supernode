@@ -26,15 +26,17 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "txId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "onlyConfirmed", In = ParameterLocation.Query, Required = false, Type = typeof(bool))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(TransactionDetailModel), Description = "The OK response")]
         public async Task<IActionResult> GetTransactionById(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/id/{txId}")] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/id/{txId}")] HttpRequest req,
             string network, string coin, string txId,
             ILogger log)
         {
             try
             {
-                var obj = await ChainProviderCollection.GetInstance(coin).TransactionProvider.GetTransactionById(network, txId);
+                bool onlyConfirmed = req.Query.ContainsKey("onlyConfirmed") ? Convert.ToBoolean(req.Query["onlyConfirmed"]) : false;
+                var obj = await ChainProviderCollection.GetInstance(coin).TransactionProvider.GetTransactionById(network, txId, onlyConfirmed);
 
                 return new OkObjectResult(obj);
             }
@@ -45,19 +47,21 @@ namespace Saiive.SuperNode.Function.Functions
             }
         }
         [FunctionName("GetTransactionDetailsById")]
-        [OpenApiOperation(operationId: "GetTransactionById", tags: new[] { "Transaction" })]
+        [OpenApiOperation(operationId: "GetTransactionDetailsById", tags: new[] { "Transaction" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "txId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "onlyConfirmed", In = ParameterLocation.Query, Required = false, Type = typeof(bool))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(TransactionDetailModel), Description = "The OK response")]
         public async Task<IActionResult> GetTransactionDetailsById(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/id/{txId}/coins")] HttpRequestMessage req,
-            string network, string coin, string txId,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/id/{txId}/coins")] HttpRequest req,
+            string network, string coin, string txId, 
             ILogger log)
         {
             try
             {
-                var obj = await ChainProviderCollection.GetInstance(coin).TransactionProvider.GetTransactionById(network, txId);
+                bool onlyConfirmed = req.Query.ContainsKey("onlyConfirmed") ? Convert.ToBoolean(req.Query["onlyConfirmed"]) : false;
+                var obj = await ChainProviderCollection.GetInstance(coin).TransactionProvider.GetTransactionById(network, txId, onlyConfirmed);
 
                 return new OkObjectResult(obj.Details);
             }

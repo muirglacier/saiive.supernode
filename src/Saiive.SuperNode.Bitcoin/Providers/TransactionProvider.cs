@@ -34,7 +34,7 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             }
         }
 
-        public async Task<TransactionModel> GetTransactionById(string network, string txId)
+        public async Task<TransactionModel> GetTransactionById(string network, string txId, bool onlyConfirmed)
         {
             var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}");
 

@@ -67,7 +67,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
 
 
-        public async Task<TransactionModel> GetTransactionById(string network, string txId)
+        public async Task<TransactionModel> GetTransactionById(string network, string txId, bool onlyConfirmed)
         {
             var detailModel = await _addressProvider.GetTransactionDetails(network, txId);
 
@@ -90,6 +90,11 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             }
             catch(Exception)
             {
+                if(onlyConfirmed)
+                {
+                    throw;
+                }
+
                 var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}api/DFI/{network}/tx/{txId}");
 
                 responseLegacy.EnsureSuccessStatusCode();

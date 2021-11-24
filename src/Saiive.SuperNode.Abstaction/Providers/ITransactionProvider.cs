@@ -6,7 +6,7 @@ namespace Saiive.SuperNode.Abstaction.Providers
 {
     public interface ITransactionProvider
     {
-        Task<TransactionModel> GetTransactionById(string network, string txId);
+        Task<TransactionModel> GetTransactionById(string network, string txId, bool onlyConfirmed=false);
         Task<IList<TransactionModel>> GetTransactionsByBlock(string network, string block);
         Task<IList<BlockTransactionModel>> GetTransactionsByBlockHeight(string network, int height, bool includeDetails);
 
