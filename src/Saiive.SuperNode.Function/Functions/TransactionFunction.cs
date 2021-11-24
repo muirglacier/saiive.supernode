@@ -185,6 +185,55 @@ namespace Saiive.SuperNode.Function.Functions
                 return new BadRequestObjectResult(new ErrorModel(e.Message));
             }
         }
+
+
+        [FunctionName("DecodeRawTransaction")]
+        [OpenApiOperation(operationId: "DecodeRawTransaction", tags: new[] { "Transaction" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(TransactionRequest), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(TransactionResponse))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> DecodeRawTransaction(
+              [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/tx/decode")] TransactionRequest req,
+              string coin, string network)
+        {
+            try
+            {
+                var obj = await ChainProviderCollection.GetInstance(coin).TransactionProvider.DecodeRawTransaction(network, req);
+                return new OkObjectResult(obj);
+            }
+            catch (Exception e)
+            {
+                var currentBlock = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentHeight(network);
+
+                Logger.LogError("{coin}+{network}: Error commiting tx to blockchain ({response} for {txHex}) @ {blockHeight} block", coin, network, e.Message, req.RawTx, currentBlock.Height);
+                return new BadRequestObjectResult(new ErrorModel($"{e.Message}"));
+            }
+        }
+
+        [FunctionName("DecodeRawTransactionByTxId")]
+        [OpenApiOperation(operationId: "DecodeRawTransactionByTxId", tags: new[] { "Transaction" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "txId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(TransactionRequest), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(TransactionResponse))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> DecodeRawTransactionByTxId(
+              [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/tx/{txId}/decode")] HttpRequestMessage req,
+              string coin, string network, string txId)
+        {
+            try
+            {
+                var obj = await ChainProviderCollection.GetInstance(coin).TransactionProvider.DecodeRawTransactionFromTxId(network, txId);
+                return new OkObjectResult(obj);
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(new ErrorModel($"{e.Message}"));
+            }
+        }
     }
 }
 

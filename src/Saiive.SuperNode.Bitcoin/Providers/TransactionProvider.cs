@@ -93,5 +93,15 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
             return obj.TxId;
         }
+
+        public Task<object> DecodeRawTransaction(string network, TransactionRequest rawTx)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<object> DecodeRawTransactionFromTxId(string network, string txId)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

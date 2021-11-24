@@ -11,5 +11,8 @@ namespace Saiive.SuperNode.Abstaction.Providers
         Task<IList<BlockTransactionModel>> GetTransactionsByBlockHeight(string network, int height, bool includeDetails);
 
         Task<string> SendRawTransaction(string network, TransactionRequest request);
+
+        Task<object> DecodeRawTransaction(string network, TransactionRequest rawTx);
+        Task<object> DecodeRawTransactionFromTxId(string network, string txId);
     }
 }

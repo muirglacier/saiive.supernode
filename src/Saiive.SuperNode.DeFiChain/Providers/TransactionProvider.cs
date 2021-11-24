@@ -159,9 +159,30 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         }
 
-        private async Task<TransactionDetailModel> GetTransactionDetails(string coin, string network, string txId)
+        public async Task<object> DecodeRawTransaction(string network, TransactionRequest rawTx)
         {
-                return await _addressProvider.GetTransactionDetails(network, txId);
+            var responseLegacy = await _client.PostAsync($"{LegacyBitcoreUrl}api/DFI/{network}/tx/decode", new StringContent(JsonConvert.SerializeObject(rawTx), Encoding.UTF8, "application/json"));
+
+            responseLegacy.EnsureSuccessStatusCode();
+
+            var data = await responseLegacy.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject(data);
+
+            return obj;
+        }
+
+        public async Task<object> DecodeRawTransactionFromTxId(string network, string txId)
+        {
+            var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}api/DFI/{network}/tx/{txId}/decoderaw");
+
+            responseLegacy.EnsureSuccessStatusCode();
+
+            var data = await responseLegacy.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject(data);
+
+            return obj;
         }
     }
 }
