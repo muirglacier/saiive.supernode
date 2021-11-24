@@ -221,7 +221,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(object), Example = typeof(TransactionResponse))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
         public async Task<IActionResult> DecodeRawTransactionByTxId(
-              [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/tx/{txId}/decode")] HttpRequestMessage req,
+              [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/tx/{txId}/decode")] HttpRequestMessage req,
               string coin, string network, string txId)
         {
             try
