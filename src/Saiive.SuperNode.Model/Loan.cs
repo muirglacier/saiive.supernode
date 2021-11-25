@@ -47,15 +47,6 @@ namespace Saiive.SuperNode.Model
 
     public class ActivePrice
     {
-        public ActivePrice()
-        {
-            Active = new Active
-            {
-                Amount = "1",
-                Weightage = 0
-            };
-        }
-
         [JsonProperty("id")]
         public string Id { get; set; }
 
