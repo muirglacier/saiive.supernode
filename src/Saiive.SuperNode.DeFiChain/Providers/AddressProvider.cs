@@ -411,22 +411,29 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                         var txDetails = await GetTransactionDetails(network, tx.Vout.Txid);
                         foreach (var outp in txDetails.Outputs)
                         {
-                            if (!String.IsNullOrEmpty(outp.Script) && outp.Script[0..2] == "6a")
+                            try
                             {
-                                var script = outp.Script.ToByteArray()[2..];
-                                if (DefiScriptParser.IsDeFiTransaction(script))
+                                if (!String.IsNullOrEmpty(outp.Script) && outp.Script[0..2] == "6a")
                                 {
-                                    var defiTx = DefiScriptParser.Parse(script);
-
-                                    if (defiTx.TxType == DefiTransactions.CustomTxType.CreateMasternode)
+                                    var script = outp.Script.ToByteArray()[2..];
+                                    if (DefiScriptParser.IsDeFiTransaction(script))
                                     {
-                                        if(await _masterNodeCache.IsMasternodeStillAlive(network, address, tx.Vout.Txid))
+                                        var defiTx = DefiScriptParser.Parse(script);
+
+                                        if (defiTx.TxType == DefiTransactions.CustomTxType.CreateMasternode)
                                         {
-                                            useTx = false;
-                                            break;
+                                            if (await _masterNodeCache.IsMasternodeStillAlive(network, address, tx.Vout.Txid))
+                                            {
+                                                useTx = false;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+                            }
+                            catch
+                            {
+                                //ignore
                             }
                         }
                     }
