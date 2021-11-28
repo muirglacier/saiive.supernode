@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -67,6 +68,7 @@ namespace Saiive.SuperNode.Function.Functions
 
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var obj = await ChainProviderCollection.GetInstance(coin).AccountHistoryProvider.GetTotalBalance(network, token, limit, maxBlockHeight, no_rewards, req);
                 return new OkObjectResult(obj);
             }

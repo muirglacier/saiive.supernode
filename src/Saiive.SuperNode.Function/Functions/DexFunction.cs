@@ -87,6 +87,7 @@ namespace Saiive.SuperNode.Function.Functions
 
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var obj = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAccount(network, req);
                 var poolPairs = await ChainProviderCollection.GetInstance(coin).PoolPairProvider.GetPoolPairsBySymbolKey(network);
                 var ret = new Dictionary<string, PoolShareModel>();
@@ -135,6 +136,7 @@ namespace Saiive.SuperNode.Function.Functions
             string network, string coin,
             ILogger log)
         {
+            req.Addresses = req.Addresses.Distinct().ToList();
             await Task.CompletedTask;
             return new OkObjectResult(new List<PoolShareModel>());
         }

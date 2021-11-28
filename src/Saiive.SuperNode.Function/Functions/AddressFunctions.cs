@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -59,6 +60,7 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var retAccountList = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetTotalBalance(network, req);
 
                 return new OkObjectResult(retAccountList);
@@ -106,6 +108,7 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetBalance(network, req);
 
                 return new OkObjectResult(ret);
@@ -155,6 +158,7 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var retList = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAccount(network, req);
 
                 return new OkObjectResult(retList);
@@ -203,6 +207,7 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetTransactions(network, req);
                 return new OkObjectResult(ret);
             }
@@ -249,6 +254,7 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetUnspentTransactionOutput(network, req);
                 return new OkObjectResult(ret);
             }
@@ -296,6 +302,7 @@ namespace Saiive.SuperNode.Function.Functions
         {
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetLoanVaultsForAddresses(network, req.Addresses);
 
                 return new OkObjectResult(ret);

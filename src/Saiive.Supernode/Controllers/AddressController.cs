@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -115,6 +116,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
+                request.Addresses = request.Addresses.Distinct().ToList();
                 var retList = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAccount(network, request);
 
                 return Ok(retList);
@@ -149,6 +151,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
+                request.Addresses = request.Addresses.Distinct().ToList();
                 var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetTransactions(network, request);
                 return Ok(ret);
             }
@@ -182,6 +185,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
+                request.Addresses = request.Addresses.Distinct().ToList();
                 var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetUnspentTransactionOutput(network, request);
                 return Ok(ret);
             }

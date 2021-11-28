@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -57,6 +58,7 @@ namespace Saiive.SuperNode.Function.Functions
 
             try
             {
+                req.Addresses = req.Addresses.Distinct().ToList();
                 var obj = await ChainProviderCollection.GetInstance(coin).AddressTransactionDetailProvider.GetTransactions(network, req);
                 return new OkObjectResult(obj);
             }
