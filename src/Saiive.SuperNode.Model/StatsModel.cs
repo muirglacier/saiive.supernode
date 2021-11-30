@@ -3,160 +3,178 @@ using System.Collections.Generic;
 
 namespace Saiive.SuperNode.Model
 {
-    public class BurnInfo
+    public class Count
     {
-        [JsonProperty("address")]
-        public string Address { get; set; }
+        [JsonProperty("blocks")]
+        public int Blocks { get; set; }
 
-        [JsonProperty("amount")]
-        public string Amount { get; set; }
+        [JsonProperty("prices")]
+        public int Prices { get; set; }
 
         [JsonProperty("tokens")]
-        public List<string> Tokens { get; set; }
+        public int Tokens { get; set; }
 
-        [JsonProperty("feeburn")]
-        public double Feeburn { get; set; }
+        [JsonProperty("masternodes")]
+        public int Masternodes { get; set; }
 
-        [JsonProperty("emissionburn")]
-        public string Emissionburn { get; set; }
+        [JsonProperty("collateralTokens")]
+        public int CollateralTokens { get; set; }
+
+        [JsonProperty("loanTokens")]
+        public int LoanTokens { get; set; }
+
+        [JsonProperty("openAuctions")]
+        public int OpenAuctions { get; set; }
+
+        [JsonProperty("openVaults")]
+        public int OpenVaults { get; set; }
+
+        [JsonProperty("schemes")]
+        public int Schemes { get; set; }
     }
 
-    public class Supply
+    public class Burned
     {
-        [JsonProperty("total")]
-        public double Total { get; set; }
+        [JsonProperty("address")]
+        public double Address { get; set; }
 
-        [JsonProperty("circulation")]
-        public double Circulation { get; set; }
+        [JsonProperty("emission")]
+        public double Emission { get; set; }
 
-        [JsonProperty("foundation")]
-        public int Foundation { get; set; }
-
-        [JsonProperty("community")]
-        public double Community { get; set; }
-    }
-
-    public class InitDist
-    {
-        [JsonProperty("total")]
-        public int Total { get; set; }
-
-        [JsonProperty("totalPercent")]
-        public int TotalPercent { get; set; }
-
-        [JsonProperty("foundation")]
-        public int Foundation { get; set; }
-
-        [JsonProperty("foundationPercent")]
-        public int FoundationPercent { get; set; }
-
-        [JsonProperty("circulation")]
-        public int Circulation { get; set; }
-
-        [JsonProperty("circulationPercent")]
-        public int CirculationPercent { get; set; }
-    }
-
-    public class Tokens
-    {
-        [JsonProperty("max")]
-        public int Max { get; set; }
-
-        [JsonProperty("supply")]
-        public Supply Supply { get; set; }
-
-        [JsonProperty("initDist")]
-        public InitDist InitDist { get; set; }
-    }
-
-    public class Rewards
-    {
-        [JsonProperty("anchorPercent")]
-        public double AnchorPercent { get; set; }
-
-        [JsonProperty("liquidityPoolPercent")]
-        public double LiquidityPoolPercent { get; set; }
-
-        [JsonProperty("communityPercent")]
-        public double CommunityPercent { get; set; }
+        [JsonProperty("fee")]
+        public int Fee { get; set; }
 
         [JsonProperty("total")]
         public double Total { get; set; }
+    }
 
-        [JsonProperty("community")]
-        public double Community { get; set; }
+    public class Tvl
+    {
+        [JsonProperty("dex")]
+        public double Dex { get; set; }
 
-        [JsonProperty("minter")]
-        public double Minter { get; set; }
+        [JsonProperty("masternodes")]
+        public double Masternodes { get; set; }
 
-        [JsonProperty("anchorReward")]
-        public double AnchorReward { get; set; }
+        [JsonProperty("loan")]
+        public double Loan { get; set; }
 
-        [JsonProperty("liquidityPool")]
-        public int LiquidityPool { get; set; }
+        [JsonProperty("total")]
+        public double Total { get; set; }
+    }
 
+    public class DFIPrice
+    {
+        [JsonProperty("usd")]
+        public double Usd { get; set; }
+
+        [JsonProperty("usdt")]
+        public double Usdt { get; set; }
+    }
+
+    public class Locked
+    {
+        [JsonProperty("weeks")]
+        public int Weeks { get; set; }
+
+        [JsonProperty("count")]
+        public int Count { get; set; }
+
+        [JsonProperty("tvl")]
+        public double Tvl { get; set; }
+    }
+
+    public class Masternodes
+    {
+        [JsonProperty("locked")]
+        public List<Locked> Locked { get; set; }
+    }
+
+    public class Value
+    {
+        [JsonProperty("collateral")]
+        public double Collateral { get; set; }
+
+        [JsonProperty("loan")]
+        public double Loan { get; set; }
+    }
+
+    public class StatsLoan
+    {
+        [JsonProperty("count")]
+        public Count Count { get; set; }
+
+        [JsonProperty("value")]
+        public Value Value { get; set; }
+    }
+
+    public class Emission
+    {
         [JsonProperty("masternode")]
         public double Masternode { get; set; }
+
+        [JsonProperty("dex")]
+        public double Dex { get; set; }
+
+        [JsonProperty("community")]
+        public double Community { get; set; }
 
         [JsonProperty("anchor")]
         public double Anchor { get; set; }
 
-        [JsonProperty("liquidity")]
-        public double Liquidity { get; set; }
+        [JsonProperty("burned")]
+        public double Burned { get; set; }
 
-        [JsonProperty("swap")]
-        public double Swap { get; set; }
-
-        [JsonProperty("futures")]
-        public double Futures { get; set; }
-
-        [JsonProperty("options")]
-        public double Options { get; set; }
-
-        [JsonProperty("unallocated")]
-        public double Unallocated { get; set; }
+        [JsonProperty("total")]
+        public double Total { get; set; }
     }
 
-    public class ListCommunities
+    public class Net
     {
-        [JsonProperty("AnchorReward")]
-        public double AnchorReward { get; set; }
+        [JsonProperty("version")]
+        public int Version { get; set; }
 
-        [JsonProperty("Burnt")]
-        public string Burnt { get; set; }
+        [JsonProperty("subversion")]
+        public string Subversion { get; set; }
+
+        [JsonProperty("protocolversion")]
+        public int Protocolversion { get; set; }
+    }
+
+    public class Blockchain
+    {
+        [JsonProperty("difficulty")]
+        public double Difficulty { get; set; }
     }
 
     public class StatsModel
     {
-        [JsonProperty("chain")]
-        public string Chain { get; set; }
+        [JsonProperty("count")]
+        public Count Count { get; set; }
 
-        [JsonProperty("blockHeight")]
-        public int BlockHeight { get; set; }
+        [JsonProperty("burned")]
+        public Burned Burned { get; set; }
 
-        [JsonProperty("bestBlockHash")]
-        public string BestBlockHash { get; set; }
+        [JsonProperty("tvl")]
+        public Tvl Tvl { get; set; }
 
-        [JsonProperty("difficulty")]
-        public string Difficulty { get; set; }
+        [JsonProperty("price")]
+        public DFIPrice Price { get; set; }
 
-        [JsonProperty("medianTime")]
-        public int MedianTime { get; set; }
+        [JsonProperty("masternodes")]
+        public Masternodes Masternodes { get; set; }
 
-        [JsonProperty("burnInfo")]
-        public BurnInfo BurnInfo { get; set; }
+        [JsonProperty("loan")]
+        public StatsLoan Loan { get; set; }
 
-        [JsonProperty("timeStamp")]
-        public long TimeStamp { get; set; }
+        [JsonProperty("emission")]
+        public Emission Emission { get; set; }
 
-        [JsonProperty("tokens")]
-        public Tokens Tokens { get; set; }
+        [JsonProperty("net")]
+        public Net Net { get; set; }
 
-        [JsonProperty("rewards")]
-        public Rewards Rewards { get; set; }
-
-        [JsonProperty("listCommunities")]
-        public ListCommunities ListCommunities { get; set; }
+        [JsonProperty("blockchain")]
+        public Blockchain Blockchain { get; set; }
     }
 
 

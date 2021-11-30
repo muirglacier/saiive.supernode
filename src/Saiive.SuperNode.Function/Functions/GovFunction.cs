@@ -39,8 +39,16 @@ namespace Saiive.SuperNode.Function.Functions
             await Task.CompletedTask;
             try
             {
+                if(coin == "BTC")
+                {
+                    return new NoContentResult();
+                }
+
+
+                var obj = await ChainProviderCollection.GetInstance(coin).StatsProvider.GetStats(network);
+
                 var dic = new Dictionary<string, object>();
-                dic.Add("LP_DAILY_DFI_REWARD", 255405.071232);
+                dic.Add("LP_DAILY_DFI_REWARD", obj.Emission.Masternode * 172800);
                 return new OkObjectResult(dic);
             }
             catch (Exception e)

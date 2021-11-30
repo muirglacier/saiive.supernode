@@ -25,23 +25,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
             var statsData = await stats.Content.ReadAsStringAsync();
 
-            var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
-            var latestBlock = await BlockProvider.GetCurrentHeight(network);
+            var statsObj = JsonConvert.DeserializeObject<OceanDataEntity<StatsModel>>(statsData);
 
-
-            return new StatsModel
-            {
-                Chain = network,
-                BlockHeight = latestBlock.Height,
-                BestBlockHash = latestBlock.Hash,
-                BurnInfo = new BurnInfo
-                {
-                    Address = "8defichainBurnAddressXXXXXXXdRQkSm",
-                    Amount = statsObj.Data.Burned.Total.ToString(),
-                    Emissionburn = statsObj.Data.Burned.Emission.ToString(),
-                    Feeburn = statsObj.Data.Burned.Fee
-                }
-            };
+            return statsObj.Data;
 
             
         }
