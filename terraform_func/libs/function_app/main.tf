@@ -87,7 +87,7 @@ locals {
 }
 
 resource "azurerm_function_app" "functions" {
-    name = "${var.prefix}-${var.environment}-function"
+    name = "${var.prefix}-${var.environment}-${name}function"
     location = var.location
     resource_group_name = var.resource_group
     app_service_plan_id = azurerm_app_service_plan.asp.id

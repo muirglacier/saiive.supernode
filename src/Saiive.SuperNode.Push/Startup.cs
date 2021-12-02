@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Saiive.Dobby.Api;
 using Saiive.SuperNode.Bitcoin;
 using Saiive.SuperNode.DeFiChain;
 using Saiive.SuperNode.Export;
@@ -16,6 +17,8 @@ namespace Saiive.SuperNode.Push
             builder.Services.AddLogging();
             builder.Services.AddDeFiChain();
             builder.Services.AddBitcoin();
+
+            builder.Services.AddDobbyApi();
 
             builder.Services.AddChainProviderService();
 

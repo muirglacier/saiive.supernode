@@ -20,6 +20,10 @@ variable "resource_group" {
 	
 }
 
+variable "name" {
+	default = ""
+}
+
 variable "function_app_file" {
 
 }

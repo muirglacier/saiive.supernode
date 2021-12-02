@@ -8,7 +8,9 @@ namespace Saiive.Dobby.Api
         Task<ApiResponse> AddVaultForUser(string vaultId);
         Task<ApiResponse> DeleteVaultForUser(string vaultId);
 
-        Task<CreateNotificationTriggerResponse> CreateNotificationTrigger(string vaultId, int ratio, string type, string info);
+        Task<CreateNotificationTriggerResponse> CreateNotificationTrigger(string vaultId, int ratio, string type);
         Task<GetNotificationRequestResponse> GetNotificationTriggers();
+
+        Task<GetNotificationGatewaysResponse> GetNotificationGateways();
     }
 }

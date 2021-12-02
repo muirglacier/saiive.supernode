@@ -8,6 +8,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Saiive.Dobby.Api;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Function.Base;
 using Saiive.SuperNode.Push.Model;
@@ -16,9 +17,12 @@ namespace Saiive.SuperNode.Push.Functions
 {
     public class PushRegistrationFunction : BaseFunction
     {
-        public PushRegistrationFunction(ILogger<PushRegistrationFunction> logger, ChainProviderCollection chainProviderCollection, IServiceProvider serviceProvider) : base(logger, chainProviderCollection, serviceProvider)
+        public PushRegistrationFunction(ILogger<PushRegistrationFunction> logger, ChainProviderCollection chainProviderCollection, IServiceProvider serviceProvider, IDobbyService dobbyService) : base(logger, chainProviderCollection, serviceProvider)
         {
+            DobbyService = dobbyService;
         }
+
+        public IDobbyService DobbyService { get; }
 
         [FunctionName("PushRegistrationFunction")]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -53,6 +57,14 @@ namespace Saiive.SuperNode.Push.Functions
                     try
                     {
                         var vault = await ChainProviderCollection.GetInstance(coin).LoanProvider.GetLoanVault(network, vaultId);
+
+                        var addVaultResponse = await DobbyService.AddVaultForUser(vault.VaultId);
+                        var addInfoTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) * 2, "info");
+                        var addwarningTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) + 50, "warning");
+                        var addErrorTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) - 50, "error");
+
+
+
                     }
                     catch(Exception ex)
                     {
