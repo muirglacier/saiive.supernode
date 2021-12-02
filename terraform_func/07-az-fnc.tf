@@ -98,12 +98,4 @@ module "function_app_push" {
 
   legacy_bitcoin_url = "https://bitcore.az-prod-0.saiive.live/"
   blockcypher_api = data.azurerm_key_vault_secret.blockcypherapikey.value
-
-  
-
-  cosmos_connection_string = "AccountEndpoint=${module.cosmos.endpoint};AccountKey=${module.cosmos.primary_master_key}"
-  cosmos_db_name =  module.cosmos.name
-  cosmos_table_name = module.cosmos.table
-
-
 }
