@@ -63,7 +63,7 @@ namespace Saiive.SuperNode.Push.Functions
                         var addwarningTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) + 50, "warning");
                         var addErrorTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) - 50, "error");
 
-
+                        
 
                     }
                     catch(Exception ex)
