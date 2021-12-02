@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
+using Saiive.SuperNode.Function.Base;
 
 namespace Saiive.SuperNode.Function.Functions
 {

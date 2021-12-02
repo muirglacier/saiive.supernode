@@ -5,7 +5,7 @@ using Saiive.SuperNode.Abstaction;
 using System;
 using System.Net.Http;
 
-namespace Saiive.SuperNode.Function.Functions
+namespace Saiive.SuperNode.Function.Base
 {
     public abstract class BaseFunction
     {

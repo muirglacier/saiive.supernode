@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -10,10 +9,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
-using Saiive.SuperNode.Model.Requests;
+using Saiive.SuperNode.Function.Base;
 
 namespace Saiive.SuperNode.Function.Functions
 {

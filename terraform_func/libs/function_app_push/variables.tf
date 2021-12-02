@@ -62,3 +62,24 @@ variable "cosmos_db_name" {
 variable "cosmos_table_name" {
 	
 }
+
+variable "bitcore_url" {
+	
+}
+variable "ocean_url" {
+	
+}
+variable "defichain_api" {
+	
+}
+variable "coingecko_url" {
+	
+}
+
+variable "blockcypher_api" {
+	
+}
+
+variable "legacy_bitcoin_url" {
+
+}

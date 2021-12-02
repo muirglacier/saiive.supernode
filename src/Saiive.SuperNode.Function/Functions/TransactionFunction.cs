@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
+using Saiive.SuperNode.Function.Base;
 
 namespace Saiive.SuperNode.Function.Functions
 {

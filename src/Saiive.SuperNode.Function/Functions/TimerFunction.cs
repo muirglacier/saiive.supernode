@@ -5,6 +5,7 @@ using Saiive.SuperNode.Abstaction;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Saiive.SuperNode.Function.Base;
 
 namespace Saiive.SuperNode.Function.Functions
 {

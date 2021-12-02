@@ -1,0 +1,73 @@
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Saiive.SuperNode.Abstaction;
+using Saiive.SuperNode.Function.Base;
+using Saiive.SuperNode.Push.Model;
+
+namespace Saiive.SuperNode.Push.Functions
+{
+    public class PushRegistrationFunction : BaseFunction
+    {
+        public PushRegistrationFunction(ILogger<PushRegistrationFunction> logger, ChainProviderCollection chainProviderCollection, IServiceProvider serviceProvider) : base(logger, chainProviderCollection, serviceProvider)
+        {
+        }
+
+        [FunctionName("PushRegistrationFunction")]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(PushNotificationModel), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(PushNotificationModel), Description = "The OK response")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] PushNotificationModel req,
+              string network, string coin,
+
+              [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString")]
+            IAsyncCollector<PushNotificationModel> pushModelCollector,
+            
+            [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString",
+            Id = "{PushToken}", PartitionKey = PushNotificationModel.PushTokenPartitionKey)]
+            Document pushModelDoc,
+
+
+            ILogger log)
+        {
+            if(coin.ToUpperInvariant() != "DFI")
+            {
+                return new NoContentResult();
+            }
+
+            if(pushModelDoc != null)
+            {
+                PushNotificationModel pushModel = (dynamic)pushModelDoc;
+
+                foreach(var vaultId in req.VaultIds)
+                {
+                    try
+                    {
+                        var vault = await ChainProviderCollection.GetInstance(coin).LoanProvider.GetLoanVault(network, vaultId);
+                    }
+                    catch(Exception ex)
+                    {
+                        //ignore
+                    }
+                }
+            }
+            
+
+            return new OkObjectResult(null);
+        }
+
+        /**
+         * 
+         */
+    }
+}
+

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using Saiive.SuperNode.Function.Base;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.Function.Functions

@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
+using Saiive.SuperNode.Function.Base;
 
 namespace Saiive.SuperNode.Function.Functions
 {

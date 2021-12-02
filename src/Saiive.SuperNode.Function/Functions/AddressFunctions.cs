@@ -13,6 +13,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Saiive.SuperNode.Abstaction;
+using Saiive.SuperNode.Function.Base;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
 

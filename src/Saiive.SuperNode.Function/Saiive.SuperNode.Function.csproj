@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Saiive.SuperNode.Bitcoin\Saiive.SuperNode.Bitcoin.csproj" />
     <ProjectReference Include="..\Saiive.SuperNode.DeFiChain\Saiive.SuperNode.DeFiChain.csproj" />
     <ProjectReference Include="..\Saiive.SuperNode.Export\Saiive.SuperNode.Export.csproj" />
+    <ProjectReference Include="..\Saiive.SuperNode.Function.Base\Saiive.SuperNode.Function.Base.csproj" />
     <ProjectReference Include="..\Saiive.SuperNode.Model\Saiive.SuperNode.Model.csproj" />
   </ItemGroup>
   <ItemGroup>

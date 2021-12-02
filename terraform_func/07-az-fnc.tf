@@ -95,4 +95,13 @@ module "function_app_push" {
   cosmos_db_name =  module.cosmos.name
   cosmos_table_name = module.cosmos.table
 
+  bitcore_url = "https://bitcore.scw-prod-0.saiive.live"
+  ocean_url = "https://ocean.defichain.com"
+  defichain_api = "https://api.defichain.io"
+  coingecko_url = "https://api.coingecko.com/api/v3"
+
+  legacy_bitcoin_url = "https://bitcore.az-prod-0.saiive.live/"
+  blockcypher_api = data.azurerm_key_vault_secret.blockcypherapikey.value
+
+
 }
