@@ -19,6 +19,7 @@ variables:
   Parameters.RestoreBuildProjects: '**/Saiive.Supernode.sln'
   BuildConfiguration: 'Release'
   Parameters.AzureFunction: 'src/Saiive.SuperNode.Function/Saiive.SuperNode.Function.csproj'
+  Parameters.AzureFunctionPush: 'src/Saiive.SuperNode.Push/Saiive.SuperNode.Push.csproj'
   
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -135,15 +136,57 @@ stages:
           zipAfterPublish: true
           modifyOutputPath: false
           publishWebProjects: false
-        
-   
+
     - task: Bash@3
       displayName: Rename file
       inputs:
           targetType: 'inline'
           workingDirectory: $(Build.ArtifactStagingDirectory)/function
           script: 'mv function.zip $(Build.BuildNumber)-function.zip'
-    
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'AzureFunctions'
+        publishLocation: 'Container'
+
+- stage: PackAzureFunctionPush
+  displayName: Pack and archive azure functions
+  dependsOn: BuildAzureFunction
+  condition: succeeded()
+
+  jobs:
+  - job: Publish
+    displayName: 00 Publish azure function
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '$(Parameters.RestoreBuildProjects)'
+        includeNuGetOrg: true
+        
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+          command: publish
+          projects: '$(Parameters.AzureFunctionPush)'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/function_push'
+          zipAfterPublish: true
+          modifyOutputPath: false
+          publishWebProjects: false
+        
+    - task: Bash@3
+      displayName: Rename file
+      inputs:
+          targetType: 'inline'
+          workingDirectory: $(Build.ArtifactStagingDirectory)/function_push
+          script: 'mv function.zip $(Build.BuildNumber)-function_push.zip'
+      
     - task: PublishBuildArtifacts@1
       inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'

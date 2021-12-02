@@ -213,11 +213,12 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var nativeBalance = await GetBalanceInternal(network, address);
             if (nativeBalance.Balance > 0)
             {
+                var rawBalance = Convert.ToDouble(nativeBalance.Balance, CultureInfo.InvariantCulture) / 100000000;
                 ret.Add(new AccountModel
                 {
                     Address = address,
                     Balance = nativeBalance.Balance,
-                    Raw = $"{nativeBalance.Balance}@DFI",
+                    Raw = $"{rawBalance.ToString("F9", CultureInfo.InvariantCulture)}@DFI",
                     Token = $"$DFI"
                 });
             }

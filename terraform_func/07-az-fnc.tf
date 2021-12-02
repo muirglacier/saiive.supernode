@@ -23,6 +23,15 @@ module "service_bus" {
 }
 
 
+module "cosmos" {
+  source = "./libs/cosmos"
+
+  prefix = "saiive-live"
+  location = var.location
+  environment = var.environment
+  resource_group = azurerm_resource_group.rg.name
+}
+
 
 module "function_app" {
   source = "./libs/function_app"
@@ -55,4 +64,35 @@ module "function_app" {
   export_q = module.service_bus.export_q
 
   sendgrid_api_key = data.azurerm_key_vault_secret.send_grid_key.value
+
+  cosmos_connection_string = "AccountEndpoint=${module.cosmos.endpoint};AccountKey=${module.cosmos.primary_master_key}"
+  cosmos_db_name =  module.cosmos.name
+  cosmos_table_name = module.cosmos.table
+
+}
+
+
+module "function_app_push" {
+  source = "./libs/function_app_push"
+
+  tier = var.tier
+  size = var.size
+  always_on = var.always_on
+
+  prefix = var.prefix
+  location = var.location
+  environment = var.environment
+  environment_tag = var.environment_tag
+  resource_group = azurerm_resource_group.rg.name
+
+  function_app_file = "function_push.zip"  
+  app_version = var.app_version
+
+  dns_zone = var.dns_zone
+  dns_zone_resource_group = var.dns_zone_resource_group
+
+  cosmos_connection_string = "AccountEndpoint=${module.cosmos.endpoint};AccountKey=${module.cosmos.primary_master_key}"
+  cosmos_db_name =  module.cosmos.name
+  cosmos_table_name = module.cosmos.table
+
 }
