@@ -152,7 +152,7 @@ stages:
         publishLocation: 'Container'
 
 - stage: PackAzureFunctionPush
-  displayName: Pack and archive azure functions
+  displayName: Pack and archive azure push functions
   dependsOn: BuildAzureFunction
   condition: succeeded()
 
@@ -186,7 +186,7 @@ stages:
       inputs:
           targetType: 'inline'
           workingDirectory: $(Build.ArtifactStagingDirectory)/function_push
-          script: 'mv function.zip $(Build.BuildNumber)-function_push.zip'
+          script: 'mv function_push.zip $(Build.BuildNumber)-function_push.zip'
       
     - task: PublishBuildArtifacts@1
       inputs:
