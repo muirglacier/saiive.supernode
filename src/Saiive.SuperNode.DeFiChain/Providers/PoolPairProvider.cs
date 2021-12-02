@@ -105,7 +105,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 TotalLiquidity = Convert.ToDouble(pair.TotalLiquidity.Token, CultureInfo.InvariantCulture),
                 TotalLiquidityRaw = Convert.ToDouble(pair.TotalLiquidity.Token, CultureInfo.InvariantCulture) * 100000000,
                 TotalLiquidityUsd = Convert.ToDouble(pair.TotalLiquidity.Usd, CultureInfo.InvariantCulture),
-                TradeEnabled = pair.TradeEnabled
+                TradeEnabled = pair.TradeEnabled,
+                Apr = pair.Apr.Total.HasValue ? (pair.Apr.Total.Value * 100) : 0.0
             };
         }
     }

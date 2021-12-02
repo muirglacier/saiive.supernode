@@ -75,5 +75,8 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("creationHeight")]
         public int CreationHeight { get; set; }
+
+        [JsonProperty("apr")]
+        public double Apr { get; set; }
     }
 }
