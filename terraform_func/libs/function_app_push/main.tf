@@ -92,7 +92,7 @@ resource "azurerm_function_app" "functions" {
     resource_group_name = var.resource_group
     app_service_plan_id = azurerm_app_service_plan.asp.id
     storage_connection_string = azurerm_storage_account.storage.primary_connection_string
-    version = "~3"
+    version = "~4"
     https_only = true
 
     app_settings = {
@@ -113,7 +113,10 @@ resource "azurerm_function_app" "functions" {
 
         CosmosDBName = var.cosmos_db_name
         CosmosDBCollection = var.cosmos_table_name
-      
+
+        DOBBY_API_URL = var.dobby_url 
+        WEBHOOK_URL = var.dobby_url 
+        ENVIRONMENT = var.environemnt
     }
     
     connection_string {
@@ -121,7 +124,6 @@ resource "azurerm_function_app" "functions" {
         type = "SQLAzure"
         value = var.cosmos_connection_string
     }
-   
 
     site_config {
         always_on = var.always_on

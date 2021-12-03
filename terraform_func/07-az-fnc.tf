@@ -68,6 +68,18 @@ module "function_app" {
 }
 
 
+data "azurerm_key_vault_secret" "dobby_url" {
+  name         = "${var.environment}-supernode-push-dobby-url"
+  key_vault_id = var.key_vault_id
+}
+
+data "azurerm_key_vault_secret" "webhook_url" {
+  name         = "${var.environment}-supernode-push-webhook-url"
+  key_vault_id = var.key_vault_id
+}
+
+
+
 module "function_app_push" {
   source = "./libs/function_app_push"
   
@@ -98,4 +110,6 @@ module "function_app_push" {
 
   legacy_bitcoin_url = "https://bitcore.az-prod-0.saiive.live/"
   blockcypher_api = data.azurerm_key_vault_secret.blockcypherapikey.value
+
+  dobby_url = data.azurerm_key_vault_secret.dobby_url.value
 }

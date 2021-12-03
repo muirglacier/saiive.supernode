@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
@@ -35,12 +34,13 @@ namespace Saiive.SuperNode.Function.Functions
 
         public async Task SendExportRequestToQ(ExportDto export)
         {
-            var topicClient = new QueueClient(_serviceBusConnection, _exportQueue);
-            await topicClient.SendAsync(new Message
-            {
-                Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(export)),
-                CorrelationId = export.PaymentTxId
-            });
+            //var topicClient = new QueueClient(_serviceBusConnection, _exportQueue);
+            //await topicClient.SendAsync(new Message
+            //{
+            //    Body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(export)),
+            //    CorrelationId = export.PaymentTxId
+            //});
+            await Task.CompletedTask;
         }
 
         [FunctionName("ExportHandler")]

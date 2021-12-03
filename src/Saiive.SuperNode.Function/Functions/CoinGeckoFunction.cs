@@ -34,7 +34,7 @@ namespace Saiive.SuperNode.Function.Functions
             ILogger log)
         {
             //We control the coins server-side, so we can update faster if new pairs come along
-            var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin&vs_currencies={currency}");
+            var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin,bitcoin-cash&vs_currencies={currency}");
 
             var map = new Dictionary<string, string>();
 
@@ -55,6 +55,7 @@ namespace Saiive.SuperNode.Function.Functions
                 map.Add("tether", "3");
                 map.Add("dogecoin", "7");
                 map.Add("litecoin", "9");
+                map.Add("bitcoin-cash", "12");
             }
 
             try

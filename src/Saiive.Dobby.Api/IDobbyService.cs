@@ -5,12 +5,15 @@ namespace Saiive.Dobby.Api
 {
     public interface IDobbyService
     {
-        Task<ApiResponse> AddVaultForUser(string vaultId);
-        Task<ApiResponse> DeleteVaultForUser(string vaultId);
+        Task<GetUserResponse> SetupUser(string locale);
 
-        Task<CreateNotificationTriggerResponse> CreateNotificationTrigger(string vaultId, int ratio, string type);
-        Task<GetNotificationRequestResponse> GetNotificationTriggers();
+        Task<ApiResponse> AddVaultForUser(string authKey, string vaultId);
+        Task<ApiResponse> CreateNotificationGateway(string authKey, string type, string data);
+        Task<ApiResponse> DeleteVaultForUser(string authKey, string vaultId);
 
-        Task<GetNotificationGatewaysResponse> GetNotificationGateways();
+        Task<CreateNotificationTriggerResponse> CreateNotificationTrigger(string authKey, string vaultId, int ratio, string type);
+        Task<GetNotificationRequestResponse> GetNotificationTriggers(string authKey);
+
+        Task<GetNotificationGatewaysResponse> GetNotificationGateways(string authKey);
     }
 }

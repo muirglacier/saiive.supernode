@@ -83,3 +83,10 @@ variable "blockcypher_api" {
 variable "legacy_bitcoin_url" {
 
 }
+
+variable "dobby_url" {
+	
+}
+variable "webhook_url" {
+	
+}
