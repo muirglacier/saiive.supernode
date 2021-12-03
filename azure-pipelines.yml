@@ -93,6 +93,10 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '6.0.100'
       
     - task: DotNetCoreCLI@2
       displayName: Restore
@@ -120,7 +124,10 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '6.0.100'
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
@@ -163,7 +170,10 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '6.0.100'
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
