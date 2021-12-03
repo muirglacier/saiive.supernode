@@ -5,13 +5,13 @@
         "cosmos": {
             "type": "string"
         },
-		"cosmos_db": {
+        "cosmos_db": {
             "type": "string"
         },
-		"cosmos_collection": {
+        "cosmos_collection": {
             "type": "string"
         },
-		"cosmos_collection_partition_key": {
+        "cosmos_collection_partition_key": {
             "type": "string"
         }
     },
@@ -20,7 +20,7 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2020-03-01",
-            "name": "[concat(parameters('cosmos'), '/push-mapping/', parameters('cosmos_collection'))]",
+            "name": "[concat(parameters('cosmos'), concat('/', parameters('cosmos_db'), '/'), parameters('cosmos_collection'))]",
             "dependsOn": [
 
             ],
