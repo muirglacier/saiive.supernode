@@ -37,7 +37,7 @@ variable "size" {
 }
 
 variable "dns_name" {
-	default = "supernode"
+	default = "supernode-push"
 }
 variable "dns_zone" {
   

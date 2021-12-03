@@ -23,7 +23,7 @@ resource "azurerm_storage_account" "storage" {
 
 # storage container for the function app
 resource "azurerm_storage_container" "deployments" {
-    name = "function-releases"
+    name = "function-releases-push"
     storage_account_name = azurerm_storage_account.storage.name
     container_access_type = "private"
 }
@@ -72,7 +72,7 @@ data "azurerm_storage_account_sas" "sas" {
 
 
 resource "azurerm_app_service_plan" "asp" {
-    name = "${var.prefix}-${var.environment}"
+    name = "${var.prefix}-${var.environment}-push"
     resource_group_name = var.resource_group
     location = var.location
     kind = "functionapp"

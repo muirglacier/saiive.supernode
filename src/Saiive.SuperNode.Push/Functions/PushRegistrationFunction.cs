@@ -25,17 +25,18 @@ namespace Saiive.SuperNode.Push.Functions
         public IDobbyService DobbyService { get; }
 
         [FunctionName("PushRegistrationFunction")]
+        [OpenApiOperation(operationId: "PushRegistrationFunction", tags: new[] { "Push" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(PushNotificationModel), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(PushNotificationModel), Description = "The OK response")]
-        public async Task<IActionResult> Run(
+        public async Task<IActionResult> Register(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/push/register")] PushNotificationModel req,
               string network, string coin,
 
               [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString")]
             IAsyncCollector<PushNotificationModel> pushModelCollector,
-            
+
             [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString",
             Id = "{PushToken}", PartitionKey = PushNotificationModel.PushTokenPartitionKey)]
             Document pushModelDoc,
@@ -43,16 +44,16 @@ namespace Saiive.SuperNode.Push.Functions
 
             ILogger log)
         {
-            if(coin.ToUpperInvariant() != "DFI")
+            if (coin.ToUpperInvariant() != "DFI")
             {
                 return new NoContentResult();
             }
 
-            if(pushModelDoc != null)
+            if (pushModelDoc != null)
             {
                 PushNotificationModel pushModel = (dynamic)pushModelDoc;
 
-                foreach(var vaultId in req.VaultIds)
+                foreach (var vaultId in req.VaultIds)
                 {
                     try
                     {
@@ -63,23 +64,41 @@ namespace Saiive.SuperNode.Push.Functions
                         var addwarningTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) + 50, "warning");
                         var addErrorTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) - 50, "error");
 
-                        
+
 
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         //ignore
                     }
                 }
             }
-            
+
 
             return new OkObjectResult(null);
         }
+        [FunctionName("PushDeregistrationFunction")]
+        [OpenApiOperation(operationId: "PushDeregistrationFunction", tags: new[] { "Push" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(PushNotificationModel), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(PushNotificationModel), Description = "The OK response")]
+        public async Task<IActionResult> Deregister(
+                  [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/push/deregister")] PushNotificationModel req,
+                    string network, string coin,
 
-        /**
-         * 
-         */
+                    [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString")]
+            IAsyncCollector<PushNotificationModel> pushModelCollector,
+
+                  [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString",
+            Id = "{PushToken}", PartitionKey = PushNotificationModel.PushTokenPartitionKey)]
+            Document pushModelDoc,
+
+
+                  ILogger log)
+        {
+            return new OkObjectResult(null);
+        }
     }
 }
 
