@@ -112,4 +112,5 @@ module "function_app_push" {
   blockcypher_api = data.azurerm_key_vault_secret.blockcypherapikey.value
 
   dobby_url = data.azurerm_key_vault_secret.dobby_url.value
+  webhook_url = data.azurerm_key_vault_secret.webhook_url.value
 }
