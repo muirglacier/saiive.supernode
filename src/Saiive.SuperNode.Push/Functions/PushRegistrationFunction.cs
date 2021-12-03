@@ -30,7 +30,7 @@ namespace Saiive.SuperNode.Push.Functions
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(PushNotificationModel), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(PushNotificationModel), Description = "The OK response")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] PushNotificationModel req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/push/register")] PushNotificationModel req,
               string network, string coin,
 
               [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString")]

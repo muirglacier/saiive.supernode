@@ -70,9 +70,7 @@ module "function_app" {
 
 module "function_app_push" {
   source = "./libs/function_app_push"
-
-  name = "push"
-
+  
   tier = var.tier
   size = var.size
   always_on = var.always_on
