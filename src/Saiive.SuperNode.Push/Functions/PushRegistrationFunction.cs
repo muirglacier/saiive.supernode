@@ -34,11 +34,11 @@ namespace Saiive.SuperNode.Push.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/push/register")] PushNotificationModel req,
               string network, string coin,
 
-              [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString")]
+            [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString")]
             IAsyncCollector<PushNotificationModel> pushModelCollector,
 
             [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString",
-            Id = "{PushToken}", PartitionKey = PushNotificationModel.PushTokenPartitionKey)]
+            Id = "{PushToken}", PartitionKey = PushNotificationModelDatabase.PushTokenPartitionKey)]
             Document pushModelDoc,
 
 
@@ -49,34 +49,59 @@ namespace Saiive.SuperNode.Push.Functions
                 return new NoContentResult();
             }
 
+            PushNotificationModelDatabase dbEntry = null;
+
             if (pushModelDoc != null)
             {
-                PushNotificationModel pushModel = (dynamic)pushModelDoc;
-
-                foreach (var vaultId in req.VaultIds)
+                dbEntry =  (dynamic)pushModelDoc; 
+            }
+            else
+            {
+                dbEntry = new PushNotificationModelDatabase
                 {
+                    PushToken = req.PushToken 
+                };
+            }
+
+            foreach (var vaultId in req.VaultIds)
+            {
+                try
+                {
+                    if(dbEntry.VaultIds.Contains(vaultId))
+                    {
+                        continue;
+                    }
+
+                    var vault = await ChainProviderCollection.GetInstance(coin).LoanProvider.GetLoanVault(network, vaultId);
+
                     try
                     {
-                        var vault = await ChainProviderCollection.GetInstance(coin).LoanProvider.GetLoanVault(network, vaultId);
-
                         var addVaultResponse = await DobbyService.AddVaultForUser(vault.VaultId);
-                        var addInfoTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) * 2, "info");
-                        var addwarningTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) + 50, "warning");
-                        var addErrorTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) - 50, "error");
-
-
-
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        //ignore
                     }
+                    var addInfoTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) * 2, "info");
+                    var addwarningTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate) + 50, "warning");
+                    var addDailyTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate), "daily");
+                    var addinLiqTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate), "inLiquidation");
+                    var addMayLiqTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate), "mayLiquidate");
+                    var addLiquidatedTrigger = await DobbyService.CreateNotificationTrigger(vault.VaultId, Convert.ToInt32(vault.LoanScheme.InterestRate), "liquidated");
+
+
+                    dbEntry.VaultIds.Add(vaultId);
+                }
+                catch (Exception ex)
+                {
+                    //ignore
                 }
             }
 
-
-            return new OkObjectResult(null);
+            await pushModelCollector.AddAsync(dbEntry);
+            
+            return new OkObjectResult(dbEntry);
         }
+
         [FunctionName("PushDeregistrationFunction")]
         [OpenApiOperation(operationId: "PushDeregistrationFunction", tags: new[] { "Push" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -91,7 +116,7 @@ namespace Saiive.SuperNode.Push.Functions
             IAsyncCollector<PushNotificationModel> pushModelCollector,
 
                   [CosmosDB("%CosmosDBName%", "%CosmosDBCollection%", ConnectionStringSetting = "CosmosConnectionString",
-            Id = "{PushToken}", PartitionKey = PushNotificationModel.PushTokenPartitionKey)]
+            Id = "{PushToken}", PartitionKey = PushNotificationModelDatabase.PushTokenPartitionKey)]
             Document pushModelDoc,
 
 

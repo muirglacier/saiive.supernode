@@ -4,7 +4,7 @@ namespace Saiive.Dobby.Api.Model
 {
     public class AddVaultToUserRequest
     {
-        [JsonProperty("vaultID")]
+        [JsonProperty("vaultId")]
         public string? VaultId { get; set; }
     }
 }

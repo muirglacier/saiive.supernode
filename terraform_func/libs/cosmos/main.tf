@@ -46,6 +46,6 @@ resource "azurerm_template_deployment" "sql_collection_arm" {
     cosmos = azurerm_cosmosdb_account.db.name
     cosmos_db = azurerm_cosmosdb_sql_database.sql_db.name
     cosmos_collection = local.comsos_collection_name
-    cosmos_collection_partition_key = "/partitionKey"
+    cosmos_collection_partition_key = "PartitionKey"
   }
 }

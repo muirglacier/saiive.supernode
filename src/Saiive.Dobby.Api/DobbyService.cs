@@ -83,7 +83,7 @@ namespace Saiive.Dobby.Api
                 
             };
 
-            var response = await DoPost<CreateNotificationTriggerResponse>("user/vault", postMessage);
+            var response = await DoPost<CreateNotificationTriggerResponse>("user/notification", postMessage);
             return response!;
         }
 
