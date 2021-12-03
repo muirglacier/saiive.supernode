@@ -10,10 +10,16 @@ resource "azurerm_cosmosdb_account" "db" {
   offer_type          = "Standard"
   kind                = "GlobalDocumentDB"
 
+  
+
   consistency_policy {
     consistency_level       = "BoundedStaleness"
     max_interval_in_seconds = 10
     max_staleness_prefix    = 200
+  }
+
+  capabilities {
+    name = "EnableServerless"
   }
 
   geo_location {
@@ -24,14 +30,13 @@ resource "azurerm_cosmosdb_account" "db" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "sql_db" {
-  name                = "push-mapping"
+  name                = "${var.environment}-${var.prefix}"
   resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
   account_name        = azurerm_cosmosdb_account.db.name
-  throughput          = 400
 }
 
 locals {
-  comsos_collection_name = "push-mapping-collection"
+  comsos_collection_name = "${var.environment}-${var.prefix}-collection"
 }
 
 resource "azurerm_template_deployment" "sql_collection_arm" {
