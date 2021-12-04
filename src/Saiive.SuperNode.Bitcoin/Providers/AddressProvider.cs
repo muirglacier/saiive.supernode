@@ -213,5 +213,15 @@ namespace Saiive.SuperNode.Bitcoin.Providers
         {
             throw new NotImplementedException();
         }
+
+        public Task<IList<LoanAuctionHistory>> GetAuctionHistory(string network, string address)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<LoanAuctionHistory>> GetAuctionHistory(string network, AddressesBodyRequest addresses)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

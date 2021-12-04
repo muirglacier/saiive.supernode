@@ -28,5 +28,8 @@ namespace Saiive.SuperNode.Abstaction.Providers
 
         Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address);
         Task<IList<LoanVault>> GetLoanVaultsForAddresses(string network, IList<string> addresses);
+
+        Task<IList<LoanAuctionHistory>> GetAuctionHistory(string network, string address);
+        Task<IList<LoanAuctionHistory>> GetAuctionHistory(string network, AddressesBodyRequest addresses);
     }
 }

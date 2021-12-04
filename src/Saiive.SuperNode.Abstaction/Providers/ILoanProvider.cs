@@ -22,6 +22,5 @@ namespace Saiive.SuperNode.Abstaction.Providers
 
         Task<IList<LoanAuction>> GetAuctions(string network);
 
-
     }
 }

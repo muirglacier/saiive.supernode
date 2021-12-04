@@ -314,6 +314,53 @@ namespace Saiive.SuperNode.Function.Functions
                 return new BadRequestObjectResult(new ErrorModel(e.Message));
             }
         }
+        [FunctionName("GetAuctionHistoryForAddress")]
+        [OpenApiOperation(operationId: "GetAuctionHistoryForAddress", tags: new[] { "Address" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "address", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanVault>))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> GetAuctionHistoryForAddress(
+               [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/address/loans/auctionhistory/{address}")] HttpRequestMessage req,
+               string coin, string network, string address)
+        {
+
+            try
+            {
+                return new OkObjectResult(await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAuctionHistory(network, address));
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
+
+        [FunctionName("GetAuctionHistoryForAddresses")]
+        [OpenApiOperation(operationId: "GetAuctionHistoryForAddresses", tags: new[] { "Address" })]
+        [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(AddressesBodyRequest), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<LoanVault>))]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorModel))]
+        public async Task<IActionResult> GetAuctionHistoryForAddresses(
+              [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/address/loans/auctionhistory")] AddressesBodyRequest req,
+              string coin, string network)
+        {
+            try
+            {
+                req.Addresses = req.Addresses.Distinct().ToList();
+                var ret = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetAuctionHistory(network, req);
+
+                return new OkObjectResult(ret);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return new BadRequestObjectResult(new ErrorModel(e.Message));
+            }
+        }
     }
 }
 

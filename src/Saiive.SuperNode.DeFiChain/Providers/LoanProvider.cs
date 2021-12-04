@@ -93,5 +93,6 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             var oceanData = await Helper.LoadAllFromPagedRequest<LoanAuction>($"{OceanUrl}/{ApiVersion}/{network}/loans/auctions");
             return oceanData;
         }
+
     }
 }

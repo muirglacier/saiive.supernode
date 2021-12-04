@@ -517,6 +517,29 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
             return ret;
         }
+
+
+        public async Task<IList<LoanAuctionHistory>> GetAuctionHistory(string network, string address)
+        {
+            var response = await _client.GetAsync($"{LegacyBitcoreUrl}api/DFI/{network}/lp/listauctionhistory/{address}");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<LoanAuctionHistory>>(data);
+        }
+
+        public async Task<IList<LoanAuctionHistory>> GetAuctionHistory(string network, AddressesBodyRequest addresses)
+        {
+            var ret = new List<LoanAuctionHistory>();
+
+            foreach (var address in addresses.Addresses)
+            {
+                ret.AddRange(await GetAuctionHistory(network, address));
+            }
+
+
+            return ret;
+        }
     }
 
 }

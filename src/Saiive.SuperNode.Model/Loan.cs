@@ -314,4 +314,31 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("batches")]
         public List<Batch> Batches { get; set; }
     }
+
+    public class LoanAuctionHistory
+    {
+        [JsonProperty("winner")]
+        public string Winner { get; set; }
+
+        [JsonProperty("blockHeight")] 
+        public ulong BlockHeight { get; set; }
+
+        [JsonProperty("blockHash")]
+        public string BlockHash { get; set; }
+
+        [JsonProperty("blockTime")]
+        public ulong BlockTime { get; set; }
+
+        [JsonProperty("vaultId")]
+        public string VaultId { get; set; }
+
+        [JsonProperty("batchIndex")]
+        public ulong BatchIndex { get; set; }
+
+        [JsonProperty("auctionBid")]
+        public string AuctionBid { get; set; }
+
+        [JsonProperty("auctionWon")]
+        public IList<string> AuctionWon { get; set; }
+    }
 }
