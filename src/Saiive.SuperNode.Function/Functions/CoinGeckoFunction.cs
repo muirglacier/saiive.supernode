@@ -75,7 +75,7 @@ namespace Saiive.SuperNode.Function.Functions
                     coinPrice.Fiat = item.Value[currency.ToLower()];
                     coinPrice.IdToken = map.ContainsKey(item.Key) ? map[item.Key] : null;
 
-                    ret.Add(item.Key, coinPrice);
+                    ret.Add(item.Key.Replace("-", ""), coinPrice);
                 }
 
                 return new OkObjectResult(ret);

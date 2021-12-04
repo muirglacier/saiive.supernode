@@ -264,6 +264,14 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("interestAmounts")]
         public List<LoanVaultAmount> InterestAmounts { get; set; }
     }
+    public class HighestBid
+    {
+        [JsonProperty("owner")]
+        public string Owner { get; set; }
+
+        [JsonProperty("amount")]
+        public Amount Amount { get; set; }
+    }
 
     public class Batch
     {
@@ -275,6 +283,9 @@ namespace Saiive.SuperNode.Model
 
         [JsonProperty("loan")]
         public Loan Loan { get; set; }
+
+        [JsonProperty("highestBid")]
+        public HighestBid HighestBid { get; set; }
     }
 
     public class LoanAuction
