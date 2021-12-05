@@ -306,10 +306,16 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     voutTx.Address = "false";
 
                     var startIndexOfDfTx = vo.Script.Hex.IndexOf("44665478");
+                    try
+                    {
+                        var parsedTx = DefiScriptParser.Parse(vo.Script.Hex.Substring(startIndexOfDfTx).ToByteArray());
 
-                    var parsedTx = DefiScriptParser.Parse(vo.Script.Hex.Substring(startIndexOfDfTx).ToByteArray());
-
-                    voutTx.TxType = Convert.ToChar(parsedTx.TxType).ToString();
+                        voutTx.TxType = Convert.ToChar(parsedTx.TxType).ToString();
+                    }
+                    catch
+                    {
+                        //ignore error
+                    }
                 }
                 else
                 {
