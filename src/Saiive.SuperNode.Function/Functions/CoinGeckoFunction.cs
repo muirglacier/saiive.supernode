@@ -18,6 +18,10 @@ namespace Saiive.SuperNode.Function.Functions
 {
     public class CoinGeckoFunction : BaseFunction
     {
+        private static Dictionary<string, CoinPrice> _lastPrices;
+        private static DateTime _lastRefresh;
+        private static int _priceUpdateInMinutes = 5;
+
         public CoinGeckoFunction(ILogger<AddressFunctions> logger, ChainProviderCollection chainProviderCollection, IServiceProvider serviceProvider) : base(logger, chainProviderCollection, serviceProvider)
         {
         }
@@ -33,6 +37,11 @@ namespace Saiive.SuperNode.Function.Functions
             string network, string coin, string currency,
             ILogger log)
         {
+            if(_lastPrices != null && (DateTime.UtcNow - _lastRefresh).TotalMinutes <= _priceUpdateInMinutes)
+            {
+                return new OkObjectResult(_lastPrices);
+            }
+
             //We control the coins server-side, so we can update faster if new pairs come along
             var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin,bitcoin-cash&vs_currencies={currency}");
 
@@ -77,6 +86,18 @@ namespace Saiive.SuperNode.Function.Functions
 
                     ret.Add(item.Key.Replace("-", ""), coinPrice);
                 }
+
+                _lastRefresh = DateTime.UtcNow;
+
+                ret.Add("lastUpdate", new CoinPrice()
+                {
+                    Coin = $"{_lastRefresh:o}",
+                    Currency = $"{_lastRefresh:o}",
+                    Fiat = 0,
+                    IdToken = $"Prices are updated every {_priceUpdateInMinutes} minute!"
+                });
+
+                _lastPrices = ret;
 
                 return new OkObjectResult(ret);
             }
