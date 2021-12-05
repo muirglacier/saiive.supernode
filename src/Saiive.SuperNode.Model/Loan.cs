@@ -5,9 +5,6 @@ using System.Text;
 
 namespace Saiive.SuperNode.Model
 {
-    public class Loan
-    {
-    }
 
     public class LoanScheme
     {
@@ -282,7 +279,7 @@ namespace Saiive.SuperNode.Model
         public List<LoanAuctionCollateral> Collaterals { get; set; }
 
         [JsonProperty("loan")]
-        public Loan Loan { get; set; }
+        public LoanVaultAmount Loan { get; set; }
 
         [JsonProperty("highestBid")]
         public HighestBid HighestBid { get; set; }
