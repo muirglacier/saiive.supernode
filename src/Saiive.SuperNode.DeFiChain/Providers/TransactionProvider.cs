@@ -54,8 +54,14 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 foreach(var o in tx.Outputs)
                 {
                     if(!o.Script.Contains("44665478"))
-                    {
-                        o.Address = NBitcoin.Script.FromHex(o.Script)?.GetDestinationAddress(Helper.GetNBitcoinNetwork(network))?.ToString();
+                    {try
+                        {
+                            o.Address = NBitcoin.Script.FromHex(o.Script)?.GetDestinationAddress(Helper.GetNBitcoinNetwork(network))?.ToString();
+                        }
+                        catch
+                        {
+                            //ignore
+                        }
                     }
                 }
                 return tx;
