@@ -267,7 +267,7 @@ namespace Saiive.SuperNode.Model
         public string Owner { get; set; }
 
         [JsonProperty("amount")]
-        public Amount Amount { get; set; }
+        public LoanVaultAmount Amount { get; set; }
     }
 
     public class Batch
