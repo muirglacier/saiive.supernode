@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Esplora.Client.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using RestEase;
 using Saiive.BlockCypher.Core;
 using Saiive.SuperNode.Abstaction;
 using System;
@@ -30,6 +32,13 @@ namespace Saiive.SuperNode.Bitcoin
             var b = new Blockcypher(Config["BLOCKCYHPER_API_KEY"], endpoint);
             b.EnsureSuccessStatusCode = true;
             return b;
+        }
+
+        protected IEsploraClient GetEsplora(string network)
+        {
+            var client = RestClient.For<IEsploraClient>("https://blockstream.info/api/" + (network.ToLowerInvariant() == "testnet" ? "test/" : ""));
+
+            return client;
         }
     }
 }

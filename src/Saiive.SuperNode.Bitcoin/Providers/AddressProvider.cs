@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Saiive.SuperNode.Bitcoin.Helper;
+using Esplora.Client.Interfaces;
+using RestEase;
 
 namespace Saiive.SuperNode.Bitcoin.Providers
 {
@@ -120,19 +122,51 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<IList<AccountModel>> GetAccountCypher(string network, string address)
         {
-            var instance = GetInstance(network);
-            var balance = await instance.GetBalanceForAddress(address);
-
-            var accountModel = new AccountModel
+            try
             {
-                Address = address,
-                Balance = balance.Balance.ValueLong,
-                Raw = $"{balance.Balance.ValueLong}@BTC",
-                Token = "BTC"
-            };
+                var instance = GetInstance(network);
+                var balance = await instance.GetBalanceForAddress(address);
+
+                var accountModel = new AccountModel
+                {
+                    Address = address,
+                    Balance = balance.Balance.ValueLong,
+                    Raw = $"{balance.Balance.ValueLong}@BTC",
+                    Token = "BTC"
+                };
 
 
-            return new List<AccountModel> { accountModel };
+                return new List<AccountModel> { accountModel };
+            }
+            catch
+            {
+                return new List<AccountModel>();
+            }
+        }
+
+        public async Task<IList<AccountModel>> GetAccountBlockstream(string network, string address)
+        {
+            try
+            {
+                var client = GetEsplora(network);
+                var balance = await client.GetAddress(address);
+
+                
+                var accountModel = new AccountModel
+                {
+                    Address = address,
+                    Balance = balance.ChainStatistics.FundedTxoSum - balance.ChainStatistics.SpentTxoSum,
+                    Raw = $"{balance.ChainStatistics.FundedTxoSum - balance.ChainStatistics.SpentTxoSum}@BTC",
+                    Token = "BTC"
+                };
+
+
+                return new List<AccountModel> { accountModel };
+            }
+            catch
+            {
+                return new List<AccountModel>();
+            }
         }
 
         public async Task<BalanceModel> GetBalance(string network, string address)
@@ -148,17 +182,23 @@ namespace Saiive.SuperNode.Bitcoin.Providers
         }
 
         public async Task<BalanceModel> GetBalanceCypher(string network, string address)
-        {
-            var instance = GetInstance(network);
-            var balance = await instance.GetBalanceForAddress(address);
-
-            return new BalanceModel
+        {try
             {
-                Address = address,
-                Balance = (ulong)balance.Balance.ValueLong,
-                Confirmed = (ulong)balance.Balance.ValueLong,
-                Unconfirmed = 0
-            };
+                var instance = GetInstance(network);
+                var balance = await instance.GetBalanceForAddress(address);
+
+                return new BalanceModel
+                {
+                    Address = address,
+                    Balance = (ulong)balance.Balance.ValueLong,
+                    Confirmed = (ulong)balance.Balance.ValueLong,
+                    Unconfirmed = 0
+                };
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<IList<BalanceModel>> GetBalance(string network, AddressesBodyRequest addresses)
@@ -201,8 +241,30 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             }
             catch
             {
-                return await GetTransactionsCyphre(network, address);
+                try
+                {
+                    return await GetTransactionsCyphre(network, address);
+                }
+                catch
+                {
+                    return await GetTransactionsBlockStream(network, address);
+                }
             }
+        }
+
+        private async Task<IList<TransactionModel>> GetTransactionsBlockStream(string network, string address)
+        {
+            var client = GetEsplora(network);
+            var transactions = await client.GetAddressConfirmedTransactions(address);
+
+            var ret = new  List<TransactionModel>();
+
+            foreach (var tx in transactions)
+            {
+                ret.Add(tx.ToTransactionModel(network, address));
+            }
+
+            return ret;
         }
 
         public async Task<IList<TransactionModel>> GetTransactionsCyphre(string network, string address)
@@ -251,9 +313,33 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             catch
             {
 
-                return await GetUnspentTransactionOutputCypher(network, address);
+                try
+                {
+                    return await GetUnspentTransactionOutputCypher(network, address);
+                }
+                catch
+                {
+
+                    return await GetUnspentTransactionsBlockStream(network, address);
+                }
+            }
+        }
+
+        private async Task<IList<TransactionModel>> GetUnspentTransactionsBlockStream(string network, string address)
+        {
+            var client = GetEsplora(network);
+            var transactions = await client.GetAddressUnspentTransactions(address);
+
+            var ret = new List<TransactionModel>();
+
+            foreach (var utxo in transactions)
+            {
+                var tx = await client.GetTransaction(utxo.Txid);
+
+                ret.Add(tx.ToTransactionModel(network, address));
             }
 
+            return ret;
         }
 
         public async Task<IList<TransactionModel>> GetUnspentTransactionOutputCypher(string network, string address)

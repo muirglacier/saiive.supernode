@@ -1,5 +1,6 @@
 ﻿using Saiive.BlockCypher.Core.Objects;
 using Saiive.SuperNode.Model;
+using System.Linq;
 
 namespace Saiive.SuperNode.Bitcoin.Helper
 {
@@ -134,6 +135,51 @@ namespace Saiive.SuperNode.Bitcoin.Helper
                 Hash = block.Hash,
                 Bits = (ulong)block.Bits
             };
+        }
+        
+
+        public static TransactionModel ToTransactionModel(this Esplora.Client.Models.Transaction transaction, string network, string address)
+        {
+            var details = new TransactionDetailModel();
+            foreach (var inp in transaction.InTransactions)
+            {
+                details.Inputs.Add(new TransactionModel
+                {
+                    Address = inp.PreviousTransactionValue.Address,
+                    Chain = "BTC",
+                    BlockHash = transaction.Status.BlockHash,
+                    MintTxId = inp.Txid,
+                    MintIndex = (int)inp.Vout,
+                    Value = (ulong)inp.PreviousTransactionValue.Value
+
+                });
+            }
+            foreach (var outs in transaction.OutTransactions)
+            {
+                details.Outputs.Add(new TransactionModel
+                {
+                    Address = outs.Address,
+                    Chain = "BTC",
+                    MintTxId = transaction.Txid,
+                    Value = (ulong)outs.Value
+
+                });
+            }
+            var sum = transaction.OutTransactions.Sum(a => a.Value);
+            return new TransactionModel
+            {
+                Address = address,
+                Chain = "BTC",
+                Id = transaction.Txid,
+                IsCustom = false,
+                IsCustomTxApplied = true,
+                MintHeight = (int)transaction.Status.BlockHeight,
+                Network = network,
+                Value = (ulong)sum,
+                Details = details
+
+            };
+
         }
     }
 }

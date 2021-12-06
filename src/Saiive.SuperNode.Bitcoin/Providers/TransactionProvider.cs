@@ -141,6 +141,15 @@ namespace Saiive.SuperNode.Bitcoin.Providers
             return transactions.ToTransactionModel(network, transactions.Addresses.First());
         }
 
+        public async Task<TransactionModel> GetTransactionByIdBlockStream(string network, string txId)
+        {
+            var client = GetEsplora(network);
+
+            var tx = await client.GetTransaction(txId);
+
+            return tx.ToTransactionModel(network, "");
+        }
+
         public async Task<IList<TransactionModel>> GetTransactionsByBlockCypher(string network, string block)
         {
             var instance = GetInstance(network);
