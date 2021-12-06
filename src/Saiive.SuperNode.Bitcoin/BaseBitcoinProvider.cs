@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Saiive.BlockCypher.Core;
 using Saiive.SuperNode.Abstaction;
 using System;
 using System.Net.Http;
@@ -16,6 +17,19 @@ namespace Saiive.SuperNode.Bitcoin
         {
             _client = new HttpClient();
             _client.Timeout = TimeSpan.FromMinutes(5);
+        }
+
+        public Blockcypher GetInstance(string network)
+        {
+            var endpoint = Endpoint.BtcMain;
+
+            if (network.ToLower() == "testnet")
+            {
+                endpoint = Endpoint.BtcTest3;
+            }
+            var b = new Blockcypher(Config["BLOCKCYHPER_API_KEY"], endpoint);
+            b.EnsureSuccessStatusCode = true;
+            return b;
         }
     }
 }

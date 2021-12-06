@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Saiive.SuperNode.Bitcoin.Helper;
 
 namespace Saiive.SuperNode.Bitcoin.Providers
 {
@@ -90,7 +91,13 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<IList<AccountModel>> GetAccount(string network, string address)
         {
-            return await GetAccountInternal("BTC", network, address);
+            try {
+                return await GetAccountInternal("BTC", network, address);
+            }
+            catch
+            {
+                return await GetAccountCypher(network, address);
+            }
         }
 
         public async Task<IList<Account>> GetAccount(string network, AddressesBodyRequest addresses)
@@ -111,9 +118,47 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         }
 
+        public async Task<IList<AccountModel>> GetAccountCypher(string network, string address)
+        {
+            var instance = GetInstance(network);
+            var balance = await instance.GetBalanceForAddress(address);
+
+            var accountModel = new AccountModel
+            {
+                Address = address,
+                Balance = balance.Balance.ValueLong,
+                Raw = $"{balance.Balance.ValueLong}@BTC",
+                Token = "BTC"
+            };
+
+
+            return new List<AccountModel> { accountModel };
+        }
+
         public async Task<BalanceModel> GetBalance(string network, string address)
         {
-            return await GetBalanceInternal("BTC", network, address);
+            try
+            {
+                return await GetBalanceInternal("BTC", network, address);
+            }
+            catch
+            {
+                return await GetBalanceCypher(network, address);
+            }
+        }
+
+        public async Task<BalanceModel> GetBalanceCypher(string network, string address)
+        {
+            var instance = GetInstance(network);
+            var balance = await instance.GetBalanceForAddress(address);
+
+            return new BalanceModel
+            {
+                Address = address,
+                Balance = (ulong)balance.Balance.ValueLong,
+                Confirmed = (ulong)balance.Balance.ValueLong,
+                Unconfirmed = 0
+            };
         }
 
         public async Task<IList<BalanceModel>> GetBalance(string network, AddressesBodyRequest addresses)
@@ -150,7 +195,29 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<IList<TransactionModel>> GetTransactions(string network, string address)
         {
-            return await GetTransactionsInternal("BTC", network, address);
+            try
+            {
+                return await GetTransactionsInternal("BTC", network, address);
+            }
+            catch
+            {
+                return await GetTransactionsCyphre(network, address);
+            }
+        }
+
+        public async Task<IList<TransactionModel>> GetTransactionsCyphre(string network, string address)
+        {
+            var instance = GetInstance(network);
+
+            var transactions = await instance.GetTransactions(address);
+            var ret = new List<TransactionModel>();
+
+            foreach (var tx in transactions)
+            {
+                ret.Add(tx.ToTransactionModel(network, address));
+            }
+
+            return ret;
         }
 
         public async Task<IList<TransactionModel>> GetTransactions(string network, AddressesBodyRequest addresses)
@@ -177,9 +244,34 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
         public async Task<IList<TransactionModel>> GetUnspentTransactionOutput(string network, string address)
         {
-            return await GetUnspentTransactionOutputsInternal("BTC", network, address);
+            try
+            {
+                return await GetUnspentTransactionOutputsInternal("BTC", network, address);
+            }
+            catch
+            {
+
+                return await GetUnspentTransactionOutputCypher(network, address);
+            }
 
         }
+
+        public async Task<IList<TransactionModel>> GetUnspentTransactionOutputCypher(string network, string address)
+        {
+            var ret = new List<TransactionModel>();
+            var instance = GetInstance(network);
+
+            var unspent = await instance.GetUnspentTransactionReference(address);
+
+            foreach (var tx in unspent)
+            {
+                ret.Add(tx.ToTransactionModel(network, address));
+            }
+
+            return ret;
+
+        }
+
 
         public async Task<IList<TransactionModel>> GetUnspentTransactionOutput(string network, AddressesBodyRequest addresses)
         {
