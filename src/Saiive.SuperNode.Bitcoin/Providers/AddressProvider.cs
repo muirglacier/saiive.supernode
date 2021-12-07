@@ -108,11 +108,15 @@ namespace Saiive.SuperNode.Bitcoin.Providers
 
             foreach(var address in addresses.Addresses)
             {
-                ret.Add(new Account()
+                var account = await GetAccount(network, address);
+                if (account.Count > 0)
                 {
-                    Address = address,
-                    Accounts = await GetAccount(network, address)
-                });
+                    ret.Add(new Account()
+                    {
+                        Address = address,
+                        Accounts = account
+                    });
+                }
             }
 
 
