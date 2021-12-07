@@ -174,23 +174,11 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
             var ret = new List<AccountModel>();
 
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/tokens");
-
-            var data = await response.Content.ReadAsStringAsync();
-
-            try
-            {
-                response.EnsureSuccessStatusCode();
-            }
-            catch
-            {
-                throw new ArgumentException(data);
-            }
-
-            var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTokens>>>(data);
+         
+            var data = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/tokens");
 
 
-            foreach (var acc in obj.Data)
+            foreach (var acc in data)
             {
 
                 var token = await _tokenStore.GetToken(network, acc.SymbolKey);
