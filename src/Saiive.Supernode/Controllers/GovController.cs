@@ -11,7 +11,7 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class GovController : BaseLegacyController
+    public class GovController : BaseController
     {
         public GovController(ILogger<GovController> logger, IConfiguration config) : base(logger, config)
         {

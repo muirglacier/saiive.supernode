@@ -4,7 +4,7 @@ using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.DeFiChain.Application
 {
-    internal interface IMasterNodeCache
+    public interface IMasterNodeCache
     {
         Task<List<Masternode>> GetMasterNodes(string network);
 

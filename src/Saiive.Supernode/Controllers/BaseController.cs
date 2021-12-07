@@ -1,20 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Net.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.SuperNode.Abstaction;
 
 namespace Saiive.SuperNode.Controllers
 {
     public abstract class BaseController : ControllerBase
     {
-        
+        public IConfiguration Config { get; }
         protected readonly ILogger Logger;
+        protected readonly string ApiUrl;
+        protected readonly string DefiChainApiUrl;
+        protected readonly string CoingeckoApiUrl;
 
-        protected BaseController(ILogger logger, ChainProviderCollection chainProviderCollection)
+        protected readonly HttpClient _client;
+
+        protected BaseController(ILogger logger, IConfiguration config)
         {
-            Logger = logger;
-            ChainProviderCollection = chainProviderCollection;
-        }
+            Config = config;
+            _client = new HttpClient();
+            _client.Timeout = TimeSpan.FromMinutes(5);
 
-        public ChainProviderCollection ChainProviderCollection { get; }
+            Logger = logger;
+            ApiUrl = config["BITCORE_URL"];
+            DefiChainApiUrl = config["DEFI_CHAIN_API_URL"];
+            CoingeckoApiUrl = config["COINGECKO_API_URL"];
+
+            Logger.LogTrace($"Using bitcore {ApiUrl}");
+            Logger.LogTrace($"Using DefiChainApi {DefiChainApiUrl}");
+            Logger.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
+        }
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.Controllers
@@ -15,9 +14,9 @@ namespace Saiive.SuperNode.Controllers
     [Route("/api/v1/")]
     public class BlockController : BaseController
     {
-        public BlockController(ILogger<BlockController> logger, ChainProviderCollection chainProviderCollection) : base(logger, chainProviderCollection)
+        public BlockController(ILogger<BlockController> logger, IConfiguration config) : base(logger, config)
         {
-          
+
         }
 
 
@@ -27,16 +26,23 @@ namespace Saiive.SuperNode.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentBlock(string coin, string network, int height)
         {
-           
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/{height}");
 
             try
             {
-           
-                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetBlockByHeightOrHash(network, height.ToString());
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<BlockModel>(data);
                 return Ok(obj);
             }
             catch (Exception e)
             {
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return NotFound(new ErrorModel($"block with height {height} could not be found"));
+                }
                 Logger.LogError($"{e}");
                 return BadRequest(new ErrorModel(e.Message));
             }
@@ -47,10 +53,15 @@ namespace Saiive.SuperNode.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCurrentHeight(string coin, string network)
         {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/block/tip");
 
             try
             {
-                var obj = await ChainProviderCollection.GetInstance(coin).BlockProvider.GetCurrentHeight(network);
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<BlockModel>(data);
                 return Ok(obj);
             }
             catch (Exception e)

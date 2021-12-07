@@ -23,51 +23,51 @@ namespace Saiive.SuperNode.Controllers
 
     [ApiController]
     [Route("/api/v1/")]
-    public class WalletController : BaseLegacyController
+    public class WalletController : BaseController
     {
         public WalletController(ILogger<WalletController> logger, IConfiguration config) : base(logger, config)
         {
         }
 
-        //[HttpPost("{network}/{coin}/sendtoaddress")]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
-        //public async Task<IActionResult> SendToAddress(string coin, string network, [FromBody]SendToAddressBody body)
-        //{
-        //    try
-        //    {
-        //        var enableSendConfig = Config.GetSection("ENABLE_SEND");
-        //        var maxSendAmountConfig = Config.GetSection("MAX_SEND_AMOUNT");
+        [HttpPost("{network}/{coin}/sendtoaddress")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> SendToAddress(string coin, string network, [FromBody] SendToAddressBody body)
+        {
+            try
+            {
+                var enableSendConfig = Config.GetSection("ENABLE_SEND");
+                var maxSendAmountConfig = Config.GetSection("MAX_SEND_AMOUNT");
 
-        //        var isEnabled = (bool)enableSendConfig.GetValue(typeof(bool), $"{coin}_{network}", false);
+                var isEnabled = (bool)enableSendConfig.GetValue(typeof(bool), $"{coin}_{network}", false);
 
-        //        if (!isEnabled)
-        //        {
-        //            return BadRequest($"Send is not enabled for {network}");
-        //        }
+                if (!isEnabled)
+                {
+                    return BadRequest($"Send is not enabled for {network}");
+                }
 
-        //        var maxSendAmount = (double)maxSendAmountConfig.GetValue(typeof(double), $"{coin}_{network}", 1);
+                var maxSendAmount = (double)maxSendAmountConfig.GetValue(typeof(double), $"{coin}_{network}", 1);
 
-        //        if (body.Amount > maxSendAmount)
-        //        {
-        //            return BadRequest($"Max amount to send is {maxSendAmount}!");
-        //        }
-                
+                if (body.Amount > maxSendAmount)
+                {
+                    return BadRequest($"Max amount to send is {maxSendAmount}!");
+                }
 
-        //        var httpContent =
-        //            new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-        //        var response = await _client.PostAsync($"{ApiUrl}/api/{coin}/{network}/wallet/rpc/sendtoaddress", httpContent);
 
-        //        var data = await response.Content.ReadAsStringAsync();
-        //        response.EnsureSuccessStatusCode();
+                var httpContent =
+                    new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync($"{ApiUrl}/api/{coin}/{network}/wallet/rpc/sendtoaddress", httpContent);
 
-        //        return Ok(data);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Logger.LogError($"{e}");
-        //        return BadRequest(new ErrorModel(e.Message));
-        //    }
-        //}
+                var data = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+
+                return Ok(data);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"{e}");
+                return BadRequest(new ErrorModel(e.Message));
+            }
+        }
     }
 }

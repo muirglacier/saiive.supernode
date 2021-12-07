@@ -13,11 +13,11 @@ namespace Saiive.SuperNode.Controllers
 {
     [ApiController]
     [Route("/api/v1/")]
-    public class PoolShareController : BaseLegacyController
+    public class PoolShareController : BaseController
     {
         public PoolShareController(ILogger<PoolShareController> logger, IConfiguration config) : base(logger, config)
         {
-          
+
         }
 
         private async Task<List<PoolShareModel>> GetPoolSharesInternal(string coin, string network, int start = 0, int limit = 1, bool including_start = false)
@@ -47,7 +47,7 @@ namespace Saiive.SuperNode.Controllers
             return ret;
         }
 
-        private async Task<List< PoolShareModel>> GetAllPoolSharesInternal(string coin, string network)
+        private async Task<List<PoolShareModel>> GetAllPoolSharesInternal(string coin, string network)
         {
             int start = 0;
             int limit = 10000;
@@ -59,7 +59,8 @@ namespace Saiive.SuperNode.Controllers
             {
                 loopResult = await this.GetPoolSharesInternal(coin, network, start, limit);
 
-                if (loopResult.Count == 0) {
+                if (loopResult.Count == 0)
+                {
                     break;
                 }
 
@@ -152,7 +153,7 @@ namespace Saiive.SuperNode.Controllers
 
                 foreach (var poolShare in poolShares)
                 {
-                    ret.Add(poolShare.Key, poolShare);		
+                    ret.Add(poolShare.Key, poolShare);
                 }
 
                 return Ok(ret);

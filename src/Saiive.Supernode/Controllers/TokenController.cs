@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.SuperNode.Abstaction;
+using Saiive.SuperNode.DeFiChain.Application;
 using Saiive.SuperNode.Model;
 
 namespace Saiive.SuperNode.Controllers
@@ -13,22 +14,28 @@ namespace Saiive.SuperNode.Controllers
     [Route("/api/v1/")]
     public class TokenController : BaseController
     {
+        private readonly ITokenStore _store;
 
-        public TokenController(ILogger<TokenController> logger, ChainProviderCollection chainProvider) : base(logger, chainProvider)
+        public TokenController(ILogger<TokenController> logger, IConfiguration config, ITokenStore store) : base(logger, config)
         {
+            _store = store;
         }
 
 
         [HttpGet("{network}/{coin}/tokens")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type=typeof(IDictionary<int, TokenModel>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IDictionary<int, TokenModel>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         public async Task<IActionResult> ListTokens(string coin, string network)
         {
-            
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/token/list");
 
             try
             {
-                return Ok(await ChainProviderCollection.GetInstance(coin).TokenProvider.GetAll(network));
+                var data = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
+
+
+                return Ok(data);
             }
             catch (Exception e)
             {
@@ -44,7 +51,8 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                return Ok(await ChainProviderCollection.GetInstance(coin).TokenProvider.GetToken(network, token));
+
+                return Ok(await _store.GetToken(network, token));
             }
             catch (Exception e)
             {

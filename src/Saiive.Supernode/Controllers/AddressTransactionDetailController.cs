@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Saiive.SuperNode.Abstaction;
+using Newtonsoft.Json;
+using Saiive.SuperNode.DeFiChain.Application;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
 
@@ -15,8 +16,60 @@ namespace Saiive.SuperNode.Controllers
     [Route("/api/v1/")]
     public class AddressTransactionDetailController : BaseController
     {
-        public AddressTransactionDetailController(ILogger<AddressTransactionDetailController> logger, ChainProviderCollection chainProvider) : base(logger, chainProvider)
+        private readonly ILogger<AddressTransactionDetailController> _logger;
+        private readonly ITokenStore _tokenStore;
+
+
+        public AddressTransactionDetailController(ILogger<AddressTransactionDetailController> logger, IConfiguration config, ITokenStore tokenStore) : base(logger, config)
         {
+            _logger = logger;
+            _tokenStore = tokenStore;
+        }//BlockTransactionModel
+
+
+        private async Task<List<BlockTransactionModel>> GetTransactionsInternal(string coin, string network, string address)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/address/{address}/txs?limit=1000");
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var txs = JsonConvert.DeserializeObject<List<TransactionModel>>(data);
+            var ret = new List<BlockTransactionModel>();
+
+            foreach (var tx in txs)
+            {
+                try
+                {
+                    var vin = await GetBlockTransaction(coin, network, tx.MintTxId);
+                    ret.Add(vin);
+
+                    if (tx.SpentHeight > 0)
+                    {
+                        var vout = await GetBlockTransaction(coin, network, tx.SpentTxId);
+                        ret.Add(vout);
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "error occurred");
+                }
+            }
+
+            return ret;
+
+        }
+
+        private async Task<BlockTransactionModel> GetBlockTransaction(string coin, string network, string txId)
+        {
+            var response = await _client.GetAsync($"{ApiUrl}/api/{coin}/{network}/tx/{txId}");
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<BlockTransactionModel>(data);
+            return obj;
         }
 
         [HttpGet("{network}/{coin}/tx-history/{address}")]
@@ -26,7 +79,7 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                return Ok(await ChainProviderCollection.GetInstance(coin).AddressTransactionDetailProvider.GetTransactions(network, address));
+                return Ok(await GetTransactionsInternal(coin, network, address));
             }
             catch (Exception e)
             {
@@ -42,9 +95,12 @@ namespace Saiive.SuperNode.Controllers
         {
             try
             {
-                request.Addresses = request.Addresses.Distinct().ToList();
-                var ret = await ChainProviderCollection.GetInstance(coin).AddressTransactionDetailProvider.GetTransactions(network, request);
+                var ret = new List<BlockTransactionModel>();
 
+                foreach (var address in request.Addresses)
+                {
+                    ret.AddRange(await GetTransactionsInternal(coin, network, address));
+                }
                 return Ok(ret);
             }
             catch (Exception e)
@@ -53,5 +109,6 @@ namespace Saiive.SuperNode.Controllers
                 return BadRequest(new ErrorModel(e.Message));
             }
         }
+
     }
 }
