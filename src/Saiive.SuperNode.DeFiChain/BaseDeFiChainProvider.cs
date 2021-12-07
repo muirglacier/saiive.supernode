@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.DeFiChain
 {
@@ -34,6 +36,30 @@ namespace Saiive.SuperNode.DeFiChain
             Logger?.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
             Logger?.LogTrace($"Using LEGACY_API_URL {ApiUrl}");
             Logger?.LogTrace($"Using LEGACY_BITCORE_URL {LegacyBitcoreUrl}");
+        }
+
+        public async Task<T> RunWithFallbackProvider<T>(string fallbackUrl, Func<Task<T>> func, Func<string, T> fallbackFunc)
+        {
+            try
+            {
+                var t = await func();
+                return t;
+            }
+            catch
+            {
+                var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}{fallbackUrl}");
+
+                responseLegacy.EnsureSuccessStatusCode();
+
+                var data = await responseLegacy.Content.ReadAsStringAsync();
+                
+                if(fallbackFunc != null)
+                {
+                    return fallbackFunc(data);
+                }
+                return JsonConvert.DeserializeObject<T>(data);
+
+            }
         }
 
         public DateTime UnixTimeToDateTime(long unixtime)

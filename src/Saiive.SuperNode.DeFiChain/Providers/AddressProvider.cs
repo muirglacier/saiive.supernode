@@ -172,47 +172,50 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<IList<AccountModel>> GetAccountInternal(string network, string address)
         {
-            var ret = new List<AccountModel>();
-
-         
-            var data = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/tokens");
+            return await RunWithFallbackProvider<IList<AccountModel>>($"api/v1/{network}/DFI/accounts/{address}", async () => {
+                var ret = new List<AccountModel>();
 
 
-            foreach (var acc in data)
-            {
+                var data = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/tokens");
 
-                var token = await _tokenStore.GetToken(network, acc.SymbolKey);
 
-                var account = new AccountModel
+                foreach (var acc in data)
                 {
-                    Address = address,
-                    Raw = acc.Amount,
-                    Balance = Convert.ToDouble(acc.Amount, CultureInfo.InvariantCulture) * token.Multiplier,
-                    Token = acc.SymbolKey,
-                    IsDAT = acc.IsDat,
-                    IsLPS = acc.IsLps,
-                    SymbolKey = acc.SymbolKey
-                };
 
-                ret.Add(account);
-            }
+                    var token = await _tokenStore.GetToken(network, acc.SymbolKey);
+
+                    var account = new AccountModel
+                    {
+                        Address = address,
+                        Raw = acc.Amount,
+                        Balance = Convert.ToDouble(acc.Amount, CultureInfo.InvariantCulture) * token.Multiplier,
+                        Token = acc.SymbolKey,
+                        IsDAT = acc.IsDat,
+                        IsLPS = acc.IsLps,
+                        SymbolKey = acc.SymbolKey
+                    };
+
+                    ret.Add(account);
+                }
 
 
-            var nativeBalance = await GetBalanceInternal(network, address);
-            if (nativeBalance.Balance > 0)
-            {
-                var rawBalance = Convert.ToDouble(nativeBalance.Balance, CultureInfo.InvariantCulture) / 100000000;
-                ret.Add(new AccountModel
+                var nativeBalance = await GetBalanceInternal(network, address);
+                if (nativeBalance.Balance > 0)
                 {
-                    Address = address,
-                    Balance = nativeBalance.Balance,
-                    Raw = $"{rawBalance.ToString("F9", CultureInfo.InvariantCulture)}@DFI",
-                    Token = $"$DFI"
-                });
-            }
+                    var rawBalance = Convert.ToDouble(nativeBalance.Balance, CultureInfo.InvariantCulture) / 100000000;
+                    ret.Add(new AccountModel
+                    {
+                        Address = address,
+                        Balance = nativeBalance.Balance,
+                        Raw = $"{rawBalance.ToString("F9", CultureInfo.InvariantCulture)}@DFI",
+                        Token = $"$DFI"
+                    });
+                }
 
 
-            return ret;
+                return ret;
+            }, null);
+           
 
         }
 
