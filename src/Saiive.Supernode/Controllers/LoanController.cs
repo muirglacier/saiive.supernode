@@ -256,7 +256,7 @@ namespace Saiive.SuperNode.Controllers
                     Symbol = token.Symbol,
                     Tradeable = token.Tradeable
                 },
-                TokenId = token.Id.ToString(),
+                TokenId = token.CreationTx,
                 FixedIntervalPriceId = loanToken.FixedIntervalPriceId,
                 Interest = loanToken.Interest.ToString()
             };
