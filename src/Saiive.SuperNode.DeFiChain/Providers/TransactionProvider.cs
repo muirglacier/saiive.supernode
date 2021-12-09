@@ -44,6 +44,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
         private async Task<TransactionDetailModel> GetLegacyTransactionDetails(string coin, string network, string txId)
         {
+
             try
             {
                 var response = await _client.GetAsync($"{LegacyBitcoreUrl}api/{coin}/{network}/tx/{txId}/coins");
@@ -51,9 +52,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var data = await response.Content.ReadAsStringAsync();
                 var tx = JsonConvert.DeserializeObject<TransactionDetailModel>(data);
 
-                foreach(var o in tx.Outputs)
+                foreach (var o in tx.Outputs)
                 {
-                    if(!o.Script.Contains("44665478"))
+                    if (!o.Script.Contains("44665478"))
                     {
                         try
                         {
@@ -102,7 +103,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     throw;
                 }
 
-                var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}api/DFI/{network}/tx/{txId}");
+                var responseLegacy = await _client.GetAsync($"{ApiUrl}api/v1/{network}/DFI/tx/id/{txId}");
 
                 responseLegacy.EnsureSuccessStatusCode();
 
@@ -119,54 +120,70 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<TransactionModel>> GetTransactionsByBlock(string network, string block)
         {
-
             var txs = await _blockProvider.GetTransactionForBlock(network, block);
-
-
             return txs;
         }
 
         public async Task<IList<BlockTransactionModel>> GetTransactionsByBlockHeight(string network, int height, bool includeDetails)
         {
-            var blockInstance = await _blockProvider.GetBlockByHeightOrHash(network, height.ToString());
-
-            var txs = await _blockProvider.GetTransactionForBlock(network, blockInstance.Hash);
-
-            var ret = new List<BlockTransactionModel>();
-
-            foreach(var tx in txs)
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/tx/block/{height}/{includeDetails}", async () =>
             {
-                ret.Add(await _txProvider.GetBlockTransaction(network, tx.Id));
-            }
+                var blockInstance = await _blockProvider.GetBlockByHeightOrHash(network, height.ToString());
 
-            return ret;
+                var txs = await _blockProvider.GetTransactionForBlock(network, blockInstance.Hash);
+
+                var ret = new List<BlockTransactionModel>();
+
+                foreach (var tx in txs)
+                {
+                    ret.Add(await _txProvider.GetBlockTransaction(network, tx.Id));
+                }
+
+                return ret;
+            }, null);
 
         }
 
         public async Task<string> SendRawTransaction(string network, TransactionRequest request)
         {
-            var body = new OceanRawTx
-            {
-                Hex = request.RawTx
-            };
-            var httpContent =
-                 new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{OceanUrl}/{ApiVersion}/{network}/rawtx/send", httpContent);
-
-            var data = await response.Content.ReadAsStringAsync();
-
             try
             {
-                response.EnsureSuccessStatusCode();
-                var obj = JsonConvert.DeserializeObject<OceanDataEntity<string>>(data);
+                var body = new OceanRawTx
+                {
+                    Hex = request.RawTx
+                };
+                var httpContent =
+                     new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync($"{OceanUrl}/{ApiVersion}/{network}/rawtx/send", httpContent);
 
-                Logger.LogInformation("{coin}+{network}: Committed tx to blockchain, {txId} {txHex}", "DFI", network, obj?.Data, request.RawTx);
+                var data = await response.Content.ReadAsStringAsync();
 
-                return obj.Data;
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                    var obj = JsonConvert.DeserializeObject<OceanDataEntity<string>>(data);
+
+                    Logger.LogInformation("{coin}+{network}: Committed tx to blockchain, {txId} {txHex}", "DFI", network, obj?.Data, request.RawTx);
+
+                    return obj.Data;
+                }
+                catch
+                {
+                    throw new ArgumentException(data);
+                }
             }
             catch
             {
-                throw new ArgumentException(data);
+                var httpContent =
+                     new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync($"{ApiUrl}/v1/{network}/DFI/tx/raw", httpContent);
+
+                var data = await response.Content.ReadAsStringAsync();
+                var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
+
+                Logger.LogInformation("{coin}+{network}: Committed tx to blockchain, {txId} {txHex}", "DFI", network, obj?.TxId, request.RawTx);
+
+                return obj.TxId;
             }
 
         }

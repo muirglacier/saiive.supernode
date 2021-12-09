@@ -28,7 +28,7 @@ namespace Saiive.SuperNode.Function.Functions
         [OpenApiOperation(operationId: "GetBlockByHash", tags: new[] { "Block" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-        [OpenApiParameter(name: "height", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        [OpenApiParameter(name: "hashOrHeight", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(BlockModel), Description = "The OK response")]
         public async Task<IActionResult> GetBlockByHash(
            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/{network}/{coin}/block/{hashOrHeight}")] HttpRequestMessage req,

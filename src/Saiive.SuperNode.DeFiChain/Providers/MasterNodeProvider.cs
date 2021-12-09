@@ -21,17 +21,14 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         internal async Task<List<Masternode>> LoadAll(string network)
         {
-            var q = new Queue<string>();
-            q.Enqueue(null);
-
-            var masterNodeList = new List<Masternode>();
-
-            while (q.Count > 0)
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/masternodes/list", async () =>
             {
-                var q2 = q.Dequeue();
-                var masterNodePage = await LoadMasterNode(network, q2);
+                var url = $"{OceanUrl}/{ApiVersion}/{network}/masternodes";
+                var getAllMasternodes = await Helper.LoadAllFromPagedRequest<OceanMasterNodeData>(url);
 
-                foreach (var mn in masterNodePage.Data)
+
+                var masterNodeList = new List<Masternode>();
+                foreach (var mn in getAllMasternodes)
                 {
                     masterNodeList.Add(new Masternode
                     {
@@ -45,30 +42,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                         State = mn.State
                     });
                 }
-
-                if (masterNodePage.Page != null && !String.IsNullOrEmpty(masterNodePage.Page.Next))
-                {
-                    q.Enqueue(masterNodePage.Page.Next);
-                }
-            }
-            return masterNodeList;
-        }
-
-        private async Task<OceanMasterNode> LoadMasterNode(string network, string nextPage)
-        {
-            var url = $"{OceanUrl}/{ApiVersion}/{network}/masternodes";
-            if (!String.IsNullOrEmpty(nextPage))
-            {
-                url += $"?next={nextPage}";
-            }
-
-            var response = await _client.GetAsync(url);
-
-            response.EnsureSuccessStatusCode();
-
-            var data = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<OceanMasterNode>(data);
+                return masterNodeList;
+            }, null);
         }
     }
 

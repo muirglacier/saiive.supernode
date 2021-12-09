@@ -140,39 +140,41 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<BalanceModel> GetBalanceInternal(string network, string address)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/balance");
-
-            var data = await response.Content.ReadAsStringAsync();
-            try
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/balance/{address}", async () =>
             {
-                response.EnsureSuccessStatusCode();
-            }
-            catch
-            {
-                throw new ArgumentException(data);
-            }
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/balance");
+
+                var data = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch
+                {
+                    throw new ArgumentException(data);
+                }
 
 
-            var obj = JsonConvert.DeserializeObject<OceanBalance>(data);
-            
+                var obj = JsonConvert.DeserializeObject<OceanBalance>(data);
 
-            var dfiToken = await _tokenStore.GetToken(network, "DFI");
 
-            return new BalanceModel
-            {
-                Address = address,
-                Balance = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
-                Confirmed = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
-                Unconfirmed = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
-            };
+                var dfiToken = await _tokenStore.GetToken(network, "DFI");
 
+                return new BalanceModel
+                {
+                    Address = address,
+                    Balance = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
+                    Confirmed = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
+                    Unconfirmed = Convert.ToUInt64(Convert.ToDouble(obj.Data, CultureInfo.InvariantCulture) * dfiToken.Multiplier),
+                };
+            }, null);
 
 
         }
 
         private async Task<IList<AccountModel>> GetAccountInternal(string network, string address)
         {
-            return await RunWithFallbackProvider<IList<AccountModel>>($"api/DFI/{network}/address/{address}/account", async () => {
+            return await RunWithFallbackProvider<IList<AccountModel>>($"api/v1/{network}/DFI/account/{address}", async () => {
                 var ret = new List<AccountModel>();
 
 
@@ -322,12 +324,16 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         }
 
         private async Task<List<TransactionModel>> GetTransactionsInternal(string network, string address)
-        { var url = $"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions";
+        {
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/txs/{address}", async () =>
+            {
+                var url = $"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions";
 
-            var getAllTxs = await Helper.LoadAllFromPagedRequest<OceanTransactionData>(url);
+                var getAllTxs = await Helper.LoadAllFromPagedRequest<OceanTransactionData>(url);
 
 
-            return await ConvertOceanModel(getAllTxs, network, address);
+                return await ConvertOceanModel(getAllTxs, network, address);
+            }, null);
 
         }
 
@@ -390,63 +396,66 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions/unspent");
-
-            var data = await response.Content.ReadAsStringAsync();
-
-            try
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/unspent/{address}", async () =>
             {
-                response.EnsureSuccessStatusCode();
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions/unspent");
 
-                var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
-                var useTxs = new List<OceanTransactionData>();
+                var data = await response.Content.ReadAsStringAsync();
 
-                foreach (var tx in txs.Data)
+                try
                 {
-                    var useTx = true;
-                    if (Convert.ToDouble(tx.Vout.Value, CultureInfo.InvariantCulture) == 20000.0)
-                    {
-                        var txDetails = await GetTransactionDetails(network, tx.Vout.Txid);
-                        foreach (var outp in txDetails.Outputs)
-                        {
-                            try
-                            {
-                                if (!String.IsNullOrEmpty(outp.Script) && outp.Script[0..2] == "6a")
-                                {
-                                    var script = outp.Script.ToByteArray()[2..];
-                                    if (DefiScriptParser.IsDeFiTransaction(script))
-                                    {
-                                        var defiTx = DefiScriptParser.Parse(script);
+                    response.EnsureSuccessStatusCode();
 
-                                        if (defiTx.TxType == DefiTransactions.CustomTxType.CreateMasternode)
+                    var txs = JsonConvert.DeserializeObject<OceanTransactions>(data);
+                    var useTxs = new List<OceanTransactionData>();
+
+                    foreach (var tx in txs.Data)
+                    {
+                        var useTx = true;
+                        if (Convert.ToDouble(tx.Vout.Value, CultureInfo.InvariantCulture) == 20000.0)
+                        {
+                            var txDetails = await GetTransactionDetails(network, tx.Vout.Txid);
+                            foreach (var outp in txDetails.Outputs)
+                            {
+                                try
+                                {
+                                    if (!String.IsNullOrEmpty(outp.Script) && outp.Script[0..2] == "6a")
+                                    {
+                                        var script = outp.Script.ToByteArray()[2..];
+                                        if (DefiScriptParser.IsDeFiTransaction(script))
                                         {
-                                            if (await _masterNodeCache.IsMasternodeStillAlive(network, address, tx.Vout.Txid))
+                                            var defiTx = DefiScriptParser.Parse(script);
+
+                                            if (defiTx.TxType == DefiTransactions.CustomTxType.CreateMasternode)
                                             {
-                                                useTx = false;
-                                                break;
+                                                if (await _masterNodeCache.IsMasternodeStillAlive(network, address, tx.Vout.Txid))
+                                                {
+                                                    useTx = false;
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            catch
-                            {
-                                //ignore
+                                catch
+                                {
+                                    //ignore
+                                }
                             }
                         }
+                        if (useTx)
+                        {
+                            useTxs.Add(tx);
+                        }
                     }
-                    if (useTx)
-                    {
-                        useTxs.Add(tx);
-                    }
-                }
 
-                return await ConvertOceanModel(useTxs, network, address);
-            }
-            catch
-            {
-                throw new Exception(data);
-            }
+                    return await ConvertOceanModel(useTxs, network, address);
+                }
+                catch
+                {
+                    throw new Exception(data);
+                }
+            }, null);
         }
 
         public async Task<AggregatedAddress> GetAggregatedAddress(string network, string address)
@@ -486,21 +495,24 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/vaults");
-
-            var data = await response.Content.ReadAsStringAsync();
-            try
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/address/loans/vaults/{address}", async () =>
             {
-                response.EnsureSuccessStatusCode();
-            }
-            catch
-            {
-                throw new ArgumentException(data);
-            }
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/vaults");
+
+                var data = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch
+                {
+                    throw new ArgumentException(data);
+                }
 
 
-            var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<LoanVault>>>(data);
-            return obj.Data;
+                var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<LoanVault>>>(data);
+                return obj.Data;
+            }, null);
         }
 
         public async Task<IList<LoanVault>> GetLoanVaultsForAddresses(string network, IList<string> addresses)

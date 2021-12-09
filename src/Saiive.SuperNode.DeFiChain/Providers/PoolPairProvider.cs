@@ -18,42 +18,48 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPair(string network, string poolId)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs/{poolId}");
-            response.EnsureSuccessStatusCode();
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/getpoolpair/{poolId}", async () =>
+            {
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs/{poolId}");
+                response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsStringAsync();
 
-            var obj = JsonConvert.DeserializeObject<Ocean.OceanDataEntity<Ocean.OceanPoolPairData>>(data);
-            var ret = new Dictionary<string, PoolPairModel>();
+                var obj = JsonConvert.DeserializeObject<Ocean.OceanDataEntity<Ocean.OceanPoolPairData>>(data);
+                var ret = new Dictionary<string, PoolPairModel>();
 
-            var poolPairModel = ConvertFromOceanModel(obj.Data);
+                var poolPairModel = ConvertFromOceanModel(obj.Data);
 
-            ret.Add(poolPairModel.ID, poolPairModel);
+                ret.Add(poolPairModel.ID, poolPairModel);
 
 
-            return ret;
+                return ret;
+            }, null);
         }
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPairs(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
-
-
-            response.EnsureSuccessStatusCode();
-
-            var data = await response.Content.ReadAsStringAsync();
-
-            var obj = JsonConvert.DeserializeObject<Ocean.OceanPoolPair>(data);
-
-
-            var ret = new Dictionary<string, PoolPairModel>();
-
-            foreach(var pair in obj.Data)
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/listpoolpairs", async () =>
             {
-                ret.Add(pair.Id, ConvertFromOceanModel(pair));
-            }
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
 
-            return ret;
+
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<Ocean.OceanPoolPair>(data);
+
+
+                var ret = new Dictionary<string, PoolPairModel>();
+
+                foreach (var pair in obj.Data)
+                {
+                    ret.Add(pair.Id, ConvertFromOceanModel(pair));
+                }
+
+                return ret;
+            }, null);
 
 
         }

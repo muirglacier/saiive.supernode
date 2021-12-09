@@ -15,7 +15,9 @@ namespace Saiive.SuperNode.DeFiChain.Application
     {
         private readonly IConfiguration _config;
         private readonly HttpClient _client = new HttpClient();
+
         private readonly string _apiUrl;
+        private readonly string _legacyApiUrl;
 
         private readonly Dictionary<string, Dictionary<string, TokenModel>> _tokenStore =
             new Dictionary<string, Dictionary<string, TokenModel>>();
@@ -32,6 +34,7 @@ namespace Saiive.SuperNode.DeFiChain.Application
         {
             _config = config;
             _apiUrl = config["OCEAN_URL"];
+            _legacyApiUrl = config["LEGACY_API_URL"];
         }
 
         public async Task<TokenModel> GetToken(string network, string tokenName)
@@ -63,23 +66,53 @@ namespace Saiive.SuperNode.DeFiChain.Application
 
         private async Task LoadAll(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{_apiUrl}/{BaseDeFiChainProvider.ApiVersion}/{network}/tokens");
-            foreach (var token in oceanData)
+            try
             {
-                if (!_tokenStore.ContainsKey(network))
+                var oceanData = await Helper.LoadAllFromPagedRequest<OceanTokens>($"{_apiUrl}/{BaseDeFiChainProvider.ApiVersion}/{network}/tokens");
+                foreach (var token in oceanData)
                 {
-                    _tokenStore.Add(network, new Dictionary<string, TokenModel>());
-                    _tokenStoreId.Add(network, new Dictionary<string, TokenModel>());
-                    _tokenStoreRaw.Add(network, new List<TokenModel>());
+                    if (!_tokenStore.ContainsKey(network))
+                    {
+                        _tokenStore.Add(network, new Dictionary<string, TokenModel>());
+                        _tokenStoreId.Add(network, new Dictionary<string, TokenModel>());
+                        _tokenStoreRaw.Add(network, new List<TokenModel>());
+                    }
+
+                    var tokenModel = ConvertOceanModel(token);
+
+                    if (!_tokenStore[network].ContainsKey(token.SymbolKey))
+                    {
+                        _tokenStore[network].Add(token.SymbolKey, tokenModel);
+                        _tokenStoreId[network].Add(token.Id, tokenModel);
+                        _tokenStoreRaw[network].Add(tokenModel);
+                    }
                 }
+            }
+            catch
+            {
+                var responseLegacy = await _client.GetAsync($"{_legacyApiUrl}/api/v1/{network}/DFI/tokens");
 
-                var tokenModel = ConvertOceanModel(token);
+                responseLegacy.EnsureSuccessStatusCode();
 
-                if (!_tokenStore[network].ContainsKey(token.SymbolKey))
+                var data = await responseLegacy.Content.ReadAsStringAsync();
+                var tokens = JsonConvert.DeserializeObject<List<TokenModel>>(data);
+
+                foreach (var token in tokens)
                 {
-                    _tokenStore[network].Add(token.SymbolKey, tokenModel);
-                    _tokenStoreId[network].Add(token.Id, tokenModel);
-                    _tokenStoreRaw[network].Add(tokenModel);
+                    if (!_tokenStore.ContainsKey(network))
+                    {
+                        _tokenStore.Add(network, new Dictionary<string, TokenModel>());
+                        _tokenStoreId.Add(network, new Dictionary<string, TokenModel>());
+                        _tokenStoreRaw.Add(network, new List<TokenModel>());
+                    }
+
+
+                    if (!_tokenStore[network].ContainsKey(token.SymbolKey))
+                    {
+                        _tokenStore[network].Add(token.SymbolKey, token);
+                        _tokenStoreId[network].Add(token.Id.ToString(), token);
+                        _tokenStoreRaw[network].Add(token);
+                    }
                 }
             }
         }

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Saiive.SuperNode.DeFiChain.Application;
 using Saiive.SuperNode.Model;
 using Saiive.SuperNode.Model.Requests;
 
@@ -180,6 +179,49 @@ namespace Saiive.SuperNode.Controllers
         }
 
 
+        private async Task<LoanCollateral> GetLoanCollateral(string network, BitcoreCollateral collateral)
+        {
+            var token = await TokenStore.GetToken(network, collateral.Token);
+            var price = await PriceStore.GetPrice(network, $"{token.Symbol}-USD");
+
+            return new LoanCollateral
+            {
+                ActivePrice = price,
+                Token
+                = new Token
+                {
+                    CollateralAddress = token.CollateralAddress,
+                    Creation = new Creation
+                    {
+                        Height = token.CreationHeight,
+                        Tx = token.CreationTx
+                    },
+                    Decimal = token.Decimal,
+                    Destruction = new Destruction
+                    {
+                        Height = token.DestructionHeight,
+                        Tx = token.DestructionTx
+                    },
+                    DisplaySymbol = token.SymbolKey,
+                    Finalized = token.Finalized,
+                    SymbolKey = token.SymbolKey,
+                    Id = token.Id.ToString(),
+                    IsDAT = token.IsDAT,
+                    IsLPS = token.IsLPS,
+                    Limit = "0",
+                    Mintable = token.Mintable,
+                    Minted = token.Minted.ToString(),
+                    Name = token.Name,
+                    Symbol = token.Symbol,
+                    Tradeable = token.Tradeable
+                },
+                TokenId = collateral.TokenId,
+                ActivateAfterBlock = collateral.ActivateAfterBlock,
+                PriceFeedId = collateral.FixedIntervalPriceId
+            };
+        }
+
+
         [HttpGet("{network}/{coin}/loans/vaults/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -270,7 +312,17 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                return Ok(data);
+                var ret = new List<LoanCollateral>();
+
+                var bitcoreCollat = JsonConvert.DeserializeObject<List<BitcoreCollateral>>(data);
+
+                foreach(var bit in bitcoreCollat)
+                {
+                    var collat = await GetLoanCollateral(network, bit);
+                    ret.Add(collat);
+                }
+
+                return Ok(ret);
             }
             catch (Exception e)
             {
@@ -353,7 +405,13 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                return Ok(data);
+                var bitcoreCollat = JsonConvert.DeserializeObject<BitcoreCollateral>(data);
+
+
+                var collat = await GetLoanCollateral(network, bitcoreCollat);
+
+
+                return Ok(collat);
             }
             catch (Exception e)
             {

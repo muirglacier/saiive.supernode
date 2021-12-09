@@ -19,30 +19,36 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BlockModel> GetBlockByHeightOrHash(string network, string hash)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}");
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/{hash}", async () =>
+            {
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}");
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsStringAsync();
 
-            var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
-            return ConvertOceanModel(obj.Data);
+                var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
+                return ConvertOceanModel(obj.Data);
+            }, null);
 
         }
 
 
         public async Task<List<TransactionModel>> GetTransactionForBlock(string network, string hash)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}/transactions");
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/tx/block/{hash}", async () =>
+            {
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}/transactions");
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsStringAsync();
 
-            var tip = await GetCurrentHeight(network);
+                var tip = await GetCurrentHeight(network);
 
-            var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTransactionDetailData>>>(data);
-            return ConvertOceanModel(obj, tip);
+                var obj = JsonConvert.DeserializeObject<OceanDataEntity<List<OceanTransactionDetailData>>>(data);
+                return ConvertOceanModel(obj, tip);
+            }, null);
 
         }
 
@@ -85,32 +91,43 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BlockModel> GetCurrentHeight(string network)
         {
-            var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
-            var statsData = await stats.Content.ReadAsStringAsync();
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/tip", async () =>
+            {
+                var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
+                var statsData = await stats.Content.ReadAsStringAsync();
 
-            var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
+                var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
 
-            return await GetBlockByHeightOrHash(network, statsObj.Data.Count.Blocks.ToString());
+                return await GetBlockByHeightOrHash(network, statsObj.Data.Count.Blocks.ToString());
+            }, null);
 
         }
 
         public async Task<List<BlockModel>> GetLatestBlocks(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks");
-
-            response.EnsureSuccessStatusCode();
-
-            var data = await response.Content.ReadAsStringAsync();
-
-            var obj = JsonConvert.DeserializeObject<OceanBlockList>(data);
-            var ret = new List<BlockModel>();
-
-            foreach(var o in obj.Data)
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/tip", async () =>
             {
-                ret.Add(ConvertOceanModel(o));
-            }
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks");
 
-            return ret;
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<OceanBlockList>(data);
+                var ret = new List<BlockModel>();
+
+                foreach (var o in obj.Data)
+                {
+                    ret.Add(ConvertOceanModel(o));
+                }
+
+                return ret;
+            }, (b) =>
+            {
+                var block = JsonConvert.DeserializeObject<BlockModel>(b);
+
+                return new List<BlockModel>() { block };
+            });
         }
     }
 }
