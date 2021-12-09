@@ -67,7 +67,7 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
-        [HttpPost("{network}/{coin}/loans/vaults")]
+        [HttpPost("{network}/{coin}/loanss/vaults")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetVaultsMulti(string coin, string network, AddressesBodyRequest addresses)
@@ -93,7 +93,7 @@ namespace Saiive.SuperNode.Controllers
 
 
 
-        [HttpGet("{network}/{coin}/loan/vaults")]
+        [HttpGet("{network}/{coin}/loans/vaults")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetVaults(string coin, string network)
@@ -180,7 +180,7 @@ namespace Saiive.SuperNode.Controllers
         }
 
 
-        [HttpGet("{network}/{coin}/loan/vaults/{id}")]
+        [HttpGet("{network}/{coin}/loans/vaults/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetVault(string coin, string network, string id)
@@ -231,7 +231,7 @@ namespace Saiive.SuperNode.Controllers
         }
 
 
-        [HttpGet("{network}/{coin}/loan/schemes")]
+        [HttpGet("{network}/{coin}/loans/schemes")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetSchemes(string coin, string network)
@@ -257,7 +257,7 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
-        [HttpGet("{network}/{coin}/loan/collaterals")]
+        [HttpGet("{network}/{coin}/loans/collaterals")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCollaterals(string coin, string network)
@@ -283,7 +283,7 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
-        [HttpGet("{network}/{coin}/loan/tokens")]
+        [HttpGet("{network}/{coin}/loans/tokens")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetTokens(string coin, string network)
@@ -314,7 +314,7 @@ namespace Saiive.SuperNode.Controllers
 
 
 
-        [HttpGet("{network}/{coin}/loan/schemes/{id}")]
+        [HttpGet("{network}/{coin}/loans/schemes/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetScheme(string coin, string network, string id)
@@ -340,7 +340,7 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
-        [HttpGet("{network}/{coin}/loan/collaterals/{id}")]
+        [HttpGet("{network}/{coin}/loans/collaterals/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetCollateral(string coin, string network, string id)
@@ -366,7 +366,7 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
-        [HttpGet("{network}/{coin}/loan/tokens/{id}")]
+        [HttpGet("{network}/{coin}/loans/tokens/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetToken(string coin, string network, string id)
