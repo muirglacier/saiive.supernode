@@ -30,37 +30,20 @@ namespace Saiive.SuperNode.Controllers
 
         private async Task<IList<LoanVault>> GetVaultInternal(string coin, string network, string address)
         {
-            var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/address/loans/{address}/vault");
+            var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/address/{address}/vault");
 
 
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadAsStringAsync();
 
-            var list = JsonConvert.DeserializeObject<IList<BitcoreVault>>(data);
+            var list = JsonConvert.DeserializeObject<IList<BitcoreVaultAddress>>(data);
             var retList = new List<LoanVault>();
 
             foreach (var vault in list)
             {
-                var collats = await LoadAmountsInfo(network, vault.CollateralAmounts);
-                var loanAmounts = await LoadAmountsInfo(network, vault.LoanAmounts);
-                var interestAmounts = await LoadAmountsInfo(network, vault.InterestAmounts);
-                var loanScheme = await LoanSchemeStore.GetScheme(network, vault.LoanSchemeId);
-                var loanVault = new LoanVault
-                {
-                    VaultId = vault.VaultId,
-                    LoanScheme = loanScheme,
-                    OwnerAddress = vault.OwnerAddress,
-                    State = vault.State,
-                    InformativeRatio = vault.InformativeRatio.ToString(),
-                    CollateralRatio = vault.CollateralRatio.ToString(),
-                    CollateralValue = vault.CollateralValue.ToString(),
-                    LoanValue = vault.LoanValue.ToString(),
-                    InterestValue = vault.InterestValue.ToString(),
-                    CollateralAmounts = collats,
-                    LoanAmounts = loanAmounts,
-                    InterestAmounts = interestAmounts
-                };
+                var loanVault = await GetLoanVault(coin, network, vault.VaultId);
+                retList.Add(loanVault);
             }
 
             return retList;
@@ -162,51 +145,55 @@ namespace Saiive.SuperNode.Controllers
             }
         }
 
+        private async Task<LoanVault> GetLoanVault(string coin, string network, string id)
+        {
+            var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/loans/vaults/{id}");
+
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var vault = JsonConvert.DeserializeObject<BitcoreVault>(data);
+
+            var collats = await LoadAmountsInfo(network, vault.CollateralAmounts);
+            var loanAmounts = await LoadAmountsInfo(network, vault.LoanAmounts);
+            var interestAmounts = await LoadAmountsInfo(network, vault.InterestAmounts);
+            var loanScheme = await LoanSchemeStore.GetScheme(network, vault.LoanSchemeId);
+            var loanVault = new LoanVault
+            {
+                VaultId = vault.VaultId,
+                LoanScheme = loanScheme,
+                OwnerAddress = vault.OwnerAddress,
+                State = vault.State,
+                InformativeRatio = vault.InformativeRatio.ToString(),
+                CollateralRatio = vault.CollateralRatio.ToString(),
+                CollateralValue = vault.CollateralValue.ToString(),
+                LoanValue = vault.LoanValue.ToString(),
+                InterestValue = vault.InterestValue.ToString(),
+                CollateralAmounts = collats,
+                LoanAmounts = loanAmounts,
+                InterestAmounts = interestAmounts
+
+            };
+            return loanVault;
+        }
+
 
         [HttpGet("{network}/{coin}/loan/vaults/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
         public async Task<IActionResult> GetVault(string coin, string network, string id)
         {
-            var response = await _client.GetAsync($"{String.Format(ApiUrl, network)}/api/{coin}/{network}/loans/vaults/{id}");
-
+           
             try
             {
-                response.EnsureSuccessStatusCode();
-
-                var data = await response.Content.ReadAsStringAsync();
-
-                var vault = JsonConvert.DeserializeObject<BitcoreVault>(data);
-
-                var collats = await LoadAmountsInfo(network, vault.CollateralAmounts);
-                var loanAmounts = await LoadAmountsInfo(network, vault.LoanAmounts);
-                var interestAmounts = await LoadAmountsInfo(network, vault.InterestAmounts);
-                var loanScheme = await LoanSchemeStore.GetScheme(network, vault.LoanSchemeId);
-                var loanVault = new LoanVault
-                {
-                    VaultId = vault.VaultId,
-                    LoanScheme = loanScheme,
-                    OwnerAddress = vault.OwnerAddress,
-                    State = vault.State,
-                    InformativeRatio = vault.InformativeRatio.ToString(),
-                    CollateralRatio = vault.CollateralRatio.ToString(),
-                    CollateralValue = vault.CollateralValue.ToString(),
-                    LoanValue = vault.LoanValue.ToString(),
-                    InterestValue = vault.InterestValue.ToString(),
-                    CollateralAmounts = collats,
-                    LoanAmounts = loanAmounts,
-                    InterestAmounts = interestAmounts
-
-                };
-
+                var loanVault = await GetLoanVault(coin, network, id);
                 return Ok(loanVault);
             }
             catch (Exception e)
             {
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    return NotFound(new ErrorModel($"could not be found"));
-                }
+               
                 Logger.LogError($"{e}");
                 return BadRequest(new ErrorModel(e.Message));
             }

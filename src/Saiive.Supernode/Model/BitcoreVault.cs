@@ -3,6 +3,21 @@ using System.Collections.Generic;
 
 namespace Saiive.SuperNode.Model
 {
+
+    public class BitcoreVaultAddress
+    {
+        [JsonProperty("vaultId")]
+        public string VaultId { get; set; }
+
+        [JsonProperty("ownerAddress")]
+        public string OwnerAddress { get; set; }
+
+        [JsonProperty("loanSchemeId")]
+        public string LoanSchemeId { get; set; }
+
+        [JsonProperty("state")]
+        public string State { get; set; }
+    }
     public class BitcoreVault
     {
         [JsonProperty("vaultId")]
