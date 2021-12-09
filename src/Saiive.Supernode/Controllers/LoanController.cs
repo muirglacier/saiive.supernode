@@ -246,7 +246,7 @@ namespace Saiive.SuperNode.Controllers
                     DisplaySymbol = token.SymbolKey,
                     Finalized = token.Finalized,
                     SymbolKey = token.SymbolKey,
-                    Id = token.Id.ToString(),
+                    Id = loanToken.Token.First().Key.ToString(),
                     IsDAT = token.IsDAT,
                     IsLPS = token.IsLPS,
                     Limit = "0",
