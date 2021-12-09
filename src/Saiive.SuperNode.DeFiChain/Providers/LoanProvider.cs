@@ -17,81 +17,113 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<LoanCollateral> GetLoanCollateral(string network, string id)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/collaterals/{id}");
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/collaterals/{id}", async () =>
+            {
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/collaterals/{id}");
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsStringAsync();
 
-            var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanCollateral>>(data);
-            return json.Data;
+                var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanCollateral>>(data);
+                return json.Data;
+            });
 
         }
 
         public async Task<IList<LoanCollateral>> GetLoanCollaterals(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<LoanCollateral>($"{OceanUrl}/{ApiVersion}/{network}/loans/collaterals");
-            return oceanData;
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/collaterals", async () =>
+            {
+                var oceanData = await Helper.LoadAllFromPagedRequest<LoanCollateral>($"{OceanUrl}/{ApiVersion}/{network}/loans/collaterals");
+                return oceanData;
+            });
         }
 
         public async Task<LoanScheme> GetLoanScheme(string network, string id)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/schemes/{id}");
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/schemes/{id}", async () =>
+            {
 
-            response.EnsureSuccessStatusCode();
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/schemes/{id}");
 
-            var data = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
 
-            var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanScheme>>(data);
-            return json.Data;
+                var data = await response.Content.ReadAsStringAsync();
+
+                var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanScheme>>(data);
+                return json.Data;
+            });
         }
 
         public async Task<IList<LoanScheme>> GetLoanSchemes(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<LoanScheme>($"{OceanUrl}/{ApiVersion}/{network}/loans/schemes");
-            return oceanData;
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/schemes", async () =>
+            {
+
+                var oceanData = await Helper.LoadAllFromPagedRequest<LoanScheme>($"{OceanUrl}/{ApiVersion}/{network}/loans/schemes");
+                return oceanData;
+            });
         }
 
         public async Task<LoanToken> GetLoanToken(string network, string id)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens/{id}");
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/tokens/{id}", async () =>
+            {
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens/{id}");
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var data = await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsStringAsync();
 
-            var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanToken>>(data);
-            return json.Data;
+                var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanToken>>(data);
+                return json.Data;
+            });
         }
 
         public async Task<IList<LoanToken>> GetLoanTokens(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<LoanToken>($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens");
-            return oceanData;
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/tokens", async () =>
+            {
+
+                var oceanData = await Helper.LoadAllFromPagedRequest<LoanToken>($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens");
+                return oceanData;
+            });
         }
 
         public async Task<LoanVault> GetLoanVault(string network, string id)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults/{id}");
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/vaults/{id}", async () =>
+            {
 
-            response.EnsureSuccessStatusCode();
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults/{id}");
 
-            var data = await response.Content.ReadAsStringAsync();
+                response.EnsureSuccessStatusCode();
 
-            var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanVault>>(data);
-            return json.Data;
+                var data = await response.Content.ReadAsStringAsync();
+
+                var json = JsonConvert.DeserializeObject<OceanDataEntity<LoanVault>>(data);
+                return json.Data;
+            });
         }
 
         public async Task<IList<LoanVault>> GetLoanVaults(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<LoanVault>($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults");
-            return oceanData;
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/vaults", async () =>
+            {
+
+                var oceanData = await Helper.LoadAllFromPagedRequest<LoanVault>($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults");
+                return oceanData;
+            });
         }
 
         public async Task<IList<LoanAuction>> GetAuctions(string network)
         {
-            var oceanData = await Helper.LoadAllFromPagedRequest<LoanAuction>($"{OceanUrl}/{ApiVersion}/{network}/loans/auctions");
-            return oceanData;
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/auctions", async () =>
+            {
+                var oceanData = await Helper.LoadAllFromPagedRequest<LoanAuction>($"{OceanUrl}/{ApiVersion}/{network}/loans/auctions");
+                return oceanData;
+            });
         }
 
     }

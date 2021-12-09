@@ -38,16 +38,17 @@ namespace Saiive.SuperNode.DeFiChain
             Logger?.LogTrace($"Using LEGACY_BITCORE_URL {LegacyBitcoreUrl}");
         }
 
-        public async Task<T> RunWithFallbackProvider<T>(string fallbackUrl, Func<Task<T>> func, Func<string, T> fallbackFunc)
+        public async Task<T> RunWithFallbackProvider<T>(string fallbackUrl, Func<Task<T>> func, Func<string, T> fallbackFunc=null)
         {
             try
             {
+                throw new ArgumentException();
                 var t = await func();
                 return t;
             }
             catch
             {
-                var responseLegacy = await _client.GetAsync($"{LegacyBitcoreUrl}{fallbackUrl}");
+                var responseLegacy = await _client.GetAsync($"{ApiUrl}/{fallbackUrl}");
 
                 responseLegacy.EnsureSuccessStatusCode();
 

@@ -50,6 +50,9 @@ namespace Saiive.SuperNode
 
             services.AddDeFiChain();
             services.AddBitcoin();
+            services.AddSingleton<TokenStore>();
+            services.AddSingleton<PriceStore>();
+            services.AddSingleton<LoanSchemeStore>();
 
             services.AddChainProviderService();
 

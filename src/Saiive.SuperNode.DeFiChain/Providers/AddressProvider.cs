@@ -172,7 +172,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<IList<AccountModel>> GetAccountInternal(string network, string address)
         {
-            return await RunWithFallbackProvider<IList<AccountModel>>($"api/v1/{network}/DFI/accounts/{address}", async () => {
+            return await RunWithFallbackProvider<IList<AccountModel>>($"api/DFI/{network}/address/{address}/account", async () => {
                 var ret = new List<AccountModel>();
 
 
