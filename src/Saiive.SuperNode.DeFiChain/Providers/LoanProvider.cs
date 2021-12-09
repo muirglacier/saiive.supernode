@@ -88,6 +88,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
                 var oceanData = await Helper.LoadAllFromPagedRequest<LoanToken>($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens");
                 return oceanData;
+            }, (a) =>
+            {
+                return new List<LoanToken>();
             });
         }
 

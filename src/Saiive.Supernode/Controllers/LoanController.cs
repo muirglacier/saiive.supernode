@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -348,7 +349,17 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                return Ok(data);
+                var model = JsonConvert.DeserializeObject<List<BitcoreLoanTolen>>(data);
+
+                var ret = new List<TokenModel>();
+
+                foreach(var token in model)
+                {
+                    ret.Add(token.Token.First().Value);
+                }
+
+
+                return Ok(ret);
             }
             catch (Exception e)
             {
@@ -437,7 +448,11 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                return Ok(data);
+                var model = JsonConvert.DeserializeObject<BitcoreLoanTolen>(data);
+
+                var ret = model.Token.First().Value;
+
+                return Ok(ret);
             }
             catch (Exception e)
             {
