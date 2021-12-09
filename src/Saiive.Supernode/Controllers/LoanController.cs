@@ -222,6 +222,46 @@ namespace Saiive.SuperNode.Controllers
             };
         }
 
+        private async Task<LoanToken> GetLoanToken(string network, BitcoreLoanToken loanToken, TokenModel token)
+        {
+            var price = await PriceStore.GetPrice(network, $"{token.Symbol}-USD");
+
+            return new LoanToken
+            {
+                ActivePrice = price,
+                Token = new Token
+                {
+                    CollateralAddress = token.CollateralAddress,
+                    Creation = new Creation
+                    {
+                        Height = token.CreationHeight,
+                        Tx = token.CreationTx
+                    },
+                    Decimal = token.Decimal,
+                    Destruction = new Destruction
+                    {
+                        Height = token.DestructionHeight,
+                        Tx = token.DestructionTx
+                    },
+                    DisplaySymbol = token.SymbolKey,
+                    Finalized = token.Finalized,
+                    SymbolKey = token.SymbolKey,
+                    Id = token.Id.ToString(),
+                    IsDAT = token.IsDAT,
+                    IsLPS = token.IsLPS,
+                    Limit = "0",
+                    Mintable = token.Mintable,
+                    Minted = token.Minted.ToString(),
+                    Name = token.Name,
+                    Symbol = token.Symbol,
+                    Tradeable = token.Tradeable
+                },
+                TokenId = token.Id.ToString(),
+                FixedIntervalPriceId = loanToken.FixedIntervalPriceId,
+                Interest = loanToken.Interest.ToString()
+            };
+        }
+
 
         [HttpGet("{network}/{coin}/loans/vaults/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -349,13 +389,15 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                var model = JsonConvert.DeserializeObject<List<BitcoreLoanTolen>>(data);
+                var model = JsonConvert.DeserializeObject<List<BitcoreLoanToken>>(data);
 
-                var ret = new List<TokenModel>();
+                var ret = new List<LoanToken>();
 
                 foreach(var token in model)
                 {
-                    ret.Add(token.Token.First().Value);
+                    var tokenModel = token.Token.First().Value;
+
+                    ret.Add(await GetLoanToken(network, token, tokenModel));
                 }
 
 
@@ -448,11 +490,13 @@ namespace Saiive.SuperNode.Controllers
 
                 var data = await response.Content.ReadAsStringAsync();
 
-                var model = JsonConvert.DeserializeObject<BitcoreLoanTolen>(data);
+                var model = JsonConvert.DeserializeObject<BitcoreLoanToken>(data);
 
                 var ret = model.Token.First().Value;
 
-                return Ok(ret);
+                var loanToken = await GetLoanToken(network, model, ret);
+
+                return Ok(loanToken);
             }
             catch (Exception e)
             {
