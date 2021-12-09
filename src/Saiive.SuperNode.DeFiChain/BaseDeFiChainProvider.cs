@@ -42,7 +42,6 @@ namespace Saiive.SuperNode.DeFiChain
         {
             try
             {
-                throw new ArgumentException();
                 var t = await func();
                 return t;
             }
