@@ -37,9 +37,9 @@ namespace Saiive.SuperNode.Function.Functions
             string network, string coin, string currency,
             ILogger log)
         {
-            if(_lastPrices != null && _lastPrices.ContainsKey(currency) && (DateTime.UtcNow - _lastRefresh).TotalMinutes <= _priceUpdateInMinutes)
+            if( _lastPrices.ContainsKey(currency.ToLower()) && (DateTime.UtcNow - _lastRefresh).TotalMinutes <= _priceUpdateInMinutes)
             {
-                return new OkObjectResult(_lastPrices[currency]);
+                return new OkObjectResult(_lastPrices[currency.ToLower()]);
             }
 
             //We control the coins server-side, so we can update faster if new pairs come along
