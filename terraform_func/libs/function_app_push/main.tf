@@ -125,6 +125,12 @@ resource "azurerm_function_app" "functions" {
         value = var.cosmos_connection_string
     }
 
+    connection_string {
+        name = "NotificationHub"
+        type = "Custom",
+        value = var.notification_hub_key
+    }
+
     site_config {
         always_on = var.always_on
         

@@ -90,3 +90,7 @@ variable "dobby_url" {
 variable "webhook_url" {
 	
 }
+
+variable "notification_hub_key" {
+	
+}
