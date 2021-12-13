@@ -78,6 +78,33 @@ data "azurerm_key_vault_secret" "webhook_url" {
   key_vault_id = var.key_vault_id
 }
 
+resource "azurerm_notification_hub_namespace" "hub_ns" {
+  name                = "${var.environment}-supernode-push-hub-ns"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  namespace_type      = "NotificationHub"
+
+  sku_name = "Free"
+}
+
+
+data "azurerm_key_vault_secret" "gcm_api_key" {
+  name         = "${var.environment}-gcm-api-key"
+  key_vault_id = var.key_vault_id
+}
+
+
+resource "azurerm_notification_hub" "hub" {
+  name                = "${var.environment}-supernode-push-hub"
+  namespace_name      = azurerm_notification_hub_namespace.hub_ns.name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  gcm_credentials {
+    api_key = data.azurerm_key_vault_secret.gcm_api_key.value
+  }
+}
+
 
 
 module "function_app_push" {
