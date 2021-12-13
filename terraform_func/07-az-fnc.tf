@@ -154,5 +154,5 @@ module "function_app_push" {
   dobby_url = data.azurerm_key_vault_secret.dobby_url.value
   webhook_url = data.azurerm_key_vault_secret.webhook_url.value
 
-  notification_hub_key =  azurerm_notification_hub_authorization_rule.rule.primary.primary_access_key
+  notification_hub_key = azurerm_notification_hub_authorization_rule.rule.primary_access_key
 }
