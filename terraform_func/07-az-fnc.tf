@@ -100,7 +100,7 @@ resource "azurerm_notification_hub" "hub" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
-  gcm_credentials {
+  gcm_credential {
     api_key = data.azurerm_key_vault_secret.gcm_api_key.value
   }
 }
