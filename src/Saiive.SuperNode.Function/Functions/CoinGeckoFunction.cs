@@ -18,7 +18,7 @@ namespace Saiive.SuperNode.Function.Functions
 {
     public class CoinGeckoFunction : BaseFunction
     {
-        private static Dictionary<string, CoinPrice> _lastPrices;
+        private static Dictionary<string, Dictionary<string, CoinPrice>> _lastPrices = new Dictionary<string, Dictionary<string, CoinPrice>>();
         private static DateTime _lastRefresh;
         private static int _priceUpdateInMinutes = 5;
 
@@ -37,13 +37,13 @@ namespace Saiive.SuperNode.Function.Functions
             string network, string coin, string currency,
             ILogger log)
         {
-            if(_lastPrices != null && (DateTime.UtcNow - _lastRefresh).TotalMinutes <= _priceUpdateInMinutes)
+            if(_lastPrices != null && _lastPrices.ContainsKey(currency) && (DateTime.UtcNow - _lastRefresh).TotalMinutes <= _priceUpdateInMinutes)
             {
-                return new OkObjectResult(_lastPrices);
+                return new OkObjectResult(_lastPrices[currency]);
             }
 
             //We control the coins server-side, so we can update faster if new pairs come along
-            var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin,bitcoin-cash&vs_currencies={currency}");
+            var response = await _client.GetAsync($"{CoingeckoApiUrl}/simple/price?ids=defichain,bitcoin,ethereum,tether,dogecoin,litecoin,bitcoin-cash,tether&vs_currencies={currency}");
 
             var map = new Dictionary<string, string>();
 
@@ -97,7 +97,12 @@ namespace Saiive.SuperNode.Function.Functions
                     IdToken = $"Prices are updated every {_priceUpdateInMinutes} minute!"
                 });
 
-                _lastPrices = ret;
+                if(!_lastPrices.ContainsKey(currency.ToLower()))
+                {
+                    _lastPrices.Add(currency.ToLower(), ret);
+                }
+
+                _lastPrices[currency.ToLower()] = ret;
 
                 return new OkObjectResult(ret);
             }
