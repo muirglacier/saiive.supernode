@@ -127,7 +127,7 @@ resource "azurerm_function_app" "functions" {
 
     connection_string {
         name = "NotificationHub"
-        type = "Custom",
+        type = "Custom"
         value = var.notification_hub_key
     }
 
