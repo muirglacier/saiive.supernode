@@ -75,8 +75,9 @@ module "function_app_us" {
   tier = "dynamic"
   size = "Y1"
   always_on = var.always_on
+  use_dns = false
 
-  prefix = var.prefix
+  prefix = "${var.prefix}-us"
   location = azurerm_resource_group.rg_us.location
   environment = var.environment
   environment_tag = var.environment_tag

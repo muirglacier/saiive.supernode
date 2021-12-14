@@ -85,3 +85,7 @@ variable "export_q" {
 variable "sendgrid_api_key" {
 	
 }
+
+variable "use_dns" {
+	default = true
+}
