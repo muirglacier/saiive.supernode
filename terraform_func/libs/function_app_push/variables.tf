@@ -94,3 +94,6 @@ variable "webhook_url" {
 variable "notification_hub_key" {
 	
 }
+variable "legacy_api_url" {
+
+}

@@ -117,6 +117,7 @@ resource "azurerm_function_app" "functions" {
         DOBBY_API_URL = var.dobby_url 
         WEBHOOK_URL = var.dobby_url 
         ENVIRONMENT = var.environment
+        LEGACY_API_URL = var.legacy_api_url
     }
     
     connection_string {

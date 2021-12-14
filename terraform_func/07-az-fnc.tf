@@ -52,6 +52,7 @@ module "function_app" {
   dns_zone = var.dns_zone
   dns_zone_resource_group = var.dns_zone_resource_group
 
+  legacy_api_url = "https://api.az-prod-0.saiive.live/"
   bitcore_url = "https://bitcore.scw-prod-0.saiive.live"
   ocean_url = "https://ocean.defichain.com"
   defichain_api = "https://api.defichain.io"
