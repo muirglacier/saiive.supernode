@@ -111,7 +111,7 @@ resource "azurerm_function_app" "functions" {
 
        // APPINSIGHTS_INSTRUMENTATIONKEY = var.environment == "prod" ? azurerm_application_insights.application_insights[0].instrumentation_key : ""
 
-        LEGACY_API_URL = var.bitcore_url
+        LEGACY_API_URL = var.legacy_api_url
         OCEAN_URL=  var.ocean_url
         DEFI_CHAIN_API_URL=  var.defichain_api
         COINGECKO_API_URL=  var.coingecko_url

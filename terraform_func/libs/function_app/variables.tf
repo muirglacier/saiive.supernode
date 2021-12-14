@@ -66,6 +66,9 @@ variable "blockcypher_api" {
 variable "legacy_bitcoin_url" {
 
 }
+variable "legacy_api_url" {
+
+}
 
 variable "always_on" {
 	default = true
