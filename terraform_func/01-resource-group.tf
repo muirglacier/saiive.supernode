@@ -9,3 +9,12 @@ resource "azurerm_resource_group" "rg" {
     Environment = var.environment_tag
   }
 }
+
+resource "azurerm_resource_group" "rg_us" {
+  name     = "${var.prefix}-${var.environment}-us"
+  location = "Central US"
+
+  tags = {
+    Environment = var.environment_tag
+  }
+}
