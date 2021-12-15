@@ -152,9 +152,9 @@ resource "azurerm_dns_cname_record" "function_domain_name" {
   record              = azurerm_function_app.functions.default_hostname
 }
 
-resource "azurerm_dns_txt_record" "function_domain_name_txt" {
+resource "azurerm_dns_txt_record" "function_domain_name_txt_1" {
   name                = "asuid.${local.dns}"
-  zone_name           = var.dns
+  zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
   ttl                 = 300
 
@@ -164,9 +164,9 @@ resource "azurerm_dns_txt_record" "function_domain_name_txt" {
 }
 
 resource "azurerm_dns_txt_record" "function_domain_name_txt" {
-  count = use_dns ? 1 : 0
+  count = var.use_dns ? 1 : 0
   name                = "asuid.${local.cname}"
-  zone_name           = var.dns
+  zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
   ttl                 = 300
 
@@ -189,7 +189,7 @@ resource "azurerm_app_service_custom_hostname_binding" "binding" {
 }
 
 
-resource "azurerm_app_service_custom_hostname_binding" "binding" {
+resource "azurerm_app_service_custom_hostname_binding" "binding1" {
 
  depends_on = [
      azurerm_dns_cname_record.function_domain_name,
