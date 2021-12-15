@@ -78,6 +78,8 @@ module "function_app_us" {
   use_dns = false
 
   prefix = "${var.prefix}-us"
+  dns_name = "supernode-us"
+  
   location = azurerm_resource_group.rg_us.location
   environment = var.environment
   environment_tag = var.environment_tag
