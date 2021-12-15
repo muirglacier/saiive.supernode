@@ -12,7 +12,7 @@ resource "azurerm_traffic_manager_profile" "tm" {
   monitor_config {
     protocol                     = "https"
     port                         = 443
-    path                         = "/"
+    path                         = "/api/v1/health"
     interval_in_seconds          = 30
     timeout_in_seconds           = 9
     tolerated_number_of_failures = 3
@@ -24,8 +24,8 @@ resource "azurerm_traffic_manager_endpoint" "endpoint_default" {
   name                =  "${var.prefix}-${var.environment}-endpoint-default"
   resource_group_name = azurerm_resource_group.rg.name
   profile_name        = azurerm_traffic_manager_profile.tm.name
-  target_resource_id   = module.function_app.id
-  type                = "azureEndpoints"
+  target              = module.function_app.dns_name
+  type                = "externalEndpoints"
   weight              = 100
 
   geo_mappings = ["WORLD"]
@@ -35,8 +35,8 @@ resource "azurerm_traffic_manager_endpoint" "endpoint_default_us" {
   name                =  "${var.prefix}-${var.environment}-endpoint-default_us"
   resource_group_name = azurerm_resource_group.rg.name
   profile_name        = azurerm_traffic_manager_profile.tm.name
-  target_resource_id   = module.function_app_us.id
-  type                = "azureEndpoints"
+  target              = module.function_app_us.dns_name
+  type                = "externalEndpoints"
   weight              = 100
 
   geo_mappings = ["US"]
