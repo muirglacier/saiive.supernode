@@ -144,12 +144,6 @@ resource "azurerm_function_app" "functions" {
 
 
 resource "azurerm_app_service_custom_hostname_binding" "binding" {
-
- depends_on = [
-     azurerm_dns_cname_record.function_domain_name,
-     azurerm_dns_txt_record.function_domain_name_txt
- ]
-
   hostname            = "${local.cname}.${var.dns_zone}"
   app_service_name    = azurerm_function_app.functions.name
   resource_group_name = var.resource_group
