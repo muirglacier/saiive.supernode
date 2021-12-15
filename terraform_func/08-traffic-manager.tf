@@ -16,6 +16,7 @@ resource "azurerm_traffic_manager_profile" "tm" {
     interval_in_seconds          = 30
     timeout_in_seconds           = 9
     tolerated_number_of_failures = 3
+    expected_status_code_ranges  = 200-204
   }
 
 }
@@ -42,7 +43,7 @@ resource "azurerm_traffic_manager_endpoint" "endpoint_default_us" {
   geo_mappings = ["US"]
 }
 locals {
-    cname = var.environment == "prod" ? "tm-supernode" :  "${var.environment}-tm-supernode"
+    cname = var.environment == "prod" ? "supernode" :  "${var.environment}-supernode"
 }
 
 resource "azurerm_dns_cname_record" "function_domain_name" {
