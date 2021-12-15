@@ -82,10 +82,6 @@ resource "azurerm_app_service_plan" "asp" {
         size = var.size
     }
 }
-locals {
-    cname = var.environment == "prod" ? var.dns_name :  "${var.environment}-${var.dns_name}"
-}
-
 resource "azurerm_function_app" "functions" {
     name = "${var.prefix}-${var.environment}-function"
     location = var.location
@@ -142,8 +138,64 @@ resource "azurerm_function_app" "functions" {
     }
 }
 
+locals {
+    cname = var.environment == "prod" ? var.dns_name :  "${var.environment}-${var.dns_name}"
+    dns = "${var.instance_name}-func"
+}
+
+
+resource "azurerm_dns_cname_record" "function_domain_name" {
+  name                = local.dns
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  record              = azurerm_function_app.functions.default_hostname
+}
+
+resource "azurerm_dns_txt_record" "function_domain_name_txt" {
+  name                = "asuid.${local.dns}"
+  zone_name           = var.dns
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+
+  record {
+    value = azurerm_function_app.functions.custom_domain_verification_id
+  }
+}
+
+resource "azurerm_dns_txt_record" "function_domain_name_txt" {
+  count = use_dns ? 1 : 0
+  name                = "asuid.${local.cname}"
+  zone_name           = var.dns
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+
+  record {
+    value = azurerm_function_app.functions.custom_domain_verification_id
+  }
+}
+
 
 resource "azurerm_app_service_custom_hostname_binding" "binding" {
+
+ depends_on = [
+     azurerm_dns_cname_record.function_domain_name,
+     azurerm_dns_txt_record.function_domain_name_txt
+ ]
+
+  hostname            = "${local.dns}.${var.dns_zone}"
+  app_service_name    = azurerm_function_app.functions.name
+  resource_group_name = var.resource_group
+}
+
+
+resource "azurerm_app_service_custom_hostname_binding" "binding" {
+
+ depends_on = [
+     azurerm_dns_cname_record.function_domain_name,
+     azurerm_dns_txt_record.function_domain_name_txt
+ ]
+
   hostname            = "${local.cname}.${var.dns_zone}"
   app_service_name    = azurerm_function_app.functions.name
   resource_group_name = var.resource_group

@@ -40,6 +40,9 @@ variable "size" {
 variable "dns_name" {
 	default = "supernode"
 }
+variable "instance_name" {
+	
+}
 variable "dns_zone" {
   
 }
