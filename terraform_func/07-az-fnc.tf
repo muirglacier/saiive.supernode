@@ -40,6 +40,8 @@ module "function_app" {
   size = var.size
   always_on = var.always_on
 
+  instance_name = "${var.prefix}-de"
+
   prefix = var.prefix
   location = var.location
   environment = var.environment
@@ -78,6 +80,7 @@ module "function_app_us" {
   use_dns = false
 
   prefix = "${var.prefix}-us"
+  instance_name = "${var.prefix}-us"
   
   location = azurerm_resource_group.rg_us.location
   environment = var.environment
