@@ -41,3 +41,14 @@ resource "azurerm_traffic_manager_endpoint" "endpoint_default_us" {
 
   geo_mappings = ["US"]
 }
+locals {
+    cname = var.environment == "prod" ? "tm-supernode" :  "${var.environment}-tm-supernode"
+}
+
+resource "azurerm_dns_cname_record" "function_domain_name" {
+  name                = local.cname
+  zone_name           = var.dns_zone
+  resource_group_name = var.dns_zone_resource_group
+  ttl                 = 300
+  record              = azurerm_traffic_manager_profile.tm.fqdn
+}
