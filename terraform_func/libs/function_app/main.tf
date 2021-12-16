@@ -140,7 +140,7 @@ resource "azurerm_function_app" "functions" {
 
 locals {
     cname = var.environment == "prod" ? var.dns_name :  "${var.environment}-${var.dns_name}"
-    dns = "${var.instance_name}-func"
+    dns = "${var.environment}-${var.instance_name}-func"
 }
 
 
