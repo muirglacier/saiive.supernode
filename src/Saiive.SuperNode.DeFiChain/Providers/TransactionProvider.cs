@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -146,16 +147,17 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<string> SendRawTransaction(string network, TransactionRequest request)
         {
+            var body = new OceanRawTx
+            {
+                Hex = request.RawTx
+            };
+            var httpContent =
+                 new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{OceanUrl}/{ApiVersion}/{network}/rawtx/send", httpContent);
+
             try
             {
-                var body = new OceanRawTx
-                {
-                    Hex = request.RawTx
-                };
-                var httpContent =
-                     new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-                var response = await _client.PostAsync($"{OceanUrl}/{ApiVersion}/{network}/rawtx/send", httpContent);
-
+              
                 var data = await response.Content.ReadAsStringAsync();
 
                 try
@@ -174,11 +176,15 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             }
             catch
             {
-                var httpContent =
+                if(response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    throw;
+                }
+                var nhttpContent =
                      new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                var response = await _client.PostAsync($"{ApiUrl}/v1/{network}/DFI/tx/raw", httpContent);
+                var nresponse = await _client.PostAsync($"{ApiUrl}/v1/{network}/DFI/tx/raw", nhttpContent);
 
-                var data = await response.Content.ReadAsStringAsync();
+                var data = await nresponse.Content.ReadAsStringAsync();
                 var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
 
                 Logger.LogInformation("{coin}+{network}: Committed tx to blockchain, {txId} {txHex}", "DFI", network, obj?.TxId, request.RawTx);
