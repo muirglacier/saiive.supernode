@@ -76,7 +76,7 @@ module "function_app_us" {
 
   tier = "dynamic"
   size = "Y1"
-  always_on = var.always_on
+  always_on = false
   use_dns = false
 
   prefix = "${var.prefix}-us"
