@@ -74,9 +74,10 @@ module "function_app" {
 module "function_app_us" {
   source = "./libs/function_app"
 
-  tier = "dynamic"
-  size = "Y1"
-  always_on = false
+  tier = var.tier
+  size = var.size
+  always_on = var.always_on
+  
   use_dns = false
 
   prefix = "${var.prefix}-us"
