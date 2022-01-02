@@ -100,7 +100,7 @@ resource "azurerm_function_app" "functions" {
         FUNCTION_APP_EDIT_MODE = "readonly"
         WEBSITE_ENABLE_SYNC_UPDATE_SITE = "false"
         HASH = base64encode(filesha256("${var.app_version}-${var.function_app_file}"))
-        WEBSITE_RUN_FROM_PACKAGE = "https://${azurerm_storage_account.storage.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+        WEBSITE_RUN_FROM_PACKAGE = 1
         WEBSITE_LOAD_USER_PROFILE = 1
         WEBSITE_VNET_ROUTE_ALL = 1
 
@@ -143,7 +143,20 @@ resource "azurerm_function_app" "functions" {
 
 locals {
     cname = var.environment == "prod" ? var.dns_name :  "${var.environment}-${var.dns_name}"
-    dns = "${var.environment}-${var.instance_name}-func"
+    dns = "${var.environment}-${var.instance_name}-func" 
+    publish_code_command = "az webapp deployment source config-zip --resource-group ${var.resource_group} --name ${azurerm_function_app.functions.name} --src ${var.app_version}-${var.function_app_file}"
+
+}
+
+resource "null_resource" "function_app_publish" {
+  provisioner "local-exec" {
+    command = local.publish_code_command
+  }
+  depends_on = [local.publish_code_command]
+  triggers = {
+    input_json = filemd5("${var.app_version}-${var.function_app_file}")
+    publish_code_command = local.publish_code_command
+  }
 }
 
 
