@@ -67,17 +67,15 @@ module "function_app" {
   export_q = module.service_bus.export_q
 
   sendgrid_api_key = data.azurerm_key_vault_secret.send_grid_key.value
-
 }
 
 
 module "function_app_us" {
   source = "./libs/function_app"
 
-  tier = var.tier
-  size = var.size
-  always_on = var.always_on
-  
+  tier = "dynamic"
+  size = "Y1"
+  always_on = false
   use_dns = false
 
   prefix = "${var.prefix}-us"
