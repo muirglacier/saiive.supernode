@@ -149,21 +149,6 @@ resource "azurerm_function_app" "functions" {
     }
 }
 
-locals {
-    publish_code_command = "az webapp deployment source config-zip --resource-group ${var.resource_group} --name ${azurerm_function_app.functions.name} --src ${var.app_version}-${var.function_app_file}"
-}
-
-resource "null_resource" "function_app_publish" {
-  provisioner "local-exec" {
-    command = local.publish_code_command
-  }
-  depends_on = [local.publish_code_command]
-  triggers = {
-    input_json = filemd5("${var.app_version}-${var.function_app_file}")
-    publish_code_command = local.publish_code_command
-  }
-}
-
 resource "azurerm_dns_cname_record" "function_domain_name" {
   name                = local.cname
   zone_name           = var.dns_zone
