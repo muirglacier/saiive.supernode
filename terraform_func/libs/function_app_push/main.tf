@@ -90,8 +90,11 @@ resource "azurerm_function_app" "functions" {
     name = "${var.prefix}-${var.environment}-push-function"
     location = var.location
     resource_group_name = var.resource_group
-    app_service_plan_id = azurerm_app_service_plan.asp.id
-    storage_connection_string = azurerm_storage_account.storage.primary_connection_string
+    app_service_plan_id = azurerm_app_service_plan.asp.key_vault_id
+
+    storage_account_name       = azurerm_storage_account.storage.name
+    storage_account_access_key = azurerm_storage_account.storage.primary_access_key
+
     version = "~4"
     https_only = true
 
