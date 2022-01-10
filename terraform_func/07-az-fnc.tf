@@ -164,8 +164,8 @@ resource "azurerm_notification_hub_authorization_rule" "rule" {
 module "function_app_push" {
   source = "./libs/function_app_push"
   
-  tier = var.tier
-  size = var.size
+  tier = "dynamic"
+  size = "Y1"
   always_on = var.always_on
 
   prefix = var.prefix
