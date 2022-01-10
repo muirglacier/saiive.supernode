@@ -166,7 +166,7 @@ module "function_app_push" {
   
   tier = "dynamic"
   size = "Y1"
-  always_on = var.always_on
+  always_on = false
 
   prefix = var.prefix
   location = var.location
