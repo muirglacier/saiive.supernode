@@ -45,16 +45,16 @@ resource "azurerm_traffic_manager_endpoint" "endpoint_default_us" {
 locals {
     cname = var.environment == "prod" ? "supernode" :  "${var.environment}-supernode"
 }
-resource "azurerm_traffic_manager_endpoint" "endpoint_default_us_fallback" {
-  name                =  "${var.prefix}-${var.environment}-endpoint-default_us_world"
-  resource_group_name = azurerm_resource_group.rg.name
-  profile_name        = azurerm_traffic_manager_profile.tm.name
-  target              = substr(module.function_app.dns_name, 0, length(module.function_app.dns_name)-1)
-  type                = "externalEndpoints"
-  weight              = 1
+# resource "azurerm_traffic_manager_endpoint" "endpoint_default_us_fallback" {
+#   name                =  "${var.prefix}-${var.environment}-endpoint-default_us_world"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   profile_name        = azurerm_traffic_manager_profile.tm.name
+#   target              = substr(module.function_app.dns_name, 0, length(module.function_app.dns_name)-1)
+#   type                = "externalEndpoints"
+#   weight              = 1
 
-  geo_mappings = ["US"]
-}
+#   geo_mappings = ["US"]
+# }
 
 resource "azurerm_dns_cname_record" "function_domain_name" {
   name                = local.cname
