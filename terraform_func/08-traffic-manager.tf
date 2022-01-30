@@ -46,7 +46,7 @@ locals {
     cname = var.environment == "prod" ? "supernode" :  "${var.environment}-supernode"
 }
 resource "azurerm_traffic_manager_endpoint" "endpoint_default_us_fallback" {
-  name                =  "${var.prefix}-${var.environment}-endpoint-default_us"
+  name                =  "${var.prefix}-${var.environment}-endpoint-default_us_world"
   resource_group_name = azurerm_resource_group.rg.name
   profile_name        = azurerm_traffic_manager_profile.tm.name
   target              = substr(module.function_app.dns_name, 0, length(module.function_app.dns_name)-1)
