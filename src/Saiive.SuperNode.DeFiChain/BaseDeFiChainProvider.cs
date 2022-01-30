@@ -2,8 +2,12 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction;
+using Saiive.SuperNode.DeFiChain.Ocean;
+using Saiive.SuperNode.DeFiChain.Providers;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.DeFiChain
@@ -18,6 +22,9 @@ namespace Saiive.SuperNode.DeFiChain
         internal const string ApiVersion = "v0";
 
         protected readonly HttpClient _client;
+
+
+        private Dictionary<string, bool> _oceanSyncState = new Dictionary<string, bool>();
 
         public BaseDeFiChainProvider(ILogger logger, IConfiguration config) : base(logger, config)
         {
@@ -36,33 +43,90 @@ namespace Saiive.SuperNode.DeFiChain
             Logger?.LogTrace($"Using CoingeckoApi {CoingeckoApiUrl}");
             Logger?.LogTrace($"Using LEGACY_API_URL {ApiUrl}");
             Logger?.LogTrace($"Using LEGACY_BITCORE_URL {LegacyBitcoreUrl}");
+
+            _oceanSyncState.Add("mainnet", false);
+            _oceanSyncState.Add("testnet", false);
+
+            var timer = new Timer(DoCheckOceanSyncState, null, 1, Convert.ToInt32(TimeSpan.FromMinutes(5).TotalMilliseconds));
         }
 
-        public async Task<T> RunWithFallbackProvider<T>(string fallbackUrl, Func<Task<T>> func, Func<string, T> fallbackFunc=null)
+        private async void DoCheckOceanSyncState(object state)
+        {
+            await CheckOceanSyncState("mainnet");
+            await CheckOceanSyncState("testnet");
+        }
+
+        private async Task CheckOceanSyncState(string network)
+        {
+            var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
+            var statsData = await stats.Content.ReadAsStringAsync();
+
+            var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
+
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{statsObj.Data.Count.Blocks}");
+
+            response.EnsureSuccessStatusCode();
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
+
+            var d = BlockProvider.ConvertOceanModel(obj.Data);
+
+
+            var time = Convert.ToDateTime(d.Time);
+
+            var timeStartCheck = DateTime.Now.AddMinutes(20 * -1);
+            var timeEndCheck = DateTime.Now.AddMinutes(20);
+
+            if (time >= timeStartCheck && time <= timeEndCheck)
+            {
+                _oceanSyncState[network] = true; 
+            }
+            else
+            {
+                _oceanSyncState[network] = false;
+            }
+
+        }
+
+        public async Task<T> RunWithFallbackProvider<T>(string fallbackUrl, string network, Func<Task<T>> func, Func<string, T> fallbackFunc=null)
         {
             try
             {
-                var t = await func();
-                return t;
+                if(_oceanSyncState[network])
+                {
+                    var t = await func();
+                    return t;
+                }
+                else
+                {
+                    return await DoFallbackRequest(fallbackUrl, network, fallbackFunc);
+                }
+
             }
             catch
             {
-                var responseLegacy = await _client.GetAsync($"{ApiUrl}/{fallbackUrl}");
-
-                responseLegacy.EnsureSuccessStatusCode();
-
-                var data = await responseLegacy.Content.ReadAsStringAsync();
-                
-                if(fallbackFunc != null)
-                {
-                    return fallbackFunc(data);
-                }
-                return JsonConvert.DeserializeObject<T>(data);
-
+                return await DoFallbackRequest(fallbackUrl, network, fallbackFunc);
             }
         }
 
-        public DateTime UnixTimeToDateTime(long unixtime)
+        private async Task<T> DoFallbackRequest<T>(string fallbackUrl, string network, Func<string, T> fallbackFunc = null)
+        {
+            var responseLegacy = await _client.GetAsync($"{ApiUrl}/{fallbackUrl}");
+
+            responseLegacy.EnsureSuccessStatusCode();
+
+            var data = await responseLegacy.Content.ReadAsStringAsync();
+
+            if (fallbackFunc != null)
+            {
+                return fallbackFunc(data);
+            }
+            return JsonConvert.DeserializeObject<T>(data);
+        }
+
+        internal static DateTime UnixTimeToDateTime(long unixtime)
         {
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixtime).ToLocalTime();

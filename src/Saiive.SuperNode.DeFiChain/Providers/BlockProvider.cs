@@ -19,7 +19,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BlockModel> GetBlockByHeightOrHash(string network, string hash)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/{hash}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/{hash}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}");
 
@@ -36,7 +36,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<List<TransactionModel>> GetTransactionForBlock(string network, string hash)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/tx/block/{hash}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/tx/block/{hash}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{hash}/transactions");
 
@@ -73,7 +73,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             return res;
         }
 
-        private BlockModel ConvertOceanModel(OceanBlockData oceanBlock)
+        internal static BlockModel ConvertOceanModel(OceanBlockData oceanBlock)
         {
             return new BlockModel
             {
@@ -91,7 +91,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<BlockModel> GetCurrentHeight(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/tip", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/tip", network, async () =>
             {
                 var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
                 var statsData = await stats.Content.ReadAsStringAsync();
@@ -105,7 +105,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<List<BlockModel>> GetLatestBlocks(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/tip", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/block/tip", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks");
 

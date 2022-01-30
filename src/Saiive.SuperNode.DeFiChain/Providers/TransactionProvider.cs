@@ -127,7 +127,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<BlockTransactionModel>> GetTransactionsByBlockHeight(string network, int height, bool includeDetails)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/tx/block/{height}/{includeDetails}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/tx/block/{height}/{includeDetails}", network, async () =>
             {
                 var blockInstance = await _blockProvider.GetBlockByHeightOrHash(network, height.ToString());
 

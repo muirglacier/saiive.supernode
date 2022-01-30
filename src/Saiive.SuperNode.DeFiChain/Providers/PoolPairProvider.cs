@@ -18,7 +18,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPair(string network, string poolId)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/getpoolpair/{poolId}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/getpoolpair/{poolId}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs/{poolId}");
                 response.EnsureSuccessStatusCode();
@@ -39,7 +39,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPairs(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/listpoolpairs", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/listpoolpairs", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
 

@@ -140,7 +140,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<BalanceModel> GetBalanceInternal(string network, string address)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/balance/{address}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/balance/{address}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/balance");
 
@@ -174,7 +174,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<IList<AccountModel>> GetAccountInternal(string network, string address)
         {
-            return await RunWithFallbackProvider<IList<AccountModel>>($"api/v1/{network}/DFI/account/{address}", async () => {
+            return await RunWithFallbackProvider<IList<AccountModel>>($"api/v1/{network}/DFI/account/{address}", network, async () => {
                 var ret = new List<AccountModel>();
 
 
@@ -325,7 +325,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<TransactionModel>> GetTransactionsInternal(string network, string address)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/txs/{address}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/txs/{address}", network, async () =>
             {
                 var url = $"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions";
 
@@ -396,7 +396,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         private async Task<List<TransactionModel>> GetUnspentTransactionOutputsInternal(string coin, string network, string address)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/unspent/{address}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/unspent/{address}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/transactions/unspent");
 
@@ -495,7 +495,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanVault>> GetLoanVaultsForAddress(string network, string address)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/address/loans/vaults/{address}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/address/loans/vaults/{address}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/address/{address}/vaults");
 

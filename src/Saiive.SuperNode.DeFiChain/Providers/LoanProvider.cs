@@ -17,7 +17,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<LoanCollateral> GetLoanCollateral(string network, string id)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/collaterals/{id}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/collaterals/{id}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/collaterals/{id}");
 
@@ -33,7 +33,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanCollateral>> GetLoanCollaterals(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/collaterals", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/collaterals", network, async () =>
             {
                 var oceanData = await Helper.LoadAllFromPagedRequest<LoanCollateral>($"{OceanUrl}/{ApiVersion}/{network}/loans/collaterals");
                 return oceanData;
@@ -42,7 +42,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<LoanScheme> GetLoanScheme(string network, string id)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/schemes/{id}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/schemes/{id}", network, async () =>
             {
 
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/schemes/{id}");
@@ -58,7 +58,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanScheme>> GetLoanSchemes(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/schemes", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/schemes", network, async () =>
             {
 
                 var oceanData = await Helper.LoadAllFromPagedRequest<LoanScheme>($"{OceanUrl}/{ApiVersion}/{network}/loans/schemes");
@@ -68,7 +68,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<LoanToken> GetLoanToken(string network, string id)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/tokens/{id}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/tokens/{id}", network, async () =>
             {
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens/{id}");
 
@@ -83,7 +83,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanToken>> GetLoanTokens(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/tokens", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/tokens", network, async () =>
             {
 
                 var oceanData = await Helper.LoadAllFromPagedRequest<LoanToken>($"{OceanUrl}/{ApiVersion}/{network}/loans/tokens");
@@ -93,7 +93,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<LoanVault> GetLoanVault(string network, string id)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/vaults/{id}", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/vaults/{id}", network, async () =>
             {
 
                 var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults/{id}");
@@ -109,7 +109,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanVault>> GetLoanVaults(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/vaults", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/vaults", network, async () =>
             {
 
                 var oceanData = await Helper.LoadAllFromPagedRequest<LoanVault>($"{OceanUrl}/{ApiVersion}/{network}/loans/vaults");
@@ -119,7 +119,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<IList<LoanAuction>> GetAuctions(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/auctions", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/loans/auctions", network, async () =>
             {
                 var oceanData = await Helper.LoadAllFromPagedRequest<LoanAuction>($"{OceanUrl}/{ApiVersion}/{network}/loans/auctions");
                 return oceanData;

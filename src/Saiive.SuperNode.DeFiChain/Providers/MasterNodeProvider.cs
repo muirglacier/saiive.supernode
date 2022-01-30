@@ -21,7 +21,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         internal async Task<List<Masternode>> LoadAll(string network)
         {
-            return await RunWithFallbackProvider($"api/v1/{network}/DFI/masternodes/list", async () =>
+            return await RunWithFallbackProvider($"api/v1/{network}/DFI/masternodes/list", network, async () =>
             {
                 var url = $"{OceanUrl}/{ApiVersion}/{network}/masternodes";
                 var getAllMasternodes = await Helper.LoadAllFromPagedRequest<OceanMasterNodeData>(url);
