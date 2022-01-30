@@ -56,7 +56,7 @@ namespace Saiive.SuperNode.DeFiChain
             await CheckOceanSyncState("testnet");
         }
 
-        private async Task CheckOceanSyncState(string network)
+        private async Task<bool> CheckOceanSyncState(string network)
         {
             var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
             var statsData = await stats.Content.ReadAsStringAsync();
@@ -72,21 +72,18 @@ namespace Saiive.SuperNode.DeFiChain
             var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
 
             var d = BlockProvider.ConvertOceanModel(obj.Data);
-
-
             var time = Convert.ToDateTime(d.Time);
 
             var timeStartCheck = DateTime.Now.AddMinutes(20 * -1);
             var timeEndCheck = DateTime.Now.AddMinutes(20);
 
+            var result = false;
             if (time >= timeStartCheck && time <= timeEndCheck)
             {
-                _oceanSyncState[network] = true; 
+                result = true;
             }
-            else
-            {
-                _oceanSyncState[network] = false;
-            }
+            _oceanSyncState[network] = result;
+            return result;
 
         }
 
@@ -94,7 +91,9 @@ namespace Saiive.SuperNode.DeFiChain
         {
             try
             {
-                if(_oceanSyncState[network])
+                var isOceanOk = await CheckOceanSyncState(network);
+
+                if (isOceanOk)
                 {
                     var t = await func();
                     return t;
