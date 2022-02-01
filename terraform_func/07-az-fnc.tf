@@ -184,7 +184,7 @@ module "function_app_push" {
   cosmos_db_name =  module.cosmos.name
   cosmos_table_name = module.cosmos.table
 
-  legacy_api_url = "https://api.az-prod-0.saiive.live/"
+  legacy_api_url = "https://api.az-prod-0.saiive.live"
   bitcore_url = "https://bitcore.az-prod-0.saiive.live"
   ocean_url = "https://ocean.defichain.com"
   defichain_api = "https://api.defichain.io"

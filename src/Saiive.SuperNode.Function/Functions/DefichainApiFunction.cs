@@ -24,7 +24,7 @@ namespace Saiive.SuperNode.Function.Functions
         }
 
         [FunctionName("ListYieldFarming")]
-        [OpenApiOperation(operationId: "CoinPrice", tags: new[] { "DeFiChain" })]
+        [OpenApiOperation(operationId: "CoinPrice", tags: new[] { "DeFiChain" }, Deprecated = true)]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(List<YieldFramingModel>), Description = "The OK response")]

@@ -104,7 +104,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                     throw;
                 }
 
-                var responseLegacy = await _client.GetAsync($"{ApiUrl}api/v1/{network}/DFI/tx/id/{txId}");
+                var responseLegacy = await _client.GetAsync($"{ApiUrl}/api/v1/{network}/DFI/tx/id/{txId}");
 
                 responseLegacy.EnsureSuccessStatusCode();
 
@@ -182,7 +182,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 }
                 var nhttpContent =
                      new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                var nresponse = await _client.PostAsync($"{ApiUrl}/v1/{network}/DFI/tx/raw", nhttpContent);
+                var nresponse = await _client.PostAsync($"{ApiUrl}/api/v1/{network}/DFI/tx/raw", nhttpContent);
 
                 var data = await nresponse.Content.ReadAsStringAsync();
                 var obj = JsonConvert.DeserializeObject<TransactionResponse>(data);
