@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NBitcoin;
 using Newtonsoft.Json;
 using Saiive.SuperNode.Abstaction;
 using Saiive.SuperNode.DeFiChain.Ocean;
@@ -22,6 +23,7 @@ namespace Saiive.SuperNode.DeFiChain
         internal const string ApiVersion = "v0";
 
         protected readonly HttpClient _client;
+
 
 
         private Dictionary<string, bool> _oceanSyncState = new Dictionary<string, bool>();
@@ -58,32 +60,40 @@ namespace Saiive.SuperNode.DeFiChain
 
         private async Task<bool> CheckOceanSyncState(string network)
         {
-            var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
-            var statsData = await stats.Content.ReadAsStringAsync();
-
-            var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
-
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{statsObj.Data.Count.Blocks}");
-
-            response.EnsureSuccessStatusCode();
-
-            var data = await response.Content.ReadAsStringAsync();
-
-            var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
-
-            var d = BlockProvider.ConvertOceanModel(obj.Data);
-            var time = Convert.ToDateTime(d.Time);
-
-            var timeStartCheck = DateTime.Now.AddMinutes(20 * -1);
-            var timeEndCheck = DateTime.Now.AddMinutes(20);
-
-            var result = false;
-            if (time >= timeStartCheck && time <= timeEndCheck)
+            try
             {
-                result = true;
+                var stats = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/stats");
+                var statsData = await stats.Content.ReadAsStringAsync();
+
+                var statsObj = JsonConvert.DeserializeObject<OceanStats>(statsData);
+
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/blocks/{statsObj.Data.Count.Blocks}");
+
+                response.EnsureSuccessStatusCode();
+
+                var data = await response.Content.ReadAsStringAsync();
+
+                var obj = JsonConvert.DeserializeObject<OceanBlock>(data);
+
+                var d = BlockProvider.ConvertOceanModel(obj.Data);
+                var time = Convert.ToDateTime(d.Time);
+
+                var timeStartCheck = DateTime.Now.AddMinutes(20 * -1);
+                var timeEndCheck = DateTime.Now.AddMinutes(20);
+
+                var result = false;
+                if (time >= timeStartCheck && time <= timeEndCheck)
+                {
+                    result = true;
+                }
+                _oceanSyncState[network] = result;
+                return result;
             }
-            _oceanSyncState[network] = result;
-            return result;
+            catch
+            {
+                _oceanSyncState[network] = false;
+                return false;
+            }
 
         }
 
@@ -130,6 +140,15 @@ namespace Saiive.SuperNode.DeFiChain
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixtime).ToLocalTime();
             return dtDateTime;
+        }
+
+        public static Network GetNBitcoinNetwork(string network)
+        {
+            if(network.ToLowerInvariant() == "mainnet")
+            {
+                return Saiive.DeFiChain.Sharp.Parser.NBitcoin.DeFiChain.Instance.Mainnet;
+            }
+            return Saiive.DeFiChain.Sharp.Parser.NBitcoin.DeFiChain.Instance.Testnet;
         }
     }
 }

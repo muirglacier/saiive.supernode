@@ -18,7 +18,7 @@ resource "azurerm_dns_cname_record" "status_uptimerobot" {
   zone_name           = var.dns_zone
   resource_group_name = var.dns_zone_resource_group
   ttl                 = 300
-  record              = "status.uptimerobot.com"
+  record              = "stats.uptimerobot.com"
 }
 
 data "uptimerobot_alert_contact" "default_alert_contact" {
@@ -93,7 +93,7 @@ resource "uptimerobot_monitor" "supernode" {
 
 resource "uptimerobot_status_page" "defichain_status_page" {
   friendly_name  = local.uptime_robot_name
-  custom_domain  = "${local.uptime_cname_prefix}status.saiive.live"
+  custom_domain  = "${local.uptime_cname_prefix}stats.saiive.live"
   monitors       = [  
                       uptimerobot_monitor.supernode.id,
                       uptimerobot_monitor.dfi_mainnet.id,
