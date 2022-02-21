@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Saiive.SuperNode.Abstaction.Providers;
 using Saiive.SuperNode.DeFiChain.Ocean;
 using Saiive.SuperNode.Model;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,6 +15,30 @@ using System.Threading.Tasks;
 
 namespace Saiive.SuperNode.DeFiChain.Providers
 {
+    internal class JError
+    {
+        [JsonProperty("code")]
+        public int Code { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("at")]
+        public long At { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("url")]
+        public string Url { get; set; }
+    }
+
+    internal class JErrorRoot
+    {
+        [JsonProperty("error")]
+        public JError Error { get; set; }
+    }
+
     internal class TransactionProvider : BaseDeFiChainProvider, ITransactionProvider
     {
         private readonly AddressProvider _addressProvider;
@@ -159,7 +183,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
             {
               
                 var data = await response.Content.ReadAsStringAsync();
-
+                
                 try
                 {
                     response.EnsureSuccessStatusCode();
@@ -171,7 +195,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 }
                 catch
                 {
-                    throw new ArgumentException(data);
+                    var json = JsonConvert.DeserializeObject<JErrorRoot>(data);
+                    throw new ArgumentException(json.Error.Message);
                 }
             }
             catch
