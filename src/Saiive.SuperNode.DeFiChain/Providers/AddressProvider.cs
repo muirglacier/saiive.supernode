@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NBitcoin;
 using Newtonsoft.Json;
 using Saiive.DeFiChain.Sharp.Parser;
 using Saiive.SuperNode.Abstaction.Providers;
@@ -304,6 +305,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                         var parsedTx = DefiScriptParser.Parse(vo.Script.Hex.Substring(startIndexOfDfTx).ToByteArray());
 
                         voutTx.TxType = Convert.ToChar(parsedTx.TxType).ToString();
+                        ret.TxType = voutTx.TxType;
                     }
                     catch
                     {
@@ -380,15 +382,9 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
             var ret = new List<TransactionModel>();
 
-            var token = await _tokenStore.GetToken(network, "DFI");
-
             foreach (var tx in oceanTransactions)
             {
-                var valueProp = String.IsNullOrEmpty(tx.Value) ? tx.Vout.Value : tx.Value;
-                var txType = tx.Type;
-
                 ret.Add(await ConvertOceanModel(tx, network, address));
-
             }
 
             return ret;
@@ -548,6 +544,16 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
 
             return ret;
+        }
+
+        public Task<IList<AccountModel>> GetTotalBalanceXPubKey(string network, string xPubKey)
+        {
+            var pubkey = ExtPubKey.Parse(xPubKey, GetNBitcoinNetwork(network));
+            var newAddress = pubkey.Derive(KeyPath.Parse("1129/0/0/0")).PubKey.GetAddress(ScriptPubKeyType.Segwit, GetNBitcoinNetwork(network));
+            var newAddress2 = pubkey.Derive(KeyPath.Parse("0/0")).PubKey.GetAddress(ScriptPubKeyType.SegwitP2SH, GetNBitcoinNetwork(network));
+
+
+            throw new NotImplementedException();
         }
     }
 

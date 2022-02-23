@@ -7,6 +7,8 @@ namespace Saiive.SuperNode.Abstaction.Providers
 {
     public interface IAddressProvider
     {
+        Task<IList<AccountModel>> GetTotalBalanceXPubKey(string network, string xPubKey);
+
         Task<IList<AccountModel>> GetTotalBalance(string network, string address);
         Task<IDictionary<string, AccountModel>> GetTotalBalance(string network, AddressesBodyRequest addresses);
 

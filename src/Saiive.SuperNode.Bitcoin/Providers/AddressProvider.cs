@@ -405,5 +405,10 @@ namespace Saiive.SuperNode.Bitcoin.Providers
         {
             throw new NotImplementedException();
         }
+
+        public Task<IList<AccountModel>> GetTotalBalanceXPubKey(string network, string xPubKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

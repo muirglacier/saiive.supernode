@@ -17,5 +17,8 @@ namespace Saiive.SuperNode.Model
         [JsonProperty("outputs")]
         public List<TransactionModel> Outputs { get; set; }
 
+        [JsonIgnore]
+        public string TxType { get; set; }
+
     }
 }

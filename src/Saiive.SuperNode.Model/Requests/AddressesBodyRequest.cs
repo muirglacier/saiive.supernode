@@ -8,4 +8,10 @@ namespace Saiive.SuperNode.Model.Requests
         [JsonProperty("addresses")]
         public IList<string> Addresses { get; set; }
     }
+
+    public class XPubKeyRequest
+    {
+        [JsonProperty("xpubkey")]
+        public string XPubKey { get; set; }
+    }
 }

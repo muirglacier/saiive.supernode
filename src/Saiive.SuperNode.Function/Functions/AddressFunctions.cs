@@ -73,6 +73,30 @@ namespace Saiive.SuperNode.Function.Functions
             }
         }
 
+        //[FunctionName("GetTotalBalanceXPub")]
+        //[OpenApiOperation(operationId: "GetTotalBalanceXPub", tags: new[] { "Address" })]
+        //[OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        //[OpenApiParameter(name: "coin", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+        //[OpenApiRequestBody(contentType: "application/json", bodyType: typeof(XPubKeyRequest), Required = true)]
+        //[OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(Dictionary<string, AccountModel>), Description = "The OK response")]
+        //public async Task<IActionResult> GetTotalBalanceXPubKey(
+        //      [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "v1/{network}/{coin}/balance-xpub")] XPubKeyRequest req,
+        //    string coin, string network)
+        //{
+        //    try
+        //    {
+        //        var retAccountList = await ChainProviderCollection.GetInstance(coin).AddressProvider.GetTotalBalanceXPubKey(network, req.XPubKey);
+
+        //        return new OkObjectResult(retAccountList);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Logger.LogError($"{e}");
+        //        return new BadRequestObjectResult(new ErrorModel(e.Message));
+        //    }
+        //}
+
+
         [FunctionName("BalanceSingle")]
         [OpenApiOperation(operationId: "BalanceSingle", tags: new[] { "Address" })]
         [OpenApiParameter(name: "network", In = ParameterLocation.Path, Required = true, Type = typeof(string))]

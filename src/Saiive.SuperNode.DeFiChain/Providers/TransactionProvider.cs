@@ -44,12 +44,14 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         private readonly AddressProvider _addressProvider;
         private readonly BlockProvider _blockProvider;
         private readonly AddressTransactionDetailProvider _txProvider;
+        private readonly StatsProvider _statsProvider;
 
-        public TransactionProvider(ILogger<TransactionProvider> logger, IConfiguration config, AddressProvider addressProvider, BlockProvider blockProvider, AddressTransactionDetailProvider txDetailProvider) : base(logger, config)
+        public TransactionProvider(ILogger<TransactionProvider> logger, IConfiguration config, AddressProvider addressProvider, BlockProvider blockProvider, AddressTransactionDetailProvider txDetailProvider, StatsProvider statsProvider) : base(logger, config)
         {
             _addressProvider = addressProvider;
             _blockProvider = blockProvider;
             _txProvider = txDetailProvider;
+            _statsProvider = statsProvider;
         }
 
         private TransactionModel ConvertOceanModel(OceanDataEntity<OceanTransactionDetailData> data)
@@ -90,6 +92,10 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                             //ignore
                         }
                     }
+                    else
+                    {
+
+                    }
                 }
                 return tx;
             }
@@ -103,6 +109,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         public async Task<TransactionModel> GetTransactionById(string network, string txId, bool onlyConfirmed)
         {
             var detailModel = await _addressProvider.GetTransactionDetails(network, txId);
+            var stats = await _statsProvider.GetStats(network);
 
 
             var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/transactions/{txId}");
@@ -118,6 +125,8 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var ret = ConvertOceanModel(obj);
                 ret.Details = detailModel;
                 ret.Coinbase = detailModel.Inputs.Any(a => a.Coinbase);
+                ret.TxType = detailModel.TxType;
+                ret.Confirmations = stats.Count.Blocks - obj.Data.Block.Height;
 
                 return ret;
             }
