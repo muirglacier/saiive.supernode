@@ -41,7 +41,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
         {
             return await RunWithFallbackProvider($"api/v1/{network}/DFI/listpoolpairs", network, async () =>
             {
-                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
+                var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs?size=1000");
 
 
                 response.EnsureSuccessStatusCode();
