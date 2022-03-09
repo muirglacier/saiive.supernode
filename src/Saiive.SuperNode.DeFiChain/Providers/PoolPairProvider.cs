@@ -51,7 +51,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
                 var obj = JsonConvert.DeserializeObject<Ocean.OceanPoolPair>(data);
 
 
-                var ret = new Dictionary<string, PoolPairModel>();
+                var ret = new Dictionary<string, PoolPairModel>(); 
 
                 foreach (var pair in obj.Data)
                 {
@@ -66,7 +66,7 @@ namespace Saiive.SuperNode.DeFiChain.Providers
 
         public async Task<Dictionary<string, PoolPairModel>> GetPoolPairsBySymbolKey(string network)
         {
-            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs");
+            var response = await _client.GetAsync($"{OceanUrl}/{ApiVersion}/{network}/poolpairs?size=1000");
 
 
             response.EnsureSuccessStatusCode();
