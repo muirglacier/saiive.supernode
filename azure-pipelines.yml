@@ -11,9 +11,9 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '3921c1d1-a9db-4a6a-ab5a-d5c1831052af'
+  dockerRegistryServiceConnection: 'cdbc353a-a9c3-4275-a70d-a5fa4f446df6'
   imageRepository: 'supernode'
-  containerRegistry: 'defiwallet.azurecr.io'
+  containerRegistry: 'tritonwallet.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   Parameters.RestoreBuildProjects: '**/Saiive.Supernode.sln'
