@@ -69,7 +69,7 @@ variable "dns_zone_resource_group" {
 }
 
 variable "key_vault_id" {
-  default = "/subscriptions/551ab192-148c-445b-ae4f-0d0107e6f5de/resourceGroups/defi-wallet-common/providers/Microsoft.KeyVault/vaults/defichain-wallet"
+  default = "/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/defi-wallet-common/providers/Microsoft.KeyVault/vaults/dfi-wallet-key-vault"
 }
 
 
