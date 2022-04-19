@@ -12,7 +12,7 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'cdbc353a-a9c3-4275-a70d-a5fa4f446df6'
-  imageRepository: 'supernode'
+  imageRepository: 'muirglacier/supernode'
   containerRegistry: 'tritonwallet.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
