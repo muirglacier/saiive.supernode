@@ -2,7 +2,7 @@
 data "uptimerobot_account" "account" {}
 
 locals {
-  uptime_robot_name = "saiive.live"
+  uptime_robot_name = "tritonwallet.com"
 }
 locals {
     env_name = var.environment == "prod" ? local.uptime_robot_name :  "${var.environment}-${local.uptime_robot_name}"
@@ -10,7 +10,7 @@ locals {
 
 resource "uptimerobot_status_page" "defichain_status_page" {
   friendly_name  = local.env_name
-  custom_domain  = "${local.uptime_cname_prefix}node.saiive.live"
+  custom_domain  = "${local.uptime_cname_prefix}node.tritonwallet.com"
   monitors       = concat(local.uptime_nodes)
 }
 

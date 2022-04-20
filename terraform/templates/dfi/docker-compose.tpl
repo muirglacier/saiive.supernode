@@ -15,7 +15,7 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge=true"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsEncryptHttpChallenge.acme.email=office@saiive.live"
+      - "--certificatesresolvers.letsEncryptHttpChallenge.acme.email=office@tritonwallet.com"
       - "--certificatesresolvers.letsEncryptHttpChallenge.acme.storage=/letsencrypt/acme.json"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=letsEncryptHttpChallenge"

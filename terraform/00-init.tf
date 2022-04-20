@@ -40,6 +40,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+  subscription_id = "b8e05282-d2b6-4824-aaba-3b513761cc15"
 }
 
 provider "scaleway" {
@@ -83,7 +84,7 @@ variable "dns_zone_resource_group" {
 }
 
 variable "key_vault_id" {
-  default = "/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/defi-wallet-common/providers/Microsoft.KeyVault/vaults/dfi-wallet-key-vault"
+  default = "/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/saiive-terraform/providers/Microsoft.KeyVault/vaults/key-vault-6425"
 }
 
 variable "scaleway_node_count" {

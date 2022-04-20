@@ -27,8 +27,8 @@ namespace Saiive.SuperNode.Export
             try
             {
                 var msg = MailHelper.CreateSingleEmail(
-                    new EmailAddress("export@saiive.live", "saiive.live DeFi Wallet Export"),
-                    new EmailAddress(to), "saiive.live Export", "Your exports are attached to this email!", "");
+                    new EmailAddress("export@tritonwallet.com", "Triton DeFi Wallet Export"),
+                    new EmailAddress(to), "Triton Export", "Your exports are attached to this email!", "");
 
                 var i = 0;
                 foreach (var attachment in attachments)

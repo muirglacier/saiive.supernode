@@ -14,7 +14,7 @@ dns_zone = "saiive.live"
 dns_zone_resource_group = "saiive-dns"
 
 
-key_vault_id="/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/saiive-terraform/providers/Microsoft.KeyVault/vaults/saiive-wallet-key-vault"
+key_vault_id="/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/saiive-terraform/providers/Microsoft.KeyVault/vaults/key-vault-28260"
 
 
 analytics_id = "009ddeda-5a98-4712-9808-0e7f5d27ea03"
