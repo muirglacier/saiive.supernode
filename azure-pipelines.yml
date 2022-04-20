@@ -150,28 +150,3 @@ stages:
           ArtifactName: 'AzureFunctions'
           publishLocation: 'Container'
 
-
-- stage: PackageTerraform
-  displayName: Pack terraform
-  dependsOn: BuildAzureFunction
-
-  jobs:
-  - job: Pack
-    displayName: Pack terraform
-    pool:
-      vmImage: $(vmImageName)
-
-    steps:
-    - task: CopyFiles@2
-      inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/terraform_func'
-          Contents: '**'
-          TargetFolder: '$(Build.ArtifactStagingDirectory)'
-          CleanTargetFolder: true
-          OverWrite: true
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'terraform'
-          publishLocation: 'Container'
