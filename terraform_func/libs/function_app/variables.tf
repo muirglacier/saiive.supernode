@@ -24,9 +24,6 @@ variable "function_app_file" {
 
 }
 
-variable "app_version" {
-	
-}
 
 variable "tier" {
 	default = "dynamic"

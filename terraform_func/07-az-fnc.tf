@@ -38,7 +38,6 @@ module "function_app" {
   resource_group = azurerm_resource_group.rg.name
 
   function_app_file = "function.zip"  
-  app_version = var.app_version
 
   dns_zone = var.dns_zone
   dns_zone_resource_group = var.dns_zone_resource_group
