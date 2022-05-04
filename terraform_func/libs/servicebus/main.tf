@@ -11,8 +11,7 @@ resource "azurerm_servicebus_namespace" "servicebus" {
 
 resource "azurerm_servicebus_queue" "export_q" {
   name                = "export-queue"
-  resource_group_name = var.resource_group
-  namespace_name      = azurerm_servicebus_namespace.servicebus.name
+  namespace_id = azurerm_servicebus_namespace.servicebus.id
 
   enable_partitioning                   = true
   max_delivery_count                    = 5
