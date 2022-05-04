@@ -136,14 +136,6 @@ stages:
           modifyOutputPath: false
           publishWebProjects: false
         
-   
-    - task: Bash@3
-      displayName: Rename file
-      inputs:
-          targetType: 'inline'
-          workingDirectory: $(Build.ArtifactStagingDirectory)/function
-          script: 'mv function.zip $(Build.BuildNumber)-function.zip'
-    
     - task: PublishBuildArtifacts@1
       inputs:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
