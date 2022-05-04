@@ -84,7 +84,7 @@ variable "dns_zone_resource_group" {
 }
 
 variable "key_vault_id" {
-  default = "/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/saiive-terraform/providers/Microsoft.KeyVault/vaults/key-vault-6425"
+  default = "/subscriptions/b8e05282-d2b6-4824-aaba-3b513761cc15/resourceGroups/saiive-terraform/providers/Microsoft.KeyVault/vaults/key-vault-17186"
 }
 
 variable "scaleway_node_count" {
