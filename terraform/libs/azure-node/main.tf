@@ -143,6 +143,8 @@ resource "azurerm_linux_virtual_machine" "supernode" {
     network_interface_ids = [element(azurerm_network_interface.nic.*.id, count.index)]
     size                  = var.server_type
 
+   
+
     os_disk {
         name              = "${local.node_name}-${count.index}-disk"
         caching           = "ReadWrite"
@@ -185,6 +187,13 @@ resource "azurerm_linux_virtual_machine" "supernode" {
       "mkdir ~/node/mainnet",
       "mkdir ~/node/testnet"
      ]
+    }
+
+    output "provisioning_name" {
+      value = "${local.node_name}-${count.index}"
+    }
+    output "docker_compose" {
+      value = element(data.template_file.docker_compose.*.rendered, count.index)
     }
 
   provisioner "file" {
