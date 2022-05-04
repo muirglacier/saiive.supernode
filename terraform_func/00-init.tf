@@ -74,7 +74,7 @@ variable "key_vault_id" {
 
 
 variable "app_version" {
-  default = "20200722.2"
+  default = "$(func.BuildNumber)"
 }
 
 variable "tier" {
