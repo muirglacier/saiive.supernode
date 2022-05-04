@@ -73,10 +73,6 @@ variable "key_vault_id" {
 }
 
 
-variable "app_version" {
-  default = "${func.BuildNumber}"
-}
-
 variable "tier" {
 	default = "dynamic"
 }
