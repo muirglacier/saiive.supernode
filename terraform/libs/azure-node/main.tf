@@ -189,13 +189,6 @@ resource "azurerm_linux_virtual_machine" "supernode" {
      ]
     }
 
-    output "provisioning_name" {
-      value = "${local.node_name}-${count.index}"
-    }
-    output "docker_compose" {
-      value = element(data.template_file.docker_compose.*.rendered, count.index)
-    }
-
   provisioner "file" {
     content = element(data.template_file.docker_compose.*.rendered, count.index)
     destination = "~/node/docker-compose.yml"
