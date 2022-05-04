@@ -34,7 +34,7 @@ resource "azurerm_storage_blob" "appcode" {
     storage_account_name = azurerm_storage_account.storage.name
     storage_container_name = azurerm_storage_container.deployments.name
     type = "Block"
-    source = "${func.BuildNumber}-${var.function_app_file}"
+    source = "${var.function_app_file}"
 
 }
 
@@ -103,7 +103,7 @@ resource "azurerm_function_app" "functions" {
         FUNCTIONS_WORKER_RUNTIME = "dotnet"
         FUNCTION_APP_EDIT_MODE = "readonly"
         WEBSITE_ENABLE_SYNC_UPDATE_SITE = "false"
-        HASH = base64encode(filesha256("${func.BuildNumber}-${var.function_app_file}"))
+        HASH = base64encode(filesha256("${var.function_app_file}"))
         WEBSITE_RUN_FROM_PACKAGE = "https://${azurerm_storage_account.storage.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
         WEBSITE_LOAD_USER_PROFILE = 1
         WEBSITE_VNET_ROUTE_ALL = 1
