@@ -37,7 +37,7 @@ module "function_app" {
   environment_tag = var.environment_tag
   resource_group = azurerm_resource_group.rg.name
 
-  function_app_file = "function.zip"  
+  function_app_file = "AzureFunctions/function/function.zip"  
 
   dns_zone = var.dns_zone
   dns_zone_resource_group = var.dns_zone_resource_group
