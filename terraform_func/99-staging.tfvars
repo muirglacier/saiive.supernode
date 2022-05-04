@@ -1,7 +1,7 @@
 environment = "staging"
 environment_tag = "Staging"
 
-prefix = "saiive-light"
+prefix = "tritonwallet-light"
 
 dns_zone = "tritonwallet.com"
 dns_zone_resource_group = "saiive-terraform"

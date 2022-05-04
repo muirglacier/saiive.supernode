@@ -1,7 +1,7 @@
 environment = "dev"
 
 environment_tag = "Development"
-prefix = "saiive-light"
+prefix = "tritonwallet-light"
 
 
 dns_zone = "tritonwallet.com"
