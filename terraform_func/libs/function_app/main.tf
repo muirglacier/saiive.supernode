@@ -43,7 +43,7 @@ data "azurerm_storage_account_sas" "sas" {
     connection_string = azurerm_storage_account.storage.primary_connection_string
     https_only = true
     start = "2019-01-01"
-    expiry = "2021-12-31"
+    expiry = "2025-12-31"
 	
     resource_types {
         object = true
@@ -108,9 +108,9 @@ resource "azurerm_function_app" "functions" {
         WEBSITE_LOAD_USER_PROFILE = 1
         WEBSITE_VNET_ROUTE_ALL = 1
 
-        OpenApi__Title = "saiive.supernode"
+        OpenApi__Title = "tritonwallet.supernode"
         OpenApi__Description = "saiive.supernode API"
-        OpenApi__TermsOfService = "https://static.saiive.live/tos.html"
+        OpenApi__TermsOfService = "https://static.tritonwallet.com/tos.html"
 
        // APPINSIGHTS_INSTRUMENTATIONKEY = var.environment == "prod" ? azurerm_application_insights.application_insights[0].instrumentation_key : ""
 
